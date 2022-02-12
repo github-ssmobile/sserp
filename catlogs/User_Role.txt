@@ -1,0 +1,36 @@
+2020-06-15 08:52:42 PM Role: tests. Created by: 32
+2020-07-16 07:32:34 PM Role: Warehouse Manager. Created by: 32
+2020-07-20 10:54:10 PM Role: Branch Accountant. Created by: 32
+2020-07-22 11:39:48 PM Role: Sales Promoter. Created by: 32
+2020-07-27 09:29:20 PM Role: Outward Scanner. Created by: 32
+2020-08-17 09:00:20 PM Role: Dispatcher. Created by: 32
+2020-11-05 10:24:27 PM Role: Auditor. Created by: 32
+2020-11-11 02:10:22 PM Role: Account Officer. Created by: 32
+2020-11-17 08:26:24 PM Role: Payment Reconciler. Created by: 32
+2020-11-18 03:36:42 PM Role: Expense Manager. Created by: 32
+2020-11-25 09:53:17 PM Role: ABM. Created by: 32
+2020-11-26 06:48:45 PM Role: Cluster Head. Created by: 32
+2020-11-27 02:21:27 PM Role: Cheque Reconciler. Created by: 32
+2020-11-27 02:22:09 PM Role: Cash Reconciler. Created by: 32
+2020-11-27 03:24:08 PM Role: Bank Reconciler. Created by: 32
+2020-12-16 09:09:44 PM Role: MIS User. Created by: 32
+2020-12-21 02:07:34 PM Role: Catelog. Created by: 32
+2021-01-06 08:20:48 PM Role: Branch Manager. Created by: 32
+2021-01-18 02:29:28 PM Role: Warehouse All-In-One. Created by: 32
+Role: Helpline. Created by: 32
+Role: Sale Analyzer. Created by: 63
+Role: Service Co-Ordinator. Created by: 32
+Role: Insurance Zonal Heads. Created by: 32
+Role: Expense Reconciller. Created by: 32
+Role: Service Coordinator. Created by: 32
+Role: Ageing Manager. Created by: 32
+Role: Channel Partner. Created by: 764
+Role: Media. Created by: 32
+Role: Gift Allocation. Created by: 32
+Role: Finance Manager. Created by: 32
+Role: test. Created by: 32
+Role: Insurance Outward. Created by: 32
+Role: Insurance Reconciller. Created by: 32
+Role: VAS Business Manager. Created by: 32
+Role: MIS Executive. Created by: 32
+Role: GST Auditor. Created by: 32

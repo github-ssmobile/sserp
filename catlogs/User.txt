@@ -1,0 +1,45 @@
+2019-12-07 03:21:45 PM User: NewUser. Created by: 1
+2019-12-27 05:13:33 PM User: dyp_branch_acc. Created by: 1
+2020-01-01 01:33:42 PM User: Test User. Created by: 15
+2020-01-02 03:43:23 PM User: outward_user. Created by: 1
+2020-01-02 03:46:01 PM User: outward_user. Created by: 1
+2020-01-02 04:27:11 PM User: rajarampuri_acc. Created by: 1
+2020-01-02 04:27:51 PM User: inward_operator. Created by: 1
+2020-01-02 04:28:10 PM User: transfer_operator. Created by: 1
+2020-01-02 04:28:27 PM User: outward_operator. Created by: 1
+2020-01-02 04:28:50 PM User: dyp_branch_acc. Created by: 1
+2020-01-02 04:29:42 PM User: Sales Person 1 DYP Branch. Created by: 1
+2020-01-02 04:30:05 PM User: Sales Person 2 DYP Branch. Created by: 1
+2020-01-02 04:31:54 PM User: Sales Person 1 Rajarampuri HO Branch. Created by: 1
+2020-01-02 04:32:08 PM User: Sales Person 2 Rajarampuri HO Branch. Created by: 1
+2020-01-02 04:38:50 PM User: sangli_branch_acc. Created by: 1
+2020-01-02 04:39:27 PM User: Sales Person 1 Sangli Branch. Created by: 1
+2020-01-02 04:39:51 PM User: Sales Person 2 Sangli Branch. Created by: 1
+2020-01-02 04:43:04 PM User: Sales Person 3 Sangli Branch. Created by: 1
+2020-01-11 04:44:30 PM User: config. Created by: 1
+2020-01-20 09:56:32 PM User: rajarampuri_acc. Created by: 1
+2020-01-23 03:05:40 PM User: sangli. Created by: 1
+2020-01-23 03:10:27 PM User: solapur. Created by: 32
+2020-01-23 03:11:32 PM User: sangli1. Created by: 1
+2020-01-23 03:14:09 PM User: sangli. Created by: 1
+2020-01-23 03:14:49 PM User: latur. Created by: 1
+2020-01-23 03:17:10 PM User: transfer. Created by: 32
+2020-01-23 09:43:43 PM User: Arif Kurne. Created by: 32
+2020-01-23 09:44:23 PM User: Pratik Jadhav. Created by: 32
+2020-01-23 09:47:04 PM User: Vishal Bakhale. Created by: 32
+2020-01-23 09:47:50 PM User: Sunil Agarkhed. Created by: 32
+2020-01-23 09:48:17 PM User: Raju Kamble. Created by: 32
+2020-01-23 09:48:49 PM User: Samrat Patil. Created by: 32
+2020-01-23 09:49:29 PM User: Abhijeet Gholap. Created by: 32
+2020-01-24 06:20:08 PM User: Mayur Ingavle. Created by: 1
+2020-01-24 06:22:04 PM User: Rakesh Korvi. Created by: 1
+2020-01-24 06:22:54 PM User: Akshay Gohar. Created by: 1
+2020-01-24 06:23:37 PM User: Rohan Nasi. Created by: 1
+2020-01-24 06:24:24 PM User: Onkar Umberajkar. Created by: 1
+2020-01-24 07:07:54 PM User: Prasad Kulkarni. Created by: 1
+2020-01-24 07:08:53 PM User: Pravin Jadhav. Created by: 1
+2020-01-24 07:10:57 PM User: Pravin Jadhav. Created by: 1
+2020-01-24 07:12:23 PM User: Vikram Ghatge. Created by: 1
+2020-01-24 07:13:18 PM User: Ajinkya Patil. Created by: 1
+2020-01-29 10:59:38 PM User: tally_user. Created by: 32
+2020-02-21 06:16:43 PM User: Vikram Ghatge. Created by: 1
