@@ -1,0 +1,40 @@
+.aos-all{
+  font-family: Helvetica,Tahoma;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
+.aos-all {
+  width: auto;
+  /*max-width: auto;*/
+  /*margin: 10vh auto 0 auto;*/
+}
+
+.aos-item {
+  /*display: inline-block;*/
+/*  float: left;*/
+  width: auto;
+  height: auto;
+  /*padding: 20px;*/
+}
+
+.aos-item__inner {
+  position: relative;
+  width: auto;
+  height: auto;
+  /*float: left;*/
+ 
+  line-height: auto;
+  text-align: center;
+  background: #fff;
+}
+
+  .aos-item {
+    
+  }
+
+/* background: #1da4e2; */
