@@ -4,3 +4,7 @@
 /uploads/
 index.php
 .htaccess
+/assets/stock_sheets
+/assets/ewaybills
+/assets/doa_letter_file
+/assets/expense
