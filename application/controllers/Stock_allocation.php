@@ -9,6 +9,7 @@ class Stock_allocation extends CI_Controller {
         $this->load->model("Allocation_model");
         $this->load->model("Stock_model");
         $this->load->model("General_model");
+         $this->load->model("common_model");
         date_default_timezone_set('Asia/Kolkata');
     }
     
@@ -1479,6 +1480,10 @@ class Stock_allocation extends CI_Controller {
         <?php } ?>
         <th>Info</th>
         <th>Print DC</th>
+         <?php if($status== 4){ ?>
+                    <th>Generate Eway Bill</th>
+                    <th>Print</th>
+                <?php } ?>
         <th><?php if($_SESSION['idrole']==15){ ?>
             Action
         <?php } ?></th>
@@ -1505,6 +1510,31 @@ class Stock_allocation extends CI_Controller {
                              <td>
                                 <a target="" class="thumbnail textalign" href="<?php echo base_url('Outward/outward_dc/'.$data->id_stock_allocation) ?>/0" style="margin: 0 8px;padding: 5px !important;width: 50%;"><i class="fa fa-print " style="color: blue"></i>
                             </td>
+                            <?php if($status== 4){ ?>
+                                    <td>
+                                        <?php if(empty($ewayinv_data['ewb_no'])){?>
+                                            <button type="button" class="btn btn-sm btn-info textalign gen-eway-bill" 
+                                            data-id="<?php echo $data->id_stock_allocation;?>" data-branch="<?php echo $data->idbranch;?>" data-warehouse="<?php echo $idwarehouse;?>">Generate Eway Bill
+                                        </button>
+                                    <?php }else{ ?>
+                                     <button type="button" class="btn btn-sm btn-success textalign">Generated
+                                     </button>
+                                 <?php } ?>
+
+                             </td>
+                             <td> 
+                                <?php if(!empty($ewayinv_data['ewb_no'])){?>
+                                   <a href="<?php echo base_url().'Print-e-way/'.$ewayinv_data['ewb_no'].'/'.$idwarehouse;?>" target="_blank">
+                                    <button type="button" class="btn btn-sm btn-success textalign gen-eway-bill"><i class="fa fa-print " style="color: blue"></i>&nbsp; EWAY</button>
+                                </a>
+                            <?php } if($ewayinv_data['bill_type']=='1'){ ?>                                 
+                                <a href="<?php echo base_url().'Print-e-invoice/'.$ewayinv_data['idoutword_no'].'/'.$idwarehouse;?>" target="_blank">
+                                    <button type="button" class="btn btn-sm btn-success textalign gen-eway-bill"><i class="fa fa-print " style="color: blue"></i> &nbsp;E-Invoice</button>
+                                </a>
+                            <?php } ?>
+
+                        </td>
+                    <?php } ?>
                         <td>
                             <?php if ($_SESSION['idrole'] == 15 && $data->status < 3 ) { ?>                        
                                <a  class="thumbnail textalign delete_allo"  value="<?php echo $data->id_stock_allocation ?>" style="margin: 0 8px;padding: 5px !important;width: 50%;"><i class="fa fa-trash-o " style="color: red"></i>  </a>                      

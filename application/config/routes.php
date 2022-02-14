@@ -67,3 +67,17 @@ $route['cost_header_month_data'] = 'Cost_center/cost_header_month_data';
 $route['ajax_get_costing_data_for_month'] = 'Cost_center/ajax_get_costing_data_for_month';
 $route['save_cost_header_month_data'] = 'Cost_center/save_cost_header_month_data';
 $route['invoice_whatspp_api_routes/(:any)'] = 'Invoice_whatsapp_api/invoice_whatsapp_api/$1';
+
+//Hostbook Integration Start **********************050122
+
+$route['Generate-eway-bill/(:any)/(:any)/(:any)/(:any)'] = 'Hostbook_Api/generateEwayBill/$1/$1/$1/$1';
+$route['Print-e-invoice/(:any)/(:any)'] = 'Hostbook_Api/printEInvoice/$1/$1';
+$route['Print-e-way/(:any)/(:any)'] = 'Hostbook_Api/printEway/$1/$1';
+$route['generate-e-invoice-bulk'] = 'Hostbook_Api/generateEInvoiceBulk';
+$route['generate-e-invoice-bulk-data'] = 'Hostbook_Api/generateEInvoiceBulkData';
+$route['generate-e-invoice-b2b-sale'] = 'Hostbook_Api/generateEinvoiceB2Bsale';
+$route['e-invoice-eway-report'] = 'Hostbook_Api/eInvoiceEwayReport';
+$route['e-invoice-eway-report-data'] = 'Hostbook_Api/eInvoiceEwayReportData';
+
+
+//Hostbook Integration End ************************

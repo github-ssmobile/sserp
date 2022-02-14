@@ -109,10 +109,13 @@
                     <input type="hidden" class="form-control input-sm" id="courier_name" name="courier_name" placeholder="Enter Courier/ Transport Name"/>
                    
                 </div><div class="clearfix"></div><br>
+                 <div class="col-md-2">Vehicle No</div>
+                <div class="col-md-2"><input type="text" class="form-control input-sm" name="vehicle_no" placeholder="Enter Vehicle Number"/></div>
                 <div class="col-md-2">POP/LR Number</div>
                 <div class="col-md-2"><input type="text" class="form-control input-sm" name="po_lr_no" placeholder="Enter POP/LR Number"/></div>
                 <div class="col-md-2">No of Boxes</div>
                 <div class="col-md-2"><input type="text" class="form-control input-sm" name="no_of_boxes" placeholder="No of Boxes" required=""/></div>
+                <div class="clearfix"></div><br>
                 <div class="col-md-2">Remark</div>
                 <div class="col-md-2"><input type="text" class="form-control input-sm" name="shipment_remark" placeholder="Enter Shipment Remark"/></div><div class="clearfix"></div><br>
                 <div class="col-md-1 pull-right">
