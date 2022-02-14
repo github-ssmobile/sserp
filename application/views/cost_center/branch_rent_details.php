@@ -14,7 +14,7 @@
 			<th style="text-align:center;">Address</th>
 			<th style="text-align:center;">Contact</th>
 			<th style="text-align:center;">Email</th>
-	 		<th style="text-align:center;">Deposit Amount</th>
+			<th style="text-align:center;">Deposit Amount</th>
 			<th style="width:15%;text-align: center;">Edit </th>
 		</thead>
 
@@ -114,7 +114,7 @@ if((!empty($rentow_details)) && ($this->session->userdata('role_name')=='Legal')
 							<?php } ?>
 
 						<?php } ?>
-                                                                <div class="clearfix"></div><br>
+						<div class="clearfix"></div><br>
 						<?php if($this->session->userdata('role_name')=='Legal'){ ?>
 							<label class="col-md-2">Amenity Document</label>
 							<div class="col-md-4">
@@ -180,27 +180,42 @@ if((!empty($rentow_details)) && ($this->session->userdata('role_name')=='Legal')
 							<?php }
 						} ?>
 						<div class="clearfix"></div><hr>
-                                                <label class="col-md-2">Other Documents</label>
-									<div class="col-md-3">
-										<!-- <input type="file" class="form-control" placeholder="Oher Document" name="other_doc" id="other_doc" /> -->
-									</div>
-									<?php if($this->session->userdata('role_name')=='Legal'){
-										if(!empty($rentow_details['other_doc'])){
-											?>
-											<label class="col-md-1"><a href="<?php echo base_url().$rentow_details['other_doc']; ?>" target="_blank"><button type="button">View</button></a></label>
-										<?php } 
-									}?>
-								<div class="clearfix"></div><hr>
+						<label class="col-md-2">Other Documents</label>
+						<div class="col-md-3">
+							<!-- <input type="file" class="form-control" placeholder="Oher Document" name="other_doc" id="other_doc" /> -->
+						</div>
+						<?php if($this->session->userdata('role_name')=='Legal'){
+							if(!empty($rentow_details['other_doc'])){
+								?>
+								<label class="col-md-1"><a href="<?php echo base_url().$rentow_details['other_doc']; ?>" target="_blank"><button type="button">View</button></a></label>
+							<?php } 
+						}?>
+						<label class="col-md-2">Status</label>
+						<div class="col-md-3">
+							<select name="legal_approve" id="legal_approve" class="form-control">
+								<option value="0">Select</option>
+								<option value="1">Approve</option>
+								<option value="0">Reject</option>
+							</select>
+						</div>
+						<div class="clearfix"></div><hr>
+						
+						
+						<label class="col-md-2">Remark</label>
+						<div class="col-md-4">
+							<textarea type="text" class="form-control" placeholder="Remark" name="legal_remark " id="legal_remark " ><?php if(!empty($rentow_details['legal_remark '])){ echo $rentow_details['legal_remark '];} ?></textarea>
+						</div>
+						<div class="clearfix"></div><hr>
 						<input type="hidden" value="<?php if(!empty($branch_details['branch_id'])){ echo $branch_details['branch_id'];} ?>"  id="branch_id" name="branch_id"> 
 						<input type="hidden" value="<?php if(!empty($rentow_details['id'])){ echo $rentow_details['id'];} ?>"  id="id" name="id"> 
-                                                <input type="hidden" value="1"  id="legal_approve" name="legal_approve"> 
+						<input type="hidden" value="1"  id="legal_approve" name="legal_approve"> 
 
 						<a class="btn btn-warning waves-effect simple-tooltip" href="<?php echo base_url('branch_rent_details/'.$this->uri->segment(2)) ?>">Cancel</a>
 						<button type="submit" class="pull-right btn btn-info waves-effect">
 							<?php if(!empty($branch_details['branch_partener_type'])){
 								if($branch_details['branch_partener_type']=='1'){
 									echo 'Approve and Create Branch';
-								}else{echo 'Approve';} }else{echo 'Approve';}?>
+								}else{echo 'Save';} }else{echo 'Save';}?>
 							</button>
 							<div class="clearfix"></div>
 
@@ -212,7 +227,7 @@ if((!empty($rentow_details)) && ($this->session->userdata('role_name')=='Legal')
 
 
 			<div class="thumbnail" style="padding: 0; margin: 0; min-height: 800px; overflow: auto">
-                         <?php if(!empty($branch_details['branch_id'])){ ?>
+				<?php if(!empty($branch_details['branch_id'])){ ?>
 					<a href="<?php echo base_url()."branch_rent_details/".$branch_details['branch_id'].'/NEW';?>" class="btn btn-sm btn-info" style="float: right;margin-top: 4px;margin-right: 5px;">Add Rent Owner</a>
 				<?php } ?>
 				<div id="purchase" style="padding: 20px 10px; margin: 0">
@@ -260,141 +275,150 @@ if((!empty($rentow_details)) && ($this->session->userdata('role_name')=='Legal')
 									</select>
 								</div>
 								<div class="clearfix"></div><br><hr>
-                                                                <?php if(!empty($rentow_details)){?>
-								<h3 style="margin-top: 0"><span></span> Owner KYC Details</h3><hr>
-								<div class="clearfix"></div><br>
+								<?php if(!empty($rentow_details)){?>
+									<h3 style="margin-top: 0"><span></span> Owner KYC Details</h3><hr>
+									<div class="clearfix"></div><br>
 
-								<label class="col-md-2">Name Of Shop Owner</label>
-								<div class="col-md-4">
-									<input type="text" class="form-control" placeholder="Name Of Shop Owner" name="owner_name" id="owner_name" required="" value="<?php if(!empty($rentow_details['owner_name'])){ echo $rentow_details['owner_name'];} ?>" />
-								</div>
-
-								<label class="col-md-2">Age Of Shop Owner</label>
-								<div class="col-md-4">
-									<input type="text" class="form-control NumberOnly" placeholder="Age Of Shop Owner" name="owner_age" id="owner_age" required="" value="<?php if(!empty($rentow_details['owner_age'])){ echo $rentow_details['owner_age'];} ?>" />
-								</div>
-								<div class="clearfix"></div><br>
-								<label class="col-md-2">Occupation of Shop Owner</label>
-								<div class="col-md-4">
-									<input type="text" class="form-control CharOnly" placeholder="Occupation of Shop Owner" name="owner_occupation" id="owner_occupation" required="" value="<?php if(!empty($rentow_details['owner_occupation'])){ echo $rentow_details['owner_occupation'];} ?>" />
-								</div>
-
-								<label class="col-md-2">Contact No Shop Owner</label>
-								<div class="col-md-4">
-									<input type="text" class="form-control IsContact" placeholder="Contact No Shop Owner" name="owner_contact" id="owner_contact" required="" value="<?php if(!empty($rentow_details['owner_contact'])){ echo $rentow_details['owner_contact'];} ?>" />
-								</div>
-
-								<div class="clearfix"></div><br>
-								<label class="col-md-2">PAN No Shop Owner</label>
-								<div class="col-md-4">
-									<input type="text" class="form-control IsPan" placeholder="AAAAA0000A" name="owner_pan" id="owner_pan" required value="<?php if(!empty($rentow_details['owner_pan'])){ echo $rentow_details['owner_pan'];} ?>" />
-								</div>
-
-								<label class="col-md-2">Adhar No Shop Owner</label>
-								<div class="col-md-4">
-									<input type="text" class="form-control IsAdhar" placeholder="123412341234" name="owner_adhar" id="owner_adhar" required value="<?php if(!empty($rentow_details['owner_adhar'])){ echo $rentow_details['owner_adhar'];} ?>" />
-								</div>
-								<div class="clearfix"></div><br>
-								<label class="col-md-2">Gst No (if any)</label>
-								<div class="col-md-4">
-									<input type="text" class="form-control IsGst" placeholder="11AAAAA0000A1Z5" name="owner_gst" id="owner_gst" value="<?php if(!empty($rentow_details['owner_gst'])){ echo $rentow_details['owner_gst'];} ?>" />
-								</div>
-								<label class="col-md-2">Email of Shop Owner</label>
-								<div class="col-md-4">
-									<input type="email" class="form-control" placeholder="Email of Shop Owner" name="owner_email" id="owner_email" required="" value="<?php if(!empty($rentow_details['owner_email'])){ echo $rentow_details['owner_email'];} ?>" />
-								</div>
-								<div class="clearfix"></div><br>			
-								<label class="col-md-2">Address of Shop Owner</label>
-								<div class="col-md-4">
-									<textarea type="text" class="form-control" placeholder="Address of Shop Owner" name="owner_address" id="owner_address" required=""><?php if(!empty($rentow_details['owner_address'])){ echo $rentow_details['owner_address'];} ?></textarea>
-								</div>
-								<label class="col-md-2">Address of Shop</label>
-								<div class="col-md-4">
-									<textarea type="text" class="form-control" placeholder="Address of Shop" name="shop_address" id="shop_address" required="" readonly ><?php if(!empty($branch_details['branch_address'])){ echo $branch_details['branch_address'];}?></textarea>
-								</div>
-								<div class="clearfix"></div><br><hr>
-								<h3 style="margin-top: 0"><span></span> Shop Agreement Details</h3><hr>
-								<div class="clearfix"></div><br>
-
-								<div id="shop-rent-details" class=""> 
-									<label class="col-md-2">Shop Measurement (in sq.ft.)</label>
+									<label class="col-md-2">Name Of Shop Owner</label>
 									<div class="col-md-4">
-										<input type="text" class="form-control" placeholder="Shop Measurement" name="shop_measurement" id="shop_measurement" required="" value="<?php if(!empty($branch_rent_details[0]['shop_measurement'])){ echo $branch_rent_details[0]['shop_measurement'];} ?>"  <?php if(!empty($branch_rent_details[0]['shop_measurement'])){ echo 'readonly'; } ?>/>
-									</div>
-									<label class="col-md-2">Deposit Amount</label>
-									<div class="col-md-4">
-										<input type="text" class="form-control" placeholder="Deposit Amount" name="deposit_amt" id="deposit_amt" required="" value="<?php if(isset($branch_rent_details[0]['deposit_amt'])){ echo $branch_rent_details[0]['deposit_amt'];} ?>"  <?php if(!empty($branch_rent_details[0]['shop_measurement'])){ echo 'readonly'; } ?> />
-									</div>
-									<div class="clearfix"></div><br>	
-									<label class="col-md-2">Rent Amount (in rs)</label>
-									<div class="col-md-4">
-										<input type="text" class="form-control" placeholder="Rent Amount" name="rent_amount" id="rent_amount"  required="" value="<?php if(isset($branch_rent_details[0]['rent_amount'])){ echo $branch_rent_details[0]['rent_amount'];} ?>"  <?php if(!empty($branch_rent_details[0]['shop_measurement'])){ echo 'readonly'; } ?> />
+										<input type="text" class="form-control" placeholder="Name Of Shop Owner" name="owner_name" id="owner_name" required="" value="<?php if(!empty($rentow_details['owner_name'])){ echo $rentow_details['owner_name'];} ?>" />
 									</div>
 
-									<label class="col-md-2">Rent Tenure (in Years)</label>
+									<label class="col-md-2">Age Of Shop Owner</label>
 									<div class="col-md-4">
-										<input type="text" class="form-control" placeholder="Rent Tenure" name="rent_tenure" id="rent_tenure" required="" value="<?php if(!empty($branch_rent_details[0]['rent_tenure'])){ echo $branch_rent_details[0]['rent_tenure'];} ?>"  <?php if(!empty($branch_rent_details[0]['shop_measurement'])){ echo 'readonly'; } ?>/>
+										<input type="text" class="form-control NumberOnly" placeholder="Age Of Shop Owner" name="owner_age" id="owner_age" required="" value="<?php if(!empty($rentow_details['owner_age'])){ echo $rentow_details['owner_age'];} ?>" />
 									</div>
 									<div class="clearfix"></div><br>
-									<label class="col-md-2">Rent Increment Ratio</label>
-									<div class="col-md-4" id="titles">
-										<div id="titleAdd"></div>
-                                                                               
-										<!-- 	<input type="text" class="form-control" placeholder="Rent Increment Ratio" name="rent_incr_ratio" id="rent_incr_ratio" required="" value="<?php //if(!empty($rentow_details['rent_incr_ratio'])){ echo $rentow_details['rent_incr_ratio'];} ?>" /> -->
-									</div>
-									<label class="col-md-2">Rent Free Period (In days)</label>
+									<label class="col-md-2">Occupation of Shop Owner</label>
 									<div class="col-md-4">
-										<input type="text" class="form-control" placeholder="Rent Free Period" name="rent_free_period" name="rent_free_period"  value="<?php if(isset($branch_rent_details[0]['rent_free_period'])){ echo $branch_rent_details[0]['rent_free_period'];} ?>"  <?php if(!empty($branch_rent_details[0]['shop_measurement'])){ echo 'readonly'; } ?>/>
-									</div>
-									<div class="clearfix"></div><br>
-									<label class="col-md-2">Rent Free Period Start Date</label>
-									<div class="col-md-4">
-										<input type="date" class="form-control" name="rent_free_start_date" id="rent_free_start_date"  value="<?php if(!empty($branch_rent_details[0]['rent_free_start_date'])){ echo $branch_rent_details[0]['rent_free_start_date'];} ?>"  <?php if(!empty($branch_rent_details[0]['shop_measurement'])){ echo 'readonly'; } ?>/>
-									</div>
-									<label class="col-md-2">Rent Free Period End Date</label>
-									<div class="col-md-4">
-										<input type="date" class="form-control" name="rent_free_end_date" id="rent_free_end_date"  value="<?php if(!empty($branch_rent_details[0]['rent_free_end_date'])){ echo $branch_rent_details[0]['rent_free_end_date'];} ?>"  <?php if(!empty($branch_rent_details[0]['shop_measurement'])){ echo 'readonly'; } ?>/>
-									</div>
-									<div class="clearfix"></div><br>
-									<label class="col-md-2">Rent Start Date</label>
-									<div class="col-md-4">
-										<input type="date" class="form-control" name="rent_start_date" id="rent_start_date"  value="<?php if(!empty($branch_rent_details[0]['rent_start_date'])){ echo $branch_rent_details[0]['rent_start_date'];} ?>"  <?php if(!empty($branch_rent_details[0]['shop_measurement'])){ echo 'readonly'; } ?>/>
-									</div>
-									<label class="col-md-2">Rent End Date</label>
-									<div class="col-md-4">
-										<input type="date" class="form-control" name="rent_end_date" id="rent_end_date"  value="<?php if(!empty($branch_rent_details[0]['rent_end_date'])){ echo $branch_rent_details[0]['rent_end_date'];} ?>" readonly />
-									</div>
-									<div class="clearfix"></div><br>
-									<label class="col-md-2">Lock In Period (In Months)</label>
-									<div class="col-md-4">
-										<input type="text" class="form-control" placeholder="Lock In Period" name="lock_in_period" id="lock_in_period"  value="<?php if(isset($branch_rent_details[0]['lock_in_period'])){ echo $branch_rent_details[0]['lock_in_period'];} ?>"  <?php if(!empty($branch_rent_details[0]['shop_measurement'])){ echo 'readonly'; } ?>/>
-									</div>
-									<label class="col-md-2">Termination Notice Period (In Months)</label>
-									<div class="col-md-4">
-										<input type="text" class="form-control" placeholder="Termination Notice Period" name="termination_notice_period" id="termination_notice_period"  value="<?php if(!empty($branch_rent_details[0]['termination_notice_period'])){ echo $branch_rent_details[0]['termination_notice_period'];} ?>"  <?php if(!empty($branch_rent_details[0]['shop_measurement'])){ echo 'readonly'; } ?>/>
+										<input type="text" class="form-control CharOnly" placeholder="Occupation of Shop Owner" name="owner_occupation" id="owner_occupation" required="" value="<?php if(!empty($rentow_details['owner_occupation'])){ echo $rentow_details['owner_occupation'];} ?>" />
 									</div>
 
+									<label class="col-md-2">Contact No Shop Owner</label>
+									<div class="col-md-4">
+										<input type="text" class="form-control IsContact" placeholder="Contact No Shop Owner" name="owner_contact" id="owner_contact" required="" value="<?php if(!empty($rentow_details['owner_contact'])){ echo $rentow_details['owner_contact'];} ?>" />
+									</div>
 
+									<div class="clearfix"></div><br>
+									<label class="col-md-2">PAN No Shop Owner</label>
+									<div class="col-md-4">
+										<input type="text" class="form-control IsPan" placeholder="AAAAA0000A" name="owner_pan" id="owner_pan" required value="<?php if(!empty($rentow_details['owner_pan'])){ echo $rentow_details['owner_pan'];} ?>" />
+									</div>
+
+									<label class="col-md-2">Adhar No Shop Owner</label>
+									<div class="col-md-4">
+										<input type="text" class="form-control IsAdhar" placeholder="123412341234" name="owner_adhar" id="owner_adhar" required value="<?php if(!empty($rentow_details['owner_adhar'])){ echo $rentow_details['owner_adhar'];} ?>" />
+									</div>
+									<div class="clearfix"></div><br>
+									<label class="col-md-2">Gst No (if any)</label>
+									<div class="col-md-4">
+										<input type="text" class="form-control IsGst" placeholder="11AAAAA0000A1Z5" name="owner_gst" id="owner_gst" value="<?php if(!empty($rentow_details['owner_gst'])){ echo $rentow_details['owner_gst'];} ?>" />
+									</div>
+									<label class="col-md-2">Email of Shop Owner</label>
+									<div class="col-md-4">
+										<input type="email" class="form-control" placeholder="Email of Shop Owner" name="owner_email" id="owner_email" required="" value="<?php if(!empty($rentow_details['owner_email'])){ echo $rentow_details['owner_email'];} ?>" />
+									</div>
+									<div class="clearfix"></div><br>			
+									<label class="col-md-2">Address of Shop Owner</label>
+									<div class="col-md-4">
+										<textarea type="text" class="form-control" placeholder="Address of Shop Owner" name="owner_address" id="owner_address" required=""><?php if(!empty($rentow_details['owner_address'])){ echo $rentow_details['owner_address'];} ?></textarea>
+									</div>
+									<label class="col-md-2">Address of Shop</label>
+									<div class="col-md-4">
+										<textarea type="text" class="form-control" placeholder="Address of Shop" name="shop_address" id="shop_address" required="" readonly ><?php if(!empty($branch_details['branch_address'])){ echo $branch_details['branch_address'];}?></textarea>
+									</div>
 									<div class="clearfix"></div><br><hr>
+									<h3 style="margin-top: 0"><span></span> Shop Agreement Details</h3><hr>
+									<div class="clearfix"></div><br>
 
-								</div>
-								<h3 style="margin-top: 0"><span></span> Finance Details</h3><hr>
-								<div class="clearfix"></div><br>
-								<label class="col-md-2">Bank Name</label>
-								<div class="col-md-4">
-									<input type="text" class="form-control" placeholder="Bank Name" name="owner_bank_name" id="owner_bank_name" required="" value="<?php if(!empty($branch_rent_details[0]['owner_bank_name'])){ echo $branch_rent_details[0]['owner_bank_name'];} ?>" />
-								</div>
-								<label class="col-md-2">Bank Account No</label>
-								<div class="col-md-4">
-									<input type="text" class="form-control" placeholder="Bank Account No" name="owner_bank_accno" id="owner_bank_accno" required="" value="<?php if(!empty($branch_rent_details[0]['owner_bank_accno'])){ echo $branch_rent_details[0]['owner_bank_accno'];} ?>" />
-								</div>
-								<div class="clearfix"></div><br>
-								<label class="col-md-2">Bank Ifsc Code</label>
-								<div class="col-md-4">
-									<input type="text" class="form-control" placeholder="Bank Ifsc Code" name="owner_bank_ifsc" id="owner_bank_ifsc" required="" value="<?php if(!empty($branch_rent_details[0]['owner_bank_ifsc'])){ echo $branch_rent_details[0]['owner_bank_ifsc'];} ?>" />
-								</div>
-								<div class="clearfix"></div><br>
-                                                               
+									<div id="shop-rent-details" class=""> 
+										<label class="col-md-2">Shop Measurement (in sq.ft.)</label>
+										<div class="col-md-4">
+											<input type="text" class="form-control" placeholder="Shop Measurement" name="shop_measurement" id="shop_measurement" required="" value="<?php if(!empty($branch_rent_details[0]['shop_measurement'])){ echo $branch_rent_details[0]['shop_measurement'];} ?>"  <?php if(!empty($branch_rent_details[0]['shop_measurement'])){ echo 'readonly'; } ?>/>
+										</div>
+										<label class="col-md-2">Deposit Amount</label>
+										<div class="col-md-4">
+											<input type="text" class="form-control" placeholder="Deposit Amount" name="deposit_amt" id="deposit_amt" required="" value="<?php if(isset($branch_rent_details[0]['deposit_amt'])){ echo $branch_rent_details[0]['deposit_amt'];} ?>"  <?php if(!empty($branch_rent_details[0]['shop_measurement'])){ echo 'readonly'; } ?> />
+										</div>
+										<div class="clearfix"></div><br>	
+										<label class="col-md-2">Rent Amount (in rs)</label>
+										<div class="col-md-4">
+											<input type="text" class="form-control" placeholder="Rent Amount" name="rent_amount" id="rent_amount"  required="" value="<?php if(isset($branch_rent_details[0]['rent_amount'])){ echo $branch_rent_details[0]['rent_amount'];} ?>"  <?php if(!empty($branch_rent_details[0]['shop_measurement'])){ echo 'readonly'; } ?> />
+										</div>
+										<label class="col-md-2">Rent Increment Type</label>
+										<div class="col-md-4">
+											<select name="rent_inc_type" id="rent_inc_type" class="form-control">
+												<option value="0">Select</option>
+												<option value="1">Percentage</option>
+												<option value="0">Amount</option>
+											</select>
+										</div>
+										<div class="clearfix"></div><br>
+										<label class="col-md-2">Rent Tenure (in Years)</label>
+										<div class="col-md-4">
+											<input type="text" class="form-control" placeholder="Rent Tenure" name="rent_tenure" id="rent_tenure" required="" value="<?php if(!empty($branch_rent_details[0]['rent_tenure'])){ echo $branch_rent_details[0]['rent_tenure'];} ?>"  <?php if(!empty($branch_rent_details[0]['shop_measurement'])){ echo 'readonly'; } ?>/>
+										</div>
+										
+										<label class="col-md-2">Rent Increment Ratio</label>
+										<div class="col-md-4" id="titles">
+											<div id="titleAdd"></div>
+											
+											<!-- 	<input type="text" class="form-control" placeholder="Rent Increment Ratio" name="rent_incr_ratio" id="rent_incr_ratio" required="" value="<?php //if(!empty($rentow_details['rent_incr_ratio'])){ echo $rentow_details['rent_incr_ratio'];} ?>" /> -->
+										</div>
+										<div class="clearfix"></div><br>
+										<label class="col-md-2">Rent Free Period (In days)</label>
+										<div class="col-md-4">
+											<input type="text" class="form-control" placeholder="Rent Free Period" name="rent_free_period" name="rent_free_period"  value="<?php if(isset($branch_rent_details[0]['rent_free_period'])){ echo $branch_rent_details[0]['rent_free_period'];} ?>"  <?php if(!empty($branch_rent_details[0]['shop_measurement'])){ echo 'readonly'; } ?>/>
+										</div>
+										<div class="clearfix"></div><br>
+										<label class="col-md-2">Rent Free Period Start Date</label>
+										<div class="col-md-4">
+											<input type="date" class="form-control" name="rent_free_start_date" id="rent_free_start_date"  value="<?php if(!empty($branch_rent_details[0]['rent_free_start_date'])){ echo $branch_rent_details[0]['rent_free_start_date'];} ?>"  <?php if(!empty($branch_rent_details[0]['shop_measurement'])){ echo 'readonly'; } ?>/>
+										</div>
+										<label class="col-md-2">Rent Free Period End Date</label>
+										<div class="col-md-4">
+											<input type="date" class="form-control" name="rent_free_end_date" id="rent_free_end_date"  value="<?php if(!empty($branch_rent_details[0]['rent_free_end_date'])){ echo $branch_rent_details[0]['rent_free_end_date'];} ?>"  <?php if(!empty($branch_rent_details[0]['shop_measurement'])){ echo 'readonly'; } ?>/>
+										</div>
+										<div class="clearfix"></div><br>
+										<label class="col-md-2">Rent Start Date</label>
+										<div class="col-md-4">
+											<input type="date" class="form-control" name="rent_start_date" id="rent_start_date"  value="<?php if(!empty($branch_rent_details[0]['rent_start_date'])){ echo $branch_rent_details[0]['rent_start_date'];} ?>"  <?php if(!empty($branch_rent_details[0]['shop_measurement'])){ echo 'readonly'; } ?>/>
+										</div>
+										<label class="col-md-2">Rent End Date</label>
+										<div class="col-md-4">
+											<input type="date" class="form-control" name="rent_end_date" id="rent_end_date"  value="<?php if(!empty($branch_rent_details[0]['rent_end_date'])){ echo $branch_rent_details[0]['rent_end_date'];} ?>" readonly />
+										</div>
+										<div class="clearfix"></div><br>
+										<label class="col-md-2">Lock In Period (In Months)</label>
+										<div class="col-md-4">
+											<input type="text" class="form-control" placeholder="Lock In Period" name="lock_in_period" id="lock_in_period"  value="<?php if(isset($branch_rent_details[0]['lock_in_period'])){ echo $branch_rent_details[0]['lock_in_period'];} ?>"  <?php if(!empty($branch_rent_details[0]['shop_measurement'])){ echo 'readonly'; } ?>/>
+										</div>
+										<label class="col-md-2">Termination Notice Period (In Months)</label>
+										<div class="col-md-4">
+											<input type="text" class="form-control" placeholder="Termination Notice Period" name="termination_notice_period" id="termination_notice_period"  value="<?php if(!empty($branch_rent_details[0]['termination_notice_period'])){ echo $branch_rent_details[0]['termination_notice_period'];} ?>"  <?php if(!empty($branch_rent_details[0]['shop_measurement'])){ echo 'readonly'; } ?>/>
+										</div>
+
+
+										<div class="clearfix"></div><br><hr>
+
+									</div>
+									<h3 style="margin-top: 0"><span></span> Finance Details</h3><hr>
+									<div class="clearfix"></div><br>
+									<label class="col-md-2">Bank Name</label>
+									<div class="col-md-4">
+										<input type="text" class="form-control" placeholder="Bank Name" name="owner_bank_name" id="owner_bank_name" required="" value="<?php if(!empty($branch_rent_details[0]['owner_bank_name'])){ echo $branch_rent_details[0]['owner_bank_name'];} ?>" />
+									</div>
+									<label class="col-md-2">Bank Account No</label>
+									<div class="col-md-4">
+										<input type="text" class="form-control" placeholder="Bank Account No" name="owner_bank_accno" id="owner_bank_accno" required="" value="<?php if(!empty($branch_rent_details[0]['owner_bank_accno'])){ echo $branch_rent_details[0]['owner_bank_accno'];} ?>" />
+									</div>
+									<div class="clearfix"></div><br>
+									<label class="col-md-2">Bank Ifsc Code</label>
+									<div class="col-md-4">
+										<input type="text" class="form-control" placeholder="Bank Ifsc Code" name="owner_bank_ifsc" id="owner_bank_ifsc" required="" value="<?php if(!empty($branch_rent_details[0]['owner_bank_ifsc'])){ echo $branch_rent_details[0]['owner_bank_ifsc'];} ?>" />
+									</div>
+									<div class="clearfix"></div><br>
+									
 									<label class="col-md-2">Cheque Document</label>
 									<div class="col-md-4">
 										<input type="file" class="form-control" placeholder="Cheque Document" name="cheque_doc" id="cheque_doc" />
@@ -420,9 +444,9 @@ if((!empty($rentow_details)) && ($this->session->userdata('role_name')=='Legal')
 											</label>
 										<?php }
 									} ?>
-									</div>
-									
-									
+								</div>
+								
+								
 								<div class="clearfix"></div><br><hr>
 								<h3 style="margin-top: 0"><span></span> Electricity Details</h3><hr>
 								<div class="clearfix"></div><br>
@@ -504,134 +528,147 @@ if((!empty($rentow_details)) && ($this->session->userdata('role_name')=='Legal')
 									<?php }
 								} ?>
 								<div class="clearfix"></div><hr>
-                                                                <label class="col-md-2">Other Documents</label>
-									<div class="col-md-3">
-										<input type="file" class="form-control" placeholder="Oher Document" name="other_doc" id="other_doc" />
-									</div>
-									<?php if($this->session->userdata('role_name')=='Legal'){
-										if(!empty($rentow_details['other_doc'])){
-											?>
-											<label class="col-md-1"><a href="<?php echo base_url().$rentow_details['other_doc']; ?>" target="_blank"><button type="button">View</button></a></label>
-										<?php } 
-									}?>
-                                                                <label class="col-md-2">Rent Document</label>
-							
-							<?php if(!empty($rentow_details['rent_doc'])){
-								?>
-								
+								<label class="col-md-2">Other Documents</label>
 								<div class="col-md-3">
-
-									<a href="<?php echo base_url().$rentow_details['rent_doc']; ?>" target="_blank"><button  type="button">View</button></a>
-
-
+									<input type="file" class="form-control" placeholder="Oher Document" name="other_doc" id="other_doc" />
 								</div>
-							<?php } ?>
+								<?php if($this->session->userdata('role_name')=='Legal'){
+									if(!empty($rentow_details['other_doc'])){
+										?>
+										<label class="col-md-1"><a href="<?php echo base_url().$rentow_details['other_doc']; ?>" target="_blank"><button type="button">View</button></a></label>
+									<?php } 
+								}?>
+								<label class="col-md-2">Rent Document</label>
+								
+								<?php if(!empty($rentow_details['rent_doc'])){
+									?>
+									
+									<div class="col-md-3">
 
-						
-                                                                <div class="clearfix"></div><br>
+										<a href="<?php echo base_url().$rentow_details['rent_doc']; ?>" target="_blank"><button  type="button">View</button></a>
+
+
+									</div>
+								<?php } ?>
+								<div class="clearfix"></div><br>
+								<label class="col-md-2">Legal Remark</label>
+								<div class="col-md-4">
+									<textarea type="text" class="form-control" placeholder="Remark" name="legal_remark " id="legal_remark " readonly><?php if(!empty($rentow_details['legal_remark '])){ echo $rentow_details['legal_remark '];} ?></textarea>
+								</div>
+								<div class="clearfix"></div><br>
 								<input type="hidden" value="<?php if(!empty($branch_details['branch_id'])){ echo $branch_details['branch_id'];} ?>"  id="branch_id" name="branch_id"> 
 								<input type="hidden" value="<?php if(!empty($rentow_details['id'])){ echo $rentow_details['id'];} ?>"  id="id" name="id"> 
-                                                                <?php } ?>
-                                                                <a class="btn btn-warning waves-effect simple-tooltip" href="<?php echo base_url('branch_rent_details') ?>">Cancel</a>
-								<button type="submit" class="pull-right btn btn-info waves-effect">
-									<?php if(!empty($branch_details['branch_partener_type'])){
-										if($branch_details['branch_partener_type']=='1'){
-											echo 'Save and Create Branch';
-										}else{echo 'Save';} }else{echo 'Save';}?>
-									</button>
-									<div class="clearfix"></div>
+							<?php } ?>
+							<a class="btn btn-warning waves-effect simple-tooltip" href="<?php echo base_url('branch_rent_details') ?>">Cancel</a>
+							<button type="submit" class="pull-right btn btn-info waves-effect">
+								<?php if(!empty($branch_details['branch_partener_type'])){
+									if($branch_details['branch_partener_type']=='1'){
+										echo 'Save and Create Branch';
+									}else{echo 'Save';} }else{echo 'Save';}?>
+								</button>
+								<div class="clearfix"></div>
 
-								</div>
-							</form>
-						</div>
+							</div>
+						</form>
 					</div>
-				<?php }
-				?>
-				<script type="text/javascript">
-                                    base_url='<?php echo base_url();?>';
-					$(document).ready(function () {
+				</div>
+			<?php }
+			?>
+			<script type="text/javascript">
+				base_url='<?php echo base_url();?>';
+				$(document).ready(function () {
 
-						$("#branch_rent_form").validate({
-							errorElement : 'span',
-							submitHandler: function(form) {
-                                                            var user_role='<?php echo $this->session->userdata('role_name');?>';
-                                                            
-								var formData = new FormData($('#branch_rent_form')[0]);
-								$('#btn-submit').attr('disabled', true).html('Loading');
-                                                               
-								$.ajax({
-									url:base_url + 'branch_rent_details_store',
-									type: "POST",
-									data: formData,
-									async: true,
-									dataType:"JSON",
-									cache: false,
-									contentType: false,
-									processData: false,
-									success:function(response)
+					$("#branch_rent_form").validate({
+						errorElement : 'span',
+						submitHandler: function(form) {
+							var user_role='<?php echo $this->session->userdata('role_name');?>';
+							
+							var formData = new FormData($('#branch_rent_form')[0]);
+							$('#btn-submit').attr('disabled', true).html('Loading');
+							
+							$.ajax({
+								url:base_url + 'branch_rent_details_store',
+								type: "POST",
+								data: formData,
+								async: true,
+								dataType:"JSON",
+								cache: false,
+								contentType: false,
+								processData: false,
+								success:function(response)
+								{
+									if(response.status)
 									{
-										if(response.status)
-										{
-											alert(response.message);
-                                                                                        if(user_role=='Legal'){
-                                                                                            setTimeout(function(){
+										alert(response.message);
+										if(user_role=='Legal'){
+											setTimeout(function(){
 												window.location.href = base_url + 'branch_rent_details_legal';
 											},2000);
-                                                                                        }else{
+										}else{
 											setTimeout(function(){
 												window.location.href = base_url + 'branch_rent_details';
 											},2000);
-                                                                                }
 										}
-										$('#btn-submit').attr('disabled', false).html('Save');
 									}
-								});
-								return false;
-							}
-						});
-
-						$(document).on("change", "#branch_name", function (event) {
-                                                 
-							window.location.href = base_url + 'branch_rent_details/'+$(this).val();
-						});
-
-						$(document).on("change", "#rent_tenure", function (event) {
-							$('#asd').remove();   
-							var container = $('<div class="controls" id="asd">');
-							var option = $("#rent_tenure").val();
-							for(i=1;i<=option;i++) 
-							{
-								container.append('<input style="display: block;" class="form-control" type=text id="rent_incr_ratio" class="span3 input-left-top-margins" name="rent_incr_ratio[]" id="Description' + i +'"' + 'placeholder="' + i + ' Year Ratio" />');
-							}
-							$('#titleAdd').after(container);   
-						});
-
-var inc_rat='<?php if(isset($branch_rent_details[0]['rent_incr_ratio'])){ echo $branch_rent_details[0]['rent_incr_ratio'];} ?>';
-if(inc_rat!=''){
-     
-       	var container = $('<div class="controls" id="asd">');
-    var option=inc_rat.split(',');
-  
-    for(i=0;i<option.length;i++) 
-							{
-                                                             
-
-								container.append('<input style="display: block;" class="form-control" type=text id="rent_incr_ratio" class="span3 input-left-top-margins" name="rent_incr_ratio[]" id="Description' + (i+1) +'"' + 'value="' + option[i] + '" readonly/>');
-							}
-							$('#titleAdd').after(container);
-
-    }
-						$(document).on("change", "#rent_start_date", function (event) {
-
-							var permonamt=0;
-							var start_date=$('#rent_start_date').val();
-							dt = new Date(start_date);
-							var day = ("0" + (dt.getDate())).slice(-2);
-							var month = ("0" + (dt.getMonth() + 1)).slice(-2);
-							var year = (parseFloat(dt.getFullYear()) + parseFloat($('#rent_tenure').val()));
-							var datestring = year+ "-" + month + "-" + day ;
-							$('#rent_end_date').val(((datestring)));
-						});
+									$('#btn-submit').attr('disabled', false).html('Save');
+								}
+							});
+							return false;
+						}
 					});
-				</script>
-				<?php include __DIR__ . '../../footer.php'; ?>
+
+					$(document).on("change", "#branch_name", function (event) {
+						
+						window.location.href = base_url + 'branch_rent_details/'+$(this).val();
+					});
+
+					$(document).on("change", "#rent_tenure", function (event) {
+						$('#asd').remove();   
+						var container = $('<div class="controls" id="asd">');
+						var option = $("#rent_tenure").val();
+						var read;
+						var rat
+						for(i=1;i<=option;i++) 
+						{
+							if(i==1){
+								read='readonly';
+								rat=0;
+							}else{
+								read=''; 
+								rat='';
+							}
+							container.append('<input style="display: block;" class="form-control" type=text id="rent_incr_ratio" class="span3 input-left-top-margins" name="rent_incr_ratio[]" id="Description' + i +'"' + 'placeholder="' + i + ' Year Ratio"'+ read +' value="'+rat+'" />');
+						}
+						$('#titleAdd').after(container);   
+					});
+
+					var inc_rat='<?php if(isset($branch_rent_details[0]['rent_incr_ratio'])){ echo $branch_rent_details[0]['rent_incr_ratio'];} ?>';
+
+					if(inc_rat!=''){
+						
+						var container = $('<div class="controls" id="asd">');
+						var option=inc_rat.split(',');
+						
+						for(i=0;i<option.length;i++) 
+						{
+							
+
+							container.append('<input style="display: block;" class="form-control" type=text id="rent_incr_ratio" class="span3 input-left-top-margins" name="rent_incr_ratio[]" id="Description' + (i+1) +'"' + 'value="' + option[i] + '" readonly/>');
+						}
+						$('#titleAdd').after(container);
+
+					}
+					$(document).on("change", "#rent_start_date", function (event) {
+
+						var permonamt=0;
+						var start_date=$('#rent_start_date').val();
+						dt = new Date(start_date);
+						var day = ("0" + (dt.getDate())).slice(-2);
+						var month = ("0" + (dt.getMonth() + 1)).slice(-2);
+						var year = (parseFloat(dt.getFullYear()) + parseFloat($('#rent_tenure').val()));
+						var datestring = year+ "-" + month + "-" + day ;
+						$('#rent_end_date').val(((datestring)));
+					});
+				});
+			</script>
+			<?php include __DIR__ . '../../footer.php'; ?>
