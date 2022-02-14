@@ -10,7 +10,8 @@ class Transfer extends CI_Controller
         $this->load->model("General_model");
         $this->load->model("Outward_model");       
         $this->load->model("Inward_model");   
-        $this->load->model("Transfer_model");           
+        $this->load->model("Transfer_model");     
+           $this->load->model("common_model");         
         date_default_timezone_set('Asia/Kolkata');        
     }
     public function my_stock_requests(){
@@ -510,6 +511,7 @@ class Transfer extends CI_Controller
         $idbrand=$this->input->post('idbrand');
         $product_name=$this->input->post('product_name');
         $qty=$this->input->post('qty');
+        $vehicle_no=$this->input->post('vehicle_no');
         $price=$this->input->post('price');
         $cgst_per=$this->input->post('cgst_per');
         $scanned=$this->input->post('scanned');
@@ -702,6 +704,7 @@ class Transfer extends CI_Controller
            'shipment_entry_by' => $this->input->post('shipment_entry_by'),
            'shipment_entry_time' => $datetime,
            'status' => 4,
+           'vehicle_no' => $vehicle_no,
         );        
             $this->Transfer_model->save_transfer_shipment_details($id_transfer, $data);
         }
