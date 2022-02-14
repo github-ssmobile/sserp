@@ -1490,7 +1490,8 @@ class Stock_allocation extends CI_Controller {
         </thead>
                 <tbody class="data_1">
                 <?php $i = 1;
-                foreach ($stock_allocation as $data) {                                         
+                foreach ($stock_allocation as $data) {    
+                    $ewayinv_data= $this->common_model->getSingleRow('eway_einvoice_data',array('idoutword_no'=>$data->id_outward));                                   
                         ?>                
                         <tr>  
                             <td><?php echo $data->id_stock_allocation; ?> </td>
