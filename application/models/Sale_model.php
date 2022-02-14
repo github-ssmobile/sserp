@@ -165,7 +165,7 @@ class Sale_model extends CI_Model {
         
     }
     public function get_sale_payment_byid_invoice_edit($idsale) {
-        return $this->db->select('payment_mode.*,payment_head.*,sale_payment.*,payment_reconciliation.payment_receive as reconciliation_status')->where('sale_payment.idsale',$idsale)
+        return $this->db->select('payment_mode.*,payment_head.*,sale_payment.*,payment_reconciliation.payment_receive as reconciliation_status,payment_reconciliation.idadvance_payment_receive')->where('sale_payment.idsale',$idsale)
                         ->where('sale_payment.idpayment_mode = payment_mode.id_paymentmode')->from('payment_mode')
                         ->where('sale_payment.idpayment_head = payment_head.id_paymenthead')->from('payment_head')
                         ->join('payment_reconciliation', 'payment_reconciliation.idsale_payment = sale_payment.id_salepayment', 'left')
