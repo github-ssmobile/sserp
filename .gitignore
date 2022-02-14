@@ -2,9 +2,12 @@
 /assets/jquery-ui-1.12.1.custom/nbproject/private/
 /invoices/
 /uploads/
+/sale_files/
 index.php
 .htaccess
 /assets/stock_sheets
 /assets/ewaybills
 /assets/doa_letter_file
 /assets/expense
+/assets/product_images
+/assets/web_gdv_report
