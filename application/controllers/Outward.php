@@ -357,7 +357,7 @@ public function save_shipment_details() {
     $idoutward = $this->input->post('id_outward');
     $idallocation = $this->input->post('id_allocation');    
     $user_id=$this->session->userdata('id_users');
-    if($this->input->post('idtvendors')=='9' && $this->input->post('vehicle_no')=='' && $this->input->post('po_lr_no')==''){
+     if($this->input->post('idtvendors')=='9' && ($this->input->post('vehicle_no')=='' || $this->input->post('po_lr_no')=='')){
 
        $this->session->set_flashdata('save_data', 'Shipment is aborted. If transport is self then enter vehicle no and po lr no');
        return redirect('Outward/outward_details/'.$idallocation.'/0');
