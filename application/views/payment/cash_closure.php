@@ -29,7 +29,7 @@
     }
 </style>
 <?php $avaiable=0;$todays_sale=0;$todays_salesreturn=0;$credit_rec=0;$pending_closure_cash=0;$total_expense=0;$total_short_deposit=0;$total_daybook=0;
-        $tcash_deposit=0;$tcash_receive=0;$tcash_refund=0;
+        $tcash_deposit=0;$tcash_receive=0;$tcash_refund=0;$tcash_accessories=0;
 //$total_deposit=0;
     if($total_daybook_cash->sum_cash){
         $total_daybook = $total_daybook_cash->sum_cash;
@@ -49,6 +49,8 @@
             $tcash_receive = $cash->todays_cash;
         }elseif($cash->entry_type == 9){ // cash receive
             $tcash_refund = $cash->todays_cash;
+        }elseif($cash->entry_type == 10){ // accessories cash deposite
+            $tcash_accessories = $cash->todays_cash;
         }
 //        elseif($cash->entry_type == 6){ // Todays cash deposit
 //            $total_deposit = $cash->todays_cash;
@@ -63,7 +65,7 @@
 //    if($todays_cash_deposit->sum_deposit_cash){
 //        $tcash_deposit = -$todays_cash_deposit->sum_deposit_cash;
 //    }
-    $available = $total_daybook + $todays_sale + $todays_salesreturn + $credit_rec + $total_expense + $tcash_deposit + $tcash_receive + $tcash_refund;
+    $available = $total_daybook + $todays_sale + $todays_salesreturn + $credit_rec + $total_expense + $tcash_deposit + $tcash_receive + $tcash_refund + $tcash_accessories;
 ?>
 <script>
     $(document).ready(function(){
@@ -104,6 +106,41 @@
             };
         });
     });
+    
+    function get_accessories_daybookamount_cnt(){
+            
+        var idbranch = $('#idbranch').val();
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth()+1; //January is 0!
+        var yyyy = today.getFullYear();
+        if(dd<10){
+            dd='0'+dd
+        } 
+        if(mm<10){
+            mm='0'+mm
+        } 
+        var today = yyyy+'-'+mm+'-'+dd;
+       // alert(today);return false;
+        
+        $.ajax({
+        url:"<?php echo base_url() ?>Accessories_deposite/get_accessories_daybookamount_cnt",
+        method:"POST",
+        data:{idbranch: idbranch,today:today},
+        success:function(data)
+        {
+            if(data == 1){
+                alert("Please Deposite Accessories Cash");
+                return false;
+            }else{
+                console.log('accessories amount is 0.')
+            }
+        }
+       }); 
+          
+      }
+    
+    
 </script>
 <div class="col-md-10"><center><h3 style="margin: 10px"><span class="mdi mdi-clipboard-text fa-lg"></span> Cash Closer</h3></center></div>
 <div class="col-md-1"><a class="pull-right arrow-down thumbnail waves-effect simple-tooltip btn-block" onclick="this.classList.toggle('active')" data-toggle="collapse" data-target="#pay" title="Add Branch" style="margin-bottom: 2px"></a></div><div class="clearfix"></div><hr>
@@ -147,7 +184,7 @@
         }
     }
     ?>
-<form class="collapse" id="pay">
+<form class="collapse" id="pay" method="POST" action="<?php echo base_url('Payment/save_cash_closure') ?>" >
     <div class="col-md-4 col-sm-6" style="padding: 0">
         <div style="margin-top: 100px;">
         <center><h4 style="color: #ff0000; font-family: Kurale"><b>Daily fill Cash Closure...</b></h4></center>
@@ -248,6 +285,10 @@
                                 <td><?php echo $tcash_deposit ?></td>
                             </tr>
                             <tr>
+                                <td><i class="mdi mdi-plus-circle-outline fa-lg"></i> Accessories Cash</td>
+                                <td><?php echo $tcash_accessories ?></td>
+                            </tr>
+                            <tr>
                                 <td>Available</td>
                                 <td>
                                     <?php echo $available ?>
@@ -295,7 +336,7 @@
                     <input type="hidden" id="idbranch" name="idbranch" value="<?php echo $this->session->userdata('idbranch') ?>" />
                     <!--<input type="hidden" id="var_closer" name="var_closer" value="<?php echo $var_closer ?>" />-->
                     <a class="btn btn-warning waves-effect simple-tooltip" data-toggle="collapse" data-target="#pay">Cancel</a>
-                    <button type="submit" formmethod="POST" id="closure_btn" formaction="<?php echo base_url('Payment/save_cash_closure') ?>" class="pull-right btn btn-info waves-effect" style="background-image: linear-gradient(to right top, #051937, #173460, #28538d, #3773bc, #4596ee);">Save</button>
+                    <button type="button"  id="closure_btn"  onclick="get_accessories_daybookamount_cnt()" class="pull-right btn btn-info waves-effect" style="background-image: linear-gradient(to right top, #051937, #173460, #28538d, #3773bc, #4596ee);">Save</button>
                     <div class="clearfix"></div>
                 </div>
             </div><div class="clearfix"></div>

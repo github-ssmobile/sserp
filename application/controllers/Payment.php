@@ -30,6 +30,7 @@ class Payment extends CI_Controller
         $q['cash_closure_last_entry'] = $this->Sale_model->get_cash_closure_last_entry_byidbranch($idbranch); // cash closure data
         $q['cash_closure_data'] = $this->Reconciliation_model->get_cash_closure_data_byidbranch($idbranch); // cash closure data
 //        $q['daybook_cash_sum'] = $this->Sale_model->get_daybook_cash_sum_byid($idbranch); // cash closure data
+        $q['accessories_cash_data'] = $this->Reconciliation_model->get_accessories_cash_deposite_byidbranch($idbranch); // accessories cash deposite
         $this->load->view('payment/cash_closure', $q);
     }
     

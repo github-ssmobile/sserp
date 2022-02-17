@@ -1483,6 +1483,11 @@ class Reconciliation_model extends CI_Model{
                         ->where('payment_reconciliation.idpayment_mode = payment_mode.id_paymentmode')->from('payment_mode')
                         ->get('payment_reconciliation')->result();
     }
+    
+    public function get_accessories_cash_deposite_byidbranch($idbranch) {
+        //die('ddd');
+        return $this->db->where('idbranch',$idbranch)->get('daybook_cash')->result();
+    }
    
 }
 ?>

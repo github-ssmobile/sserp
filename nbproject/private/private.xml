@@ -3,14 +3,13 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/xampp/htdocs/erp/application/controllers/Payment.php</file>
-            <file>file:/D:/xampp/htdocs/erp/application/models/Sale_model.php</file>
-            <file>file:/D:/xampp/htdocs/erp/application/views/sale/imei_change.php</file>
-            <file>file:/D:/xampp/htdocs/erp/application/views/sale/invoice_print.php</file>
-            <file>file:/D:/xampp/htdocs/erp/application/controllers/Invoice_whatsapp_api.php</file>
-            <file>file:/D:/xampp/htdocs/erp/application/controllers/Sale.php</file>
-            <file>file:/D:/xampp/htdocs/erp/application/libraries/Rest.php</file>
-            <file>file:/D:/xampp/htdocs/erp/application/config/routes.php</file>
+            <file>file:/C:/xampp/htdocs/sserp/application/views/payment/cash_closure.php</file>
+            <file>file:/C:/xampp/htdocs/sserp/application/views/master/vendor_details.php</file>
+            <file>file:/C:/xampp/htdocs/sserp/application/controllers/Accessories_deposite.php</file>
+            <file>file:/C:/xampp/htdocs/sserp/application/models/Report_model.php</file>
+            <file>file:/C:/xampp/htdocs/sserp/application/config/config.php</file>
+            <file>file:/C:/xampp/htdocs/sserp/application/controllers/Customer_loyalty.php</file>
+            <file>file:/C:/xampp/htdocs/sserp/application/controllers/Payment.php</file>
         </group>
     </open-files>
 </project-private>
