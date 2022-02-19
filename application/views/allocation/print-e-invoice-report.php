@@ -73,7 +73,9 @@ foreach ($outward_data as $sale) { ?>
                         &nbsp; Mobile: <?php echo $sale->buyer_contact;
                         if ($sale->buyer_gst) { ?><br>
                         &nbsp; GST No.: <?php echo $sale->buyer_gst;
-                    } $gst_type = $sale->gst_type; 
+                    }
+                    $gst_type = $sale->gst_type; 
+                     //$gst_type = 1; 
                     ?>
                 </div>
             </div>
@@ -108,206 +110,270 @@ foreach ($outward_data as $sale) { ?>
                         $is_mop = 0;
                         $discount_amt=0;
                         
-                            if ($gst_type == 1) { // igst
-                                foreach ($sale_product as $product) {
-                                 $product_data= $this->common_model->getSingleRow('model_variants',array('id_variant'=>$product['idvariant']));
-                                 $hsn_data= $this->common_model->getSingleRow('category',array('id_category'=>$product['idcategory']));
-                                 $total_amount=0;
-
-                                 $total_amount=$product['price'];
-                                 $is_mop += 0;
-
-                                 $ttotal_amount += $total_amount;
-                                 $cal = ($product['igst_per'] + 100) / 100;
-                                 $taxable = $total_amount / $cal;
-                                 $igstamt = $total_amount - $taxable;
-                                 $tigst += $igstamt;
-                                 $tqty += $product['qty'];
-//                                    $trate += $product->price;
-//                                    $tdiscount += $product->discount_amt;
-                                 $ttaxable += $taxable;
-                                 $rate = $taxable / $product['qty'];
-                                 $trate += $rate;
-                                 ?>
-                                 <tr>
-                                    <td><?php echo $i++; ?></td>
-                                    <td><?php echo $product_data['full_name']; 
-                                ?></td>
-                                <td><?php  echo $product['imei_no'];  ?></td>
-                                <td><?php echo $hsn_data['hsn'] ?></td>
-                                <td><?php echo $product['qty'] ?></td>
-                                <td><?php echo number_format($rate,2) ?></td>
-
-                                <td><?php echo number_format($taxable, 2) ?></td>
-                                <td><?php echo number_format($igstamt, 2) . '<span class="pull-right" style="font-size:11px">(' . $product['igst_per'] . '%)</span>' ?></td>
-                                <td><?php echo $total_amount ?></td>
-                            </tr>
-
-                        <?php } ?>
+                            if ($gst_type != 1) { // igst
+                             $i=1;
+                             $t_rate=0; $t_amt=0;$tqty=0;$tt_amt=0;$totala=0;$t_aamt=0;$t_gstamt=0;
+                             foreach ($sale_product as $product) {
+                                 $price=0;
+                                 $array = explode(',', $product->imei); 
+                                 $amt=$product->price;
+                                 $tax_rate=($product->cgst_per*2);
+                                 if($einv_data['bill_type']=='3'){
+                                     if($product->is_mop){
+                                        $is_mop += 1;
+                                        if($product->total_amount > $product->mop){
+                                            $amt=$product->total_amount;
+                                        }else{
+                                            if($product->idskutype == 4){
+                                                $amt=$product->mop * $product->qty;
+                                            }else{
+                                                $amt=$product->mop;
+                                            }
+                                            $discount_amt += $product->mop - $product->total_amount;
+                                        }
+                                    }else{
+                                        $amt=$product->total_amount;
+                                        $is_mop += 0;
+                                    }
+                                    //  $amt=$product->total_amount;
+                                    $amount = $amt ;
+                                }else{
+                                    if($product->idgodown == 2){
+                                $cal = 50/100;  //// landing minus 50% for demo stock -  inter state transfer
+                            }else{
+                                $cal = 2 /100;   //// landing minus 2% for inter state transfer
+                            }
+                            $amount = $amt - ($cal*$amt);
+                        }
+                            //$price = $amt - $taxble;
+                        
+                        $rate= round(($amount*100)/(100+$tax_rate),2);
+                        $t_rate=$t_rate+$rate;
+                        $gst_amt = (($rate*$tax_rate) / 100);
+                        $basic_rate = ($amount) - $gst_amt;
+                        
+                        $taxable =  round((($rate)*($product->qty)),2);
+                        $tqty=$tqty+$product->qty;
+                        $t_aamt=$t_aamt+$product->price;
+                        $tt_amt=$tt_amt+$taxable;
+                        $gst_amt = round((($taxable*$tax_rate) / 100),2);
+                        $t_amt=round($taxable+$gst_amt,2);
+                        $totala=$totala=+$t_amt;
+                        $t_gstamt=$t_gstamt=+$gst_amt;
+                        ?>
                         <tr>
-                            <td colspan="4"><span class="pull-right">Gross Total &nbsp; &nbsp; </span></td>
-                            <td><?php echo $tqty ?></td>
-                            <td><?php echo number_format($trate,2) ?></td>
+                           <td><?php echo $i++; ?></td>
+                           <td><?php echo $product->full_name; ?></td>
+                           <td><?php $j=0;$im=""; foreach($array as $imei){
+                            if($j==2){ echo $im.$imei."<br>"; $im=""; $j=-1;}else{ $im.=$imei.", "; } $j++; } echo $im;?></td>
+                            <td><?php //echo $hsn_data['hsn'] ?></td>
+                            <td><?php echo $product->qty ?></td>
+                            <td><?php echo $taxable ?></td>
 
-                            <td><?php echo number_format($ttaxable, 2) ?></td>
-                            <td><?php echo number_format($tigst, 2) ?></td>
-                            <td><?php echo moneyFormatIndia($ttotal_amount); ?></td>
-                        </tr>
-                        <?php 
-                    } else {
-                        foreach ($sale_product as $product) {
-                              $product_data= $this->common_model->getSingleRow('model_variants',array('id_variant'=>$product['idvariant']));
-                                 $hsn_data= $this->common_model->getSingleRow('category',array('id_category'=>$product['idcategory']));
-                            $total_amount=0;
-
-                            $is_mop += 0;
-                            $total_amount=$product['price'];
+                            <td><?php echo $taxable ?></td>
+                            <td><?php echo number_format(($gst_amt/2), 2) . '<span class="pull-right" style="font-size:11px">(' . ($tax_rate/2) . '%)</span>' ?></td>
                             
-                            $ttotal_amount += $total_amount;
-                            $cal = ($product['cgst_per'] + $product['sgst_per'] + 100) / 100;
-                            $taxable = $total_amount / $cal;
-                            $cgst = $total_amount - $taxable;
-                            $cgstamt = $cgst / 2;
-                            $tcgst += $cgstamt;
-                            $tqty += $product['qty'];
-                                          
-                            $ttaxable += $taxable;
-                            $rate = $taxable / $product['qty'];
-                            $trate += $rate;
-                            ?>
-                            <tr>
-                                <td><?php echo $i++; ?></td>
-                                <td><?php echo $product_data['full_name']; 
-                            ?></td>
-                            <td><?php  echo $product['imei_no'];  ?></td>
-                            <td><?php echo $hsn_data['hsn'] ?></td>
-                            <td><?php echo $product['qty'] ?></td>
-                            <td><?php echo number_format($rate,2)  ?></td>
-
-                            <td><?php echo number_format($taxable, 2) ?></td>
-
-
-                            <td><?php echo number_format($cgstamt, 2) . '<span class="pull-right" style="font-size:11px">(' . $product['cgst_per'] . '%)</span>' ?></td>
-                            <td><?php echo number_format($cgstamt, 2) . '<span class="pull-right" style="font-size:11px">(' . $product['sgst_per'] . '%)</span>' ?></td>
-
-
-                            <td><?php echo $total_amount ?></td>
+                            <td><?php echo number_format(($gst_amt/2), 2) . '<span class="pull-right" style="font-size:11px">(' . ($tax_rate/2) . '%)</span>' ?></td>
+                            <td><?php echo number_format($t_amt,2) ?></td>
+                            
                         </tr>
+
                     <?php } ?>
                     <tr>
                         <td colspan="4"><span class="pull-right">Gross Total &nbsp; &nbsp; </span></td>
                         <td><?php echo $tqty ?></td>
-                        <td><?php echo number_format($trate,2) ?></td>
-                        <td><?php echo number_format($ttaxable, 2) ?></td>
-                        <td><?php echo number_format($tcgst, 2) ?></td>
-                        <td><?php echo number_format($tcgst, 2) ?></td>
-                        <td><?php echo moneyFormatIndia($ttotal_amount); ?></td>
+                        <td><?php echo number_format($t_rate,2) ?></td>
+                        <td><?php echo number_format($t_rate, 2) ?></td>
+                        <td><?php echo number_format(($t_gstamt/2), 2) ?></td>
+                        <td><?php echo number_format(($t_gstamt/2), 2) ?></td>
+                        
+                        <td><?php echo number_format($totala,2); ?></td>
                     </tr>
-                <?php } ?>
-                <tr style="border: 1px solid #999999">
-                    <td colspan="10" style="border: 1px solid #999999;font-size: 14px;">
-                        <b>Declaration:</b> We declare that this invoice shows actual price of the goods described & that all particulars are true & correct.
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+                    <?php 
+                } else {
+                    $i=1;
+                    $t_rate=0; $t_amt=0;$tqty=0;$tt_amt=0;$totala=0;$t_aamt=0;$t_gstamt=0;
+                    foreach ($sale_product as $product) {
+                     $price=0;
+                     $array = explode(',', $product->imei); 
+                     $amt=$product->price;
+                     $tax_rate=($product->cgst_per*2);
+                     if($einv_data['bill_type']=='3'){
+                      if($product->is_mop){
+                        $is_mop += 1;
+                        if($product->total_amount > $product->mop){
+                            $amt=$product->total_amount;
+                        }else{
+                            if($product->idskutype == 4){
+                                $amt=$product->mop * $product->qty;
+                            }else{
+                                $amt=$product->mop;
+                            }
+                            $discount_amt += $product->mop - $product->total_amount;
+                        }
+                    }else{
+                        $amt=$product->total_amount;
+                        $is_mop += 0;
+                    }
+                }else{
+                    if($product->idgodown == 2){
+                                $cal = 50/100;  //// landing minus 50% for demo stock -  inter state transfer
+                            }else{
+                                $cal = 2 /100;   //// landing minus 2% for inter state transfer
+                            }
+                            $amount = $amt - ($cal*$amt);
+                        }
+                            //$price = $amt - $taxble;
+                        
+                        $rate= round(($amount*100)/(100+$tax_rate),2);
+                        $t_rate=$t_rate+$rate;
+                        $gst_amt = (($rate*$tax_rate) / 100);
+                        $basic_rate = ($amount) - $gst_amt;
+                        
+                        $taxable =  round((($rate)*($product->qty)),2);
+                        $tqty=$tqty+$product->qty;
+                        $t_aamt=$t_aamt+$product->price;
+                        $tt_amt=$tt_amt+$taxable;
+                        $gst_amt = round((($taxable*$tax_rate) / 100),2);
+                        $t_amt=round($taxable+$gst_amt,2);
+                        $totala=$totala=+$t_amt;
+                        $t_gstamt=$t_gstamt=+$gst_amt;
+                        ?>
+                        <tr>
+                            <td><?php echo $i++; ?></td>
+                            <td><?php echo $product->full_name; ?></td>
+                            <td><?php $j=0;$im=""; foreach($array as $imei){
+                                if($j==2){ echo $im.$imei."<br>"; $im=""; $j=-1;}else{ $im.=$imei.", "; } $j++; } echo $im;?></td>
+                                <td><?php //echo $hsn_data['hsn'] ?></td>
+                                <td><?php echo $product->qty ?></td>
+                                <td><?php echo $taxable ?></td>
+
+                                <td><?php echo $taxable ?></td>
+                                
+
+                                <td><?php echo number_format($gst_amt, 2) . '<span class="pull-right" style="font-size:11px">(' . $tax_rate . '%)</span>' ?></td>
+
+                                <td><?php echo number_format($t_amt,2) ?></td>
+                            </tr>
+                        <?php } ?>
+                        <tr>
+                            <td colspan="4"><span class="pull-right">Gross Total &nbsp; &nbsp; </span></td>
+                            <td><?php echo $tqty ?></td>
+                            <td><?php echo number_format($t_rate,2) ?></td>
+                            <td><?php echo number_format($t_rate, 2) ?></td>
+                            <td><?php echo number_format($t_gstamt, 2) ?></td>
+                            
+                            <td><?php echo number_format($totala,2); ?></td>
+                        </tr>
+                    <?php } ?>
+                    <tr style="border: 1px solid #999999">
+                        <td colspan="10" style="border: 1px solid #999999;font-size: 14px;">
+                            <b>Declaration:</b> We declare that this invoice shows actual price of the goods described & that all particulars are true & correct.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
 
-    <div class="row" style="border: 1px solid #999999">
-        <div class="col-md-9 col-xs-9 col-xs-9" style="border-right: 1px solid #c3c3c3; padding: auto 5px"> 
-            <div style="line-height: 20px; color: #666666;">
-                <i class="fa fa-circle" style="font-size: 10px; opacity: 0.4;"></i> &nbsp;  <span style="color: #000;">Terms & Conditions</span><br>
-                <div style="font-size: 13px">
-                    - &nbsp; Goods once sold will not be taken back, until and unless approved by the manufacturer.<br>
-                    -  &nbsp; SS Communication & Service Pvt Ltd is not responsible for the performance and the warranty of any device sold. Warranty if any, is provided only by the manufacturer and as per the manufacturer’s policy only.<br>
-                    -  &nbsp; In spite of the above, any device which is physically damaged, tampered or water logged, will not qualify for any kind of warranty from the manufacturer. <br>
-                    -  &nbsp; All warranty periods if any are mentioned in the warranty card of the manufacturer and is applicable from the date of this invoice.<br>
+        <div class="row" style="border: 1px solid #999999">
+            <div class="col-md-9 col-xs-9 col-xs-9" style="border-right: 1px solid #c3c3c3; padding: auto 5px"> 
+                <div style="line-height: 20px; color: #666666;">
+                    <i class="fa fa-circle" style="font-size: 10px; opacity: 0.4;"></i> &nbsp;  <span style="color: #000;">Terms & Conditions</span><br>
+                    <div style="font-size: 13px">
+                        - &nbsp; Goods once sold will not be taken back, until and unless approved by the manufacturer.<br>
+                        -  &nbsp; SS Communication & Service Pvt Ltd is not responsible for the performance and the warranty of any device sold. Warranty if any, is provided only by the manufacturer and as per the manufacturer’s policy only.<br>
+                        -  &nbsp; In spite of the above, any device which is physically damaged, tampered or water logged, will not qualify for any kind of warranty from the manufacturer. <br>
+                        -  &nbsp; All warranty periods if any are mentioned in the warranty card of the manufacturer and is applicable from the date of this invoice.<br>
+                    </div>
                 </div>
             </div>
+            <div class="col-md-3 col-xs-3 col-xs-3 pull-right">
+                <br><br><br><br><br><br>
+                <center>Authorized Signatory</center>
+            </div>
         </div>
-        <div class="col-md-3 col-xs-3 col-xs-3 pull-right">
-            <br><br><br><br><br><br>
-            <center>Authorized Signatory</center>
+    </div><center><i>Subject to Kolhapur<?php // echo $sale->branch_district ?> jurisdiction</i></center>
+    <?php 
+    if($einv_data['bill_type']=='3'){ 
+        if($sale->buyer_gst != '' && $discount_amt > 0 && $is_mop > 0){ ?><hr>
+        <center><h4 style="color: #000;font-family: K2D; margin: 5px"><i class="pe pe-7s-news-paper"></i> CREDIT NOTE</h4></center>
+        <div class="col-md-12 col-xs-12">
+            <b>Branch: &nbsp; <?php echo $sale->branch_name ?></b><br>
+            <b>Address: </b> <?php echo $sale->branch_address; ?><br>
+            <b>Contact:</b> <?php echo $sale->branch_contact; ?> &nbsp; &nbsp;
+            <b>GSTIN:</b> <?php echo $sale->branch_gstno; ?>
+        </div><div class="clearfix"></div>
+        <div class="col-md-7 col-xs-7">
+            <b>CN No.: &nbsp;<?php echo sprintf('%07d', $sale->id_outward) ?></b>
         </div>
-    </div>
-</div><center><i>Subject to Kolhapur<?php // echo $sale->branch_district ?> jurisdiction</i></center>
-<?php if($sale->buyer_gst != '' && $discount_amt > 0 && $is_mop > 0){ ?><hr>
-<center><h4 style="color: #000;font-family: K2D; margin: 5px"><i class="pe pe-7s-news-paper"></i> CREDIT NOTE</h4></center>
-<div class="col-md-12 col-xs-12">
-    <b>Branch: &nbsp; <?php echo $sale->branch_name ?></b><br>
-    <b>Address: </b> <?php echo $sale->branch_address; ?><br>
-    <b>Contact:</b> <?php echo $sale->branch_contact; ?> &nbsp; &nbsp;
-    <b>GSTIN:</b> <?php echo $sale->branch_gstno; ?>
-</div><div class="clearfix"></div>
-<div class="col-md-7 col-xs-7">
-    <b>CN No.: &nbsp;<?php echo sprintf('%07d', $sale->id_outward) ?></b>
-</div>
-<div class="pull-right">
-    <b>Date:</b> &nbsp;<?php echo date('d-M-Y h:i A', strtotime($sale->invoice_date)) ?>
-</div><div class="clearfix"></div>
-<div style="border: 1px solid #f00c0c; padding: 5px 10px; line-height: 30px">
-    <div class="col-md-2 col-sm-2 col-xs-3">Customer:</div>
-    <div class="col-md-5 col-sm-5 col-xs-5" style="border-bottom: 1px dashed #f00c0c">
-        <span style="text-transform: uppercase" ><?php echo $sale->customer_fname.' '.$sale->customer_lname ?></span>
-    </div>
-    <div class="col-md-2 col-sm-2 col-xs-2">Contact No.:</div>
-    <div class="col-md-3 col-sm-3 col-xs-2" style="border-bottom: 1px dashed #f00c0c">
-        <?php echo $sale->branch_contact; ?>
-    </div><div class="clearfix"></div>
-    <div class="col-md-2 col-sm-2 col-xs-3">Address:</div>
-    <div class="col-md-10 col-sm-10 col-xs-9" style="border-bottom: 1px dashed #f00c0c">
-        <?php echo $sale->buyer_add.', '.$sale->buyer_pin; ?>
-    </div>
-    <div class="col-md-2 col-sm-2 col-xs-3">GSTIN:</div>
-    <div class="col-md-10 col-sm-10 col-xs-9" style="border-bottom: 1px dashed #f00c0c">
-        <span style="text-transform: capitalize"><?php echo $sale->buyer_gst; ?></span>
-    </div><div class="clearfix"></div>
-    <?php if ($gst_type == 1) { 
-        $cal = ($product['igst_per'] + 100) / 100;
-        $taxable = $discount_amt / $cal;
-        $igstamt = $discount_amt - $taxable; ?>
-        <table class="table table-bordered">
-            <thead>
-                <th>Discount</th>
-                <th>IGST</th>
-                <th>Total</th>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><?php echo number_format($taxable,2) ?></td>
-                    <td><?php echo number_format($igstamt,2) ?></td>
-                    <td><?php echo $discount_amt ?></td>
-                </tr>
-            </tbody>
-        </table>
-    <?php } elseif ($gst_type == 0) {
-        $cal = ($product->cgst_per + $product->sgst_per + 100) / 100;
-        $taxable = $discount_amt / $cal;
-        $cgst = $discount_amt - $taxable;
-        $cgstamt = $cgst / 2;?>
-        <table class="table table-bordered">
-            <thead>
-                <th>Discount</th>
-                <th>CGST</th>
-                <th>SGST</th>
-                <th>Total</th>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><?php echo number_format($taxable,2) ?></td>
-                    <td><?php echo number_format($cgstamt,2) ?></td>
-                    <td><?php echo number_format($cgstamt,2) ?></td>
-                    <td><?php echo $discount_amt ?></td>
-                </tr>
-            </tbody>
-        </table>
-    <?php } ?>
-    <div class="col-md-3 col-xs-3 col-xs-3 pull-right"><br>
-        <center>Authorized Signatory</center>
-    </div><div class="clearfix"></div>
-</div>
-<?php } ?>
+        <div class="pull-right">
+            <b>Date:</b> &nbsp;<?php echo date('d-M-Y h:i A', strtotime($sale->invoice_date)) ?>
+        </div><div class="clearfix"></div>
+        <div style="border: 1px solid #f00c0c; padding: 5px 10px; line-height: 30px">
+            <div class="col-md-2 col-sm-2 col-xs-3">Customer:</div>
+            <div class="col-md-5 col-sm-5 col-xs-5" style="border-bottom: 1px dashed #f00c0c">
+                <span style="text-transform: uppercase" ><?php echo $sale->customer_fname.' '.$sale->customer_lname ?></span>
+            </div>
+            <div class="col-md-2 col-sm-2 col-xs-2">Contact No.:</div>
+            <div class="col-md-3 col-sm-3 col-xs-2" style="border-bottom: 1px dashed #f00c0c">
+                <?php echo $sale->branch_contact; ?>
+            </div><div class="clearfix"></div>
+            <div class="col-md-2 col-sm-2 col-xs-3">Address:</div>
+            <div class="col-md-10 col-sm-10 col-xs-9" style="border-bottom: 1px dashed #f00c0c">
+                <?php echo $sale->buyer_add.', '.$sale->buyer_pin; ?>
+            </div>
+            <div class="col-md-2 col-sm-2 col-xs-3">GSTIN:</div>
+            <div class="col-md-10 col-sm-10 col-xs-9" style="border-bottom: 1px dashed #f00c0c">
+                <span style="text-transform: capitalize"><?php echo $sale->buyer_gst; ?></span>
+            </div><div class="clearfix"></div>
+            <?php if ($gst_type == 1) { 
+                $cal = ($product['igst_per'] + 100) / 100;
+                $taxable = $discount_amt / $cal;
+                $igstamt = $discount_amt - $taxable; ?>
+                <table class="table table-bordered">
+                    <thead>
+                        <th>Discount</th>
+                        <th>IGST</th>
+                        <th>Total</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><?php echo number_format($taxable,2) ?></td>
+                            <td><?php echo number_format($igstamt,2) ?></td>
+                            <td><?php echo $discount_amt ?></td>
+                        </tr>
+                    </tbody>
+                </table>
+            <?php } elseif ($gst_type == 0) {
+                $cal = ($product->cgst_per + $product->sgst_per + 100) / 100;
+                $taxable = $discount_amt / $cal;
+                $cgst = $discount_amt - $taxable;
+                $cgstamt = $cgst / 2;?>
+                <table class="table table-bordered">
+                    <thead>
+                        <th>Discount</th>
+                        <th>CGST</th>
+                        <th>SGST</th>
+                        <th>Total</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><?php echo number_format($taxable,2) ?></td>
+                            <td><?php echo number_format($cgstamt,2) ?></td>
+                            <td><?php echo number_format($cgstamt,2) ?></td>
+                            <td><?php echo $discount_amt ?></td>
+                        </tr>
+                    </tbody>
+                </table>
+            <?php } ?>
+            <div class="col-md-3 col-xs-3 col-xs-3 pull-right"><br>
+                <center>Authorized Signatory</center>
+            </div><div class="clearfix"></div>
+        </div>
+    <?php } 
+}
+?>
 <!--<center><i>This is computer generated invoice.</i></center>-->
 </div>
 </div>

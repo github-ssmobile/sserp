@@ -68,7 +68,7 @@ $route['ajax_get_costing_data_for_month'] = 'Cost_center/ajax_get_costing_data_f
 $route['save_cost_header_month_data'] = 'Cost_center/save_cost_header_month_data';
 $route['invoice_whatspp_api_routes/(:any)'] = 'Invoice_whatsapp_api/invoice_whatsapp_api/$1';
 
-//Hostbook Integration Start **********************050122
+//Hostbook Eway and Einvoice Integration Start **********************050122
 
 $route['Generate-eway-bill/(:any)/(:any)/(:any)/(:any)'] = 'Hostbook_Api/generateEwayBill/$1/$1/$1/$1';
 $route['Print-e-invoice/(:any)/(:any)'] = 'Hostbook_Api/printEInvoice/$1/$1';
@@ -79,5 +79,10 @@ $route['generate-e-invoice-b2b-sale'] = 'Hostbook_Api/generateEinvoiceB2Bsale';
 $route['e-invoice-eway-report'] = 'Hostbook_Api/eInvoiceEwayReport';
 $route['e-invoice-eway-report-data'] = 'Hostbook_Api/eInvoiceEwayReportData';
 
+//Hostbook Eway and Einvoice  Integration End ************************
 
-//Hostbook Integration End ************************
+//Hostbook Account Integration Start ************************160222
+$route['hb-vendour-master/(:any)'] = 'Hostbook_Acc_Api/HBVendour_Master/$1';
+
+
+//Hostbook Account Integration End ************************

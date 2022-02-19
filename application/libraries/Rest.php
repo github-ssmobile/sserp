@@ -2,10 +2,11 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 class Rest {
     function request($url, $method = "GET", $data = NULL, $api = 0, $auth = NULL, $image = 0) {
-         $header=array('Ocp-Apim-Subscription-Key: '.$api, 'Content-Type:application/json','Access-Control-Allow-Origin : *');
+         $header=array('Ocp-Apim-Subscription-Key: '.$api, 'Content-Type:application/json');
         if($auth!=NULL){
           $header= array_merge($header,$auth);
         }
+    
         switch ($method) {
             case "GET" :
                 $ch = curl_init($url);

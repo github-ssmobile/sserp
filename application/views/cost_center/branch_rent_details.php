@@ -420,30 +420,30 @@ if((!empty($rentow_details)) && ($this->session->userdata('role_name')=='Legal')
 									<div class="clearfix"></div><br>
 									
 									<label class="col-md-2">Cheque Document</label>
-									<div class="col-md-4">
+									<div class="col-md-3">
 										<input type="file" class="form-control" placeholder="Cheque Document" name="cheque_doc" id="cheque_doc" />
 									</div>
-									<?php if($this->session->userdata('role_name')=='Legal'){ 
+									<?php 
 										if(!empty($rentow_details['cheque_doc'])){
 											?>
 											<label class="col-md-1">
 												<a href="<?php echo base_url().$rentow_details['cheque_doc']; ?>" target="_blank"><button  type="button">View</button></a>
 											</label>
 										<?php }
-									} ?>
+									 ?>
 									
 									<label class="col-md-2">Passbook Document</label>
-									<div class="col-md-4">
+									<div class="col-md-3">
 										<input type="file" class="form-control" placeholder="Passbook Document" name="passbook_doc" id="passbook_doc" />
 									</div>
-									<?php if($this->session->userdata('role_name')=='Legal'){ 
+									<?php 
 										if(!empty($rentow_details['passbook_doc'])){
 											?>
 											<label class="col-md-1">
 												<a href="<?php echo base_url().$rentow_details['passbook_doc']; ?>" target="_blank"><button  type="button">View</button></a>
 											</label>
 										<?php }
-									} ?>
+									?>
 								</div>
 								
 								
@@ -488,56 +488,56 @@ if((!empty($rentow_details)) && ($this->session->userdata('role_name')=='Legal')
 								<div class="col-md-3">
 									<input type="file" class="form-control" placeholder="Rent Document" name="pan_doc" id="pan_doc" />
 								</div>
-								<?php if($this->session->userdata('role_name')=='Legal'){ 
+								<?php 
 									if(!empty($rentow_details['pan_doc'])){
 										?>
 										<label class="col-md-1">
 											<a href="<?php echo base_url().$rentow_details['pan_doc']; ?>" target="_blank"><button  type="button">View</button></a>
 										</label>
 									<?php }
-								} ?>
+								 ?>
 								<label class="col-md-2">Adhar Card</label>
 								<div class="col-md-3">
 									<input type="file" class="form-control" placeholder="Rent Document" name="adhar_doc" id="adhar_doc" />
 								</div>
-								<?php if($this->session->userdata('role_name')=='Legal'){ 
+								<?php 
 									if(!empty($rentow_details['adhar_doc'])){
 										?>
 										<label class="col-md-1"><a href="<?php echo base_url().$rentow_details['adhar_doc']; ?>" target="_blank"><button type="button">View</button></a></label>
 									<?php } 
-								} ?>
+								 ?>
 								<div class="clearfix"></div><hr>
 								<label class="col-md-2">Property Documents</label>
 								<div class="col-md-3">
 									<input type="file" class="form-control" placeholder="Rent Document" name="property_doc" id="property_doc" />
 								</div>
-								<?php if($this->session->userdata('role_name')=='Legal'){
+								<?php 
 									if(!empty($rentow_details['property_doc'])){
 										?>
 										<label class="col-md-1"><a href="<?php echo base_url().$rentow_details['property_doc']; ?>" target="_blank"><button type="button">View</button></a></label>
 									<?php } 
-								}?>
+								?>
 								<label class="col-md-2">Electricity Bill</label>
 								<div class="col-md-3">
 									<input type="file" class="form-control" placeholder="Rent Document" name="electricity_doc" id="electricity_doc" />
 								</div>
-								<?php if($this->session->userdata('role_name')=='Legal'){
+								<?php 
 									if(!empty($rentow_details['electricity_doc'])){
 										?>
 										<label class="col-md-1"><a href="<?php echo base_url().$rentow_details['electricity_doc']; ?>" target="_blank"><button type="button">View</button></a></label>
 									<?php }
-								} ?>
+								 ?>
 								<div class="clearfix"></div><hr>
 								<label class="col-md-2">Other Documents</label>
 								<div class="col-md-3">
 									<input type="file" class="form-control" placeholder="Oher Document" name="other_doc" id="other_doc" />
 								</div>
-								<?php if($this->session->userdata('role_name')=='Legal'){
+								<?php 
 									if(!empty($rentow_details['other_doc'])){
 										?>
 										<label class="col-md-1"><a href="<?php echo base_url().$rentow_details['other_doc']; ?>" target="_blank"><button type="button">View</button></a></label>
 									<?php } 
-								}?>
+								?>
 								<label class="col-md-2">Rent Document</label>
 								
 								<?php if(!empty($rentow_details['rent_doc'])){

@@ -54,7 +54,7 @@
                     dataType: 'json',
                     success:function(data){
                      alert(data.message);
-                     location.reload();
+                    $('#status').trigger('change');
                  }    
              });
             });

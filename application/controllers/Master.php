@@ -1269,7 +1269,8 @@ class Master extends CI_Controller {
             $this->General_model->save_vendor_has_branch($first_nestarray);
         }
         $this->session->set_flashdata('save_data', 'Vendor Created');
-        return redirect('Master/vendor_details');
+        // return redirect('Master/vendor_details');
+        return redirect('hb-vendour-master/'.$id);
     }
 
     public function edit_branch() {

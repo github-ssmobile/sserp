@@ -36,6 +36,7 @@
                 success:function(data)
                 {
                     alert(data.message);
+                     $('#btnsubmit').trigger('click');
                 }
             });
          }else{

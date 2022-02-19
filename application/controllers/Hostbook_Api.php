@@ -569,26 +569,26 @@ class Hostbook_Api extends CI_Controller
         $idoutword=$this->uri->segment(2);
         $comp_id= $this->common_model->getSingleRow('branch',array('id_branch'=>$from_branch));
         $q['einv_data']= $this->common_model->getSingleRow('eway_einvoice_data',array('idoutword_no'=>$idoutword));
-
-
+        $idallocation=null;
         $q['tab_active'] = ''; 
         if($q['einv_data']['bill_type']=='3'){
             $q['outward_data']= $this->Hostbook_Model->get_sale_byid($idoutword);
-// $idoutword=$q['outward_data'][0]->id_outward;
-            $q['sale_product']= $this->common_model->getRecords('sale_product','*',array('idsale'=>$q['outward_data'][0]->id_outward));
+
+            // $q['sale_product']= $this->common_model->getRecords('sale_product','*',array('idsale'=>$q['outward_data'][0]->id_outward));
+                $q['sale_product'] = $this->Hostbook_Model->get_branch_sale_by_id($idallocation,$q['outward_data'][0]->id_outward);
+                // print_r($q['sale_product']);die();
         }else{
             $q['outward_data']= $this->Hostbook_Model->get_outword_byid($idoutword);
             if(!empty($q['outward_data'])){
-                $q['sale_product']= $this->common_model->getRecords('outward_product','*',array('idoutward'=>$q['outward_data'][0]->id_outward));
-// $idoutword=$q['outward_data'][0]->id_outward;
+
+                $q['sale_product'] = $this->Hostbook_Model->get_branch_outword_by_id($idallocation,$q['outward_data'][0]->id_outward);
+
             }else{
                 $q['outward_data']= $this->Hostbook_Model->get_transfer_byid($idoutword);
-// $idoutword=$q['outward_data'][0]->id_outward;
-                $q['sale_product']= $this->common_model->getRecords('transfer_product','*',array('idtransfer'=>$q['outward_data'][0]->id_outward));
+                $q['sale_product'] = $this->Hostbook_Model->get_branch_transfer_by_id($idallocation,$q['outward_data'][0]->id_outward);
+
             }
         }
-
-
         $q['comp_id']=$comp_id;
         $q['from_comp_data']= $this->common_model->getSingleRow('company',array('company_id'=>$comp_id['idcompany']));
 

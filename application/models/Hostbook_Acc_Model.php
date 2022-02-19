@@ -2,30 +2,31 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Hostbook_Model extends CI_Model {
+class Hostbook_Acc_Model extends CI_Model {
 
 	/*************** eway bill api ******************/
-	function getLoginData($data, $Secret_Key) {
-		$url="https://sandboxgst.hostbooks.in/ewbapi/api/ewb/logintally";
-		$authorization = array('Secret-Key:'.$Secret_Key);
-		$result = $this->rest->request($url, "POST", json_encode($data), 0, $authorization);
-
+	function getLoginData($data) {
+		$url="https://sandboxinapiaccounts.hostbooks.in/securitycenter/user/login";
+		$result = $this->rest->request($url, "POST", json_encode($data), 0);
 		$result = json_decode($result, true);
 		return $result;
 	}
 
-	function getauthData($data, $Secret_Key) {
-		$url="https://sandboxgst.hostbooks.in/ewbapi/api/ewb/generate-token";
+	function getauthData($Secret_Key) {
+		$url="https://sandboxinapiaccounts.hostbooks.in/securitycenter/user/validateUserLogin";
 		$authorization = $Secret_Key;
-		$result = $this->rest->request($url, "POST", json_encode($data), 0, $authorization);
+		$data=array();
+		$result = $this->rest->request($url, "GET", '', 1, $authorization);
 
 		$result = json_decode($result, true);
 		return $result;
 	}
-	function getEwayBillData($data, $Secret_Key) {
-		$url="https://sandboxgst.hostbooks.in/ewbapi/api/ewb/generate-bill";
+	function hbGenerateMaster($data, $Secret_Key) {
+		$url="https://sandboxin2accounts.hostbooks.in/hostbook/api/master/add";
 		$authorization = $Secret_Key;
+		print_r(json_encode($data));
 		$result = $this->rest->request($url, "POST", json_encode($data), 0, $authorization);
+		print_r($result);die();
 
 		$result = json_decode($result, true);
 		return $result;
@@ -136,57 +137,6 @@ class Hostbook_Model extends CI_Model {
 		->get('sale')->result();
 	}
 	
-
-	public function get_branch_outword_by_id($idallocation,$idoutward) {         
-		$this->db->select('b.branch_name,od.date as all_date,b.idcompany,od.idbranch as id_branch,od.idwarehouse as id_warehouse,od.status as a_status,od.status as o_status,g.godown_name,mv.full_name,od.*,op.*,sum(op.qty) qty,op.price,op.cgst_per,op.idoutward,GROUP_CONCAT(op.imei_no) as imei');
-		$this->db->from('outward od');        
-		$this->db->where('g.id_godown=op.idgodown')->from('godown g');        
-		$this->db->join('outward_product op','op.idoutward=od.id_outward','left');                                 
-		$this->db->join('model_variants mv','mv.id_variant=op.idvariant');
-		$this->db->where('od.idbranch=b.id_branch')->from('branch b'); 
-		if($idoutward){
-			$this->db->where('od.id_outward', $idoutward);            
-		}
-		$this->db->group_by('op.idgodown,op.idvariant');
-		$query = $this->db->get(); 
-		return $query->result(); 
-		
-	}
-	public function get_branch_transfer_by_id($idallocation,$idoutward) {         
-		$this->db->select('`b`.`branch_name`, `od`.`date` as `all_date`, `b`.`idcompany`, `od`.`idbranch` as `id_branch`, `od`.`transfer_from` as `id_warehouse`, `od`.`status` as `a_status`,`od`.`status` as `o_status`, `g`.`godown_name`, `mv`.`full_name`, `od`.*,op.*, sum(op.qty) qty,`op`.`price`, `op`.`cgst_per`, `op`.`idtransfer`,GROUP_CONCAT(op.imei_no) as imei');
-		$this->db->from('transfer od');        
-		$this->db->where('g.id_godown=op.idgodown')->from('godown g');        
-		$this->db->join('transfer_product op','op.idtransfer=od.id_transfer','left');                                 
-		$this->db->join('model_variants mv','mv.id_variant=op.idvariant');
-		$this->db->where('od.idbranch=b.id_branch')->from('branch b'); 
-		if($idoutward){
-			$this->db->where('od.id_transfer', $idoutward);            
-		}
-		$this->db->group_by('op.idgodown,op.idvariant');
-		$query = $this->db->get(); 
-		return $query->result(); 
-		
-	}
-	public function get_branch_sale_by_id($idallocation,$idoutward) {         
-		$this->db->select('`b`.`branch_name`, `od`.`date` as `all_date`, `b`.`idcompany`, `od`.`idbranch` as `id_branch`, `od`.`idbranch` as `id_warehouse`, 1 as `a_status`,
-			1 as `o_status`, `g`.`godown_name`, `mv`.`full_name`, `od`.*, `op`.*, sum(op.qty) qty, `op`.`price`, `op`.`cgst_per`, `op`.idsale idtransfer, 
-			GROUP_CONCAT(op.imei_no) as imei');
-		$this->db->from('sale od');        
-		$this->db->where('g.id_godown=op.idgodown')->from('godown g');        
-		$this->db->join('sale_product op','op.idsale=od.id_sale','left');                                 
-		$this->db->join('model_variants mv','mv.id_variant=op.idvariant');
-		$this->db->where('od.idbranch=b.id_branch')->from('branch b'); 
-		if($idoutward){
-			$this->db->where('od.id_sale', $idoutward);            
-		}
-		$this->db->group_by('op.idgodown,op.idvariant');
-		$query = $this->db->get(); 
-		return $query->result(); 
-		// die(print_r($this->db->last_query()));
-	}
-	
-
-
 	
 	
 }
