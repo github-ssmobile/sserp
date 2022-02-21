@@ -26,7 +26,7 @@ class Hostbook_Acc_Api extends CI_Controller
             $hb_valid=$this->hb_valid(1);
             if($hb_valid['status']==200){
                 $vendor_ins_data= $this->common_model->getSingleRow('vendor',array('id_vendor'=>$this->uri->segment(2)));
-              
+
                 $is_customer=false;
                 $is_vendor=true;
 
@@ -102,7 +102,7 @@ class Hostbook_Acc_Api extends CI_Controller
                         "vendor"=> $is_vendor,
                         "customer"=> $is_customer,
                         "primaryType"=> "Vendor",
-                         "pan"=> null,
+                        "pan"=> null,
                         "creditLimit"=> null,
                         "email"=> null,
                         "phone"=> null,
@@ -120,33 +120,99 @@ class Hostbook_Acc_Api extends CI_Controller
                         "panVerified"=> false,
                         "fax"=> null
                     );
-                  
 
                     $contact_List[]=$contact_Ll;
-                    
-                   
+
                     $final_array=array(
                         "contactList"=>$contact_List,
-                        
                     );
 
-
                     $hb_gen_master=$this->hbGenerateMaster(1,$final_array);
-                    print_r(($hb_gen_master));die();
+                    if($hb_gen_master['status']==200){
+                        $this->session->set_flashdata('save_data', 'Vendor Created');
+                        return redirect('Master/vendor_details');
+                    }else{
+                        $response['status']=false;
+                        $this->session->set_flashdata('save_data', $hb_gen_master['message']);
+                        $response['message']=$hb_gen_master['message'];
+                    }
                 }else{
-                    print_r('else');die();
+
+                    $contact_Ll=array(
+
+                        "name"=> $vendor_ins_data['vendor_name'],
+                        "accountNumber"=> $vendor_ins_data['vendor_contact'],
+                        "employee"=> false,
+                        "vendor"=> false,
+                        "customer"=> true,
+                        "primaryType"=> "customer",
+                        "openingBalance"=> 0.00,
+                        "openingDate"=> "01-04-2019",
+                        "status"=> "COAC",
+                        "panVerified"=> false,
+                    );
+
+                    $p_address=array(
+                        array(
+                            "address1"=> $vendor_ins_data['vendor_address'],
+                            "street"=> $vendor_ins_data['city'],
+                            "city"=> $vendor_ins_data['city'],
+                            "state"=> $vendor_ins_data['state'],
+                            "zip"=> $vendor_ins_data['pincode'],
+                            "country"=> "India",
+                            "type"=> "PADR"
+                        ),
+                        array(
+                         "address1"=> $vendor_ins_data['vendor_address'],
+                         "street"=> $vendor_ins_data['city'],
+                         "city"=> $vendor_ins_data['city'],
+                         "state"=> $vendor_ins_data['state'],
+                         "zip"=> $vendor_ins_data['pincode'],
+                         "country"=> "India",
+                         "type"=> "BADR"
+                     )
+                    );
+
+                    $contact_addd=array(
+                        "address"=>  $p_address,
+                    );
+
+                    $contactTdss=array(
+                        "tdsApplicable"=> "false"
+                    );
+                    $contact_List[]=$contact_Ll;
+                   
+                    $contactTds[]=$contactTdss;
+
+                    $final_array=array(
+                        "contactList"=>$contact_List,
+                        "address"=>$p_address,
+                        "contactTds"=>$contactTds,
+                    );
+                    
+                    $hb_gen_master=$this->hbGenerateMaster(1,$final_array);
+                    if($hb_gen_master['status']==200){
+                        $this->session->set_flashdata('save_data', 'Vendor Created');
+                        return redirect('Master/vendor_details');
+                    }else{
+                        $response['status']=false;
+                        $this->session->set_flashdata('save_data', $hb_gen_master['message']);
+                        $response['message']=$hb_gen_master['message'];
+                        return redirect('Master/vendor_details');
+                    }
                 }
-
-
-                print_r($vendor_ins_data);die(); 
             }else{
                 $response['status']=false;
                 $response['message']=$hb_valid['message'];
+                $this->session->set_flashdata('save_data', $hb_valid['message']);
+                return redirect('Master/vendor_details');
             }
 
         }else{
             $response['status']=false;
             $response['message']=$hb_login['message'];
+            $this->session->set_flashdata('save_data', $hb_login['message']);
+            return redirect('Master/vendor_details');
         }
 
     }

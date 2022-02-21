@@ -26,8 +26,7 @@ class Hostbook_Acc_Model extends CI_Model {
 		$authorization = $Secret_Key;
 		print_r(json_encode($data));
 		$result = $this->rest->request($url, "POST", json_encode($data), 0, $authorization);
-		print_r($result);die();
-
+		
 		$result = json_decode($result, true);
 		return $result;
 	}
