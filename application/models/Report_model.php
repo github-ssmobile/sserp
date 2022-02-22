@@ -73,6 +73,26 @@ class Report_model extends CI_Model{
                         ->get('expense')->result();
         }
     }
+    public function ajax_get_daybook_accessories_report($datefrom,$dateto,$idbranch,$viewbranches) {
+        if($idbranch == ''){
+            $branches = explode(',',$viewbranches);
+            return $this->db->select('daybook_cash.amount as access_cash, branch.branch_name, daybook_cash.date')
+                            ->where('entry_type',10)
+                            ->where_in('idbranch', $branches)
+                            ->where('idbranch = branch.id_branch')->from('branch')
+                            ->where('date >=', $datefrom)
+                            ->where('date <=', $dateto)
+                            ->get('daybook_cash')->result();
+        }else{
+            return  $this->db->select('daybook_cash.amount as access_cash, branch.branch_name, daybook_cash.date')
+                        ->where('entry_type',10)
+                        ->where('idbranch',$idbranch)
+                        ->where('idbranch = branch.id_branch')->from('branch')
+                        ->where('date >=', $datefrom)
+                        ->where('date <=', $dateto)
+                        ->get('daybook_cash')->result();   
+        }
+    }
     public function ajax_get_cash_deposite_to_bank_report($datefrom,$dateto,$idbranch,$viewbranches) {
         if($idbranch == ''){
             $branches = explode(',',$viewbranches);

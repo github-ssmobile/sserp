@@ -559,6 +559,9 @@ class Reconciliation extends CI_Controller
             <!--<th>Difference</th>-->
             <th>Remark</th>
             <th>Days</th>
+            <th>Handset Closure</th>
+            <th>Accessories Closure</th>
+            <th>Total Cash Closure</th>
             <th>Deposit Cash</th>
             <th>Actual Deposit</th>
             <th>Short Receive</th>
@@ -581,6 +584,9 @@ class Reconciliation extends CI_Controller
                     $datediff = $now - $deposit_date;
                     echo round($datediff / (86400)); ?>
                 </td>
+                <td><?php echo $deposit->closure_cash_handset ?></td>
+                <td><?php echo $deposit->acc_closure_cash ?></td>
+                <td><?php echo $deposit->total_closure_cash ?></td>
                 <td><?php echo $deposit->deposit_cash ?></td>
                 <td>
                     <input type="number" class="form-control input-sm received_amt" name="received_amt" placeholder="Amount" style="width: 120px" required="" min="1"/>

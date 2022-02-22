@@ -108,19 +108,22 @@
     });
     
     function get_accessories_daybookamount_cnt(){
-            
+        var total_amount = $('#total_amount').val();    
         var idbranch = $('#idbranch').val();
-        var today = new Date();
-        var dd = today.getDate();
-        var mm = today.getMonth()+1; //January is 0!
-        var yyyy = today.getFullYear();
-        if(dd<10){
-            dd='0'+dd
-        } 
-        if(mm<10){
-            mm='0'+mm
-        } 
-        var today = yyyy+'-'+mm+'-'+dd;
+        var closure_date =  $('#date').val();
+        var clsure_data = closure_date.split(" ");
+        //alert(clsure_data[0]);return false;
+        var today = clsure_data[0];
+//        var dd = today.getDate();
+//        var mm = today.getMonth()+1; //January is 0!
+//        var yyyy = today.getFullYear();
+//        if(dd<10){
+//            dd='0'+dd
+//        } 
+//        if(mm<10){
+//            mm='0'+mm
+//        } 
+//        var today = yyyy+'-'+mm+'-'+dd;
        // alert(today);return false;
         
         $.ajax({
@@ -132,7 +135,39 @@
             if(data == 1){
                 alert("Please Deposite Accessories Cash");
                 return false;
-            }else{
+            }else if(data == 2){
+                if(total_amount <= 0){
+                swal('😠 Alert','Not allowed to enter lest than 1 quantity!!','warning');
+                return false;
+                }else{
+                    if(total_amount != $('#available_total').val()){
+                    swal('😠 Alert','Available amount and entered amount should be equal!!','warning');
+                    return false;
+                    }else{
+                        if(!confirm('Are you sure? Do you want to submit')){
+                          return false;
+                      }else{
+                          document.getElementById("pay").submit();
+                      }
+                    }
+                }
+                console.log('accessories amount is depoited.')
+            }else if(data == 0){
+                if(total_amount <= 0){
+                swal('😠 Alert','Not allowed to enter lest than 1 quantity!!','warning');
+                return false;
+                }else{
+                    if(total_amount != $('#available_total').val()){
+                    swal('😠 Alert','Available amount and entered amount should be equal!!','warning');
+                    return false;
+                    }else{
+                        if(!confirm('Are you sure? Do you want to submit')){
+                          return false;
+                      }else{
+                          document.getElementById("pay").submit();
+                      }
+                    }
+                }
                 console.log('accessories amount is 0.')
             }
         }
@@ -318,7 +353,7 @@
                         <div class="pull-right">
                             <?php echo $spdatetime ?>
                             <!--<input type="hidden" name="remaining_total" id="remaining_total" value="0" />-->
-                            <input type="hidden" name="date" value="<?php echo $datetime ?>" />
+                            <input type="hidden" name="date" id="date" value="<?php echo $datetime ?>" />
                         </div><div class="clearfix"></div>
                     </span>
                     <?php // }else{ ?>

@@ -169,7 +169,8 @@ class Payment extends CI_Controller
         $total_amount = $this->input->post('total_amount');
         $pending_closure_cash = $this->input->post('pending_closure_cash');
         $remain = $pending_closure_cash - $total_amount;
-        
+        $cash_closure_date = $this->input->post('cash_closure_date');
+        //print_r($cash_closure_date);die;
         $config = array(
             'image_library' => 'gd2',
             'upload_path' => 'assets/deposite_bank',
@@ -196,6 +197,7 @@ class Payment extends CI_Controller
             'created_by' => $this->input->post('iduser'),
             'deposite_image' => $imgfile,
             'entry_time' => $date,
+            'cash_closure_date' => $cash_closure_date,
         );
         $iddeposit = $this->Reconciliation_model->save_deposit_to_bank($data);
         $refid = $this->input->post('refid');
