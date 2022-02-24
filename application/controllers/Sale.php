@@ -413,7 +413,7 @@ class Sale extends CI_Controller
              </script>
          <?php }
      }
-     
+
      public function ajax_get_invoice_search_byimeino(){
         $imei = $this->input->post('imei');
         $sale_data = $this->Sale_model->ajax_get_sales_data_byimei($imei);
@@ -464,7 +464,7 @@ class Sale extends CI_Controller
          </script>
      <?php }
  }
- 
+
  public function ajax_get_invoice_search_bycontact(){
     $contact_no = $this->input->post('contact_no');
     $sale_data = $this->Sale_model->ajax_get_sales_data_bycontact($contact_no);
@@ -751,7 +751,7 @@ public function ajax_get_imei_details() {
             $models = $this->Sale_model->ajax_stock_data_byimei_branch($imei, $idbranch);
             if(count($models)){
                 foreach($models as $model){
-                    
+
                     $ageing_data = $this->Stock_model->get_ageing_stock_data($model->idproductcategory, $model->idbrand, $model->idmodel, $model->id_variant, $model->idbranch);
                     if($ageing_data){
                         $ageing = 1;
@@ -953,7 +953,7 @@ public function ajax_get_imei_details() {
             $models = $this->Sale_model->ajax_stock_data_byimei_branch($imei, $idbranch);
             if(count($models)){
                 foreach($models as $model){
-                    
+
                     $ageing_data = $this->Stock_model->get_ageing_stock_data($model->idproductcategory, $model->idbrand, $model->idmodel, $model->id_variant, $model->idbranch);
                     if($ageing_data){
                         $ageing = 1;
@@ -2517,7 +2517,7 @@ public function ajax_get_payment_mode_data_byidhead_for_receivable() {
           });
       </script> 
   <?php }
-  
+
 }
 
 public function ajax_get_sale_revenue_report(){
@@ -3132,170 +3132,176 @@ public function edit_sale_customer() {
                 <?php
             }
             
-    /*public function ajax_search_invoice_for_edit_config() {
-        $invno = $this->input->post('invno');
-        $level = $this->input->post('level');
-        if($level != 1){
-            echo '<center><h3><i class="mdi mdi-alert"></i> You do not have authority to edit invoice. </h3>'.
-                '<img src="'.base_url().'assets/images/highAlertIcon.gif" />'
-            . '</center>'; 
-        }else{
-            $sale_data = $this->Sale_model->get_config_sale_byinvno_for_edit($invno);
-            if(count($sale_data) > 0){
-                $mnt = date('Y-m-03', strtotime($sale_data[0]->date. "+1 month"));
-                $gstdate = date('Y-m-d', strtotime($sale_data[0]->date. "+2 days"));
-                $cdate = date('Y-m-d');
+                    
+            public function ajax_search_invoice_for_edit_config() {
+                $invno = $this->input->post('invno');
+                $level = $this->input->post('level');
+                $sale_data= $this->common_model->getSingleRow('sale',array('inv_no'=>$invno));
+                $einv_data= $this->common_model->getSingleRow('eway_einvoice_data',array('idoutword_no'=>$sale_data['id_sale']));
+                if(empty($einv_data)){
+                    if($level != 1 && $level != 3){
+                        echo '<center><h3><i class="mdi mdi-alert"></i> You do not have authority to edit invoice. </h3>'.
+                        '<img src="'.base_url().'assets/images/highAlertIcon.gif" />'
+                        . '</center>'; 
+                    }else{
+                        $sale_data = $this->Sale_model->get_config_sale_byinvno_for_edit($invno);
+                        if(count($sale_data) > 0){
+                            $mnt = date('Y-m-03', strtotime($sale_data[0]->date. "+1 month"));
+                            $gstdate = date('Y-m-d', strtotime($sale_data[0]->date. "+2 days"));
+                            $cdate = date('Y-m-d');
 //                if(date('Y-m-d') < $mnt){  
-                    foreach ($sale_data as $sale){
-                        $idsale = $sale->id_sale;
-                        $sale_product = $this->Sale_model->get_sale_product_byid($idsale);
-                        $sale_payment = $this->Sale_model->get_sale_payment_byid($idsale);
-                        $sale_reconciliation = $this->Sale_model->get_sale_reconciliation_byid($idsale);
-                        $payment_head_has_attributes = $this->General_model->get_payment_head_has_attributes();
-                        $payment_mode = $this->General_model->get_active_payment_mode_head();
-                        $state_data = $this->General_model->get_state_data(); ?>
-                        <div style="font-family: K2D; font-size: 15px;">
-                            <div class="">
-                                <div class="thumbnail">
-                                    <div class="col-md-7">
-                                        To,<br>
-                                        <div class="p-1">
-                                            <span class="col-md-2 text-muted">Contact</span>
-                                            <div class="col-md-10"><div id="spcust_contact"><?php echo $sale->customer_contact ?></div></div>
-                                        </div><div class="clearfix"></div>
-                                        <div class="p-1">
-                                            <span class="col-md-2 text-muted">Customer</span>
-                                            <div class="col-md-10">
-                                                <div class="input-group">
-                                                    <div class="input-group-btn">
-                                                        <input type="text" class="form-control input-sm" id="customer_fname" placeholder="Customer First Name" value="<?php echo $sale->customer_fname ?>">
-                                                        <input type="hidden" id="idcustomer" value="<?php echo $sale->idcustomer ?>">
-                                                        <input type="hidden" id="idsale" value="<?php echo $sale->id_sale ?>">
+                            foreach ($sale_data as $sale){
+                                $idsale = $sale->id_sale;
+                                $sale_product = $this->Sale_model->get_sale_product_byid($idsale);
+                                $sale_payment = $this->Sale_model->get_sale_payment_byid_invoice_edit($idsale);
+                                $sale_reconciliation = $this->Sale_model->get_sale_reconciliation_byid($idsale);
+                                $payment_head_has_attributes = $this->General_model->get_payment_head_has_attributes();
+                                $payment_mode = $this->General_model->get_active_payment_mode_head();
+                                $state_data = $this->General_model->get_state_data(); ?>
+                                <div style="font-family: K2D; font-size: 15px;">
+                                    <div class="">
+                                        <div class="thumbnail">
+                                            <div class="col-md-7">
+                                                To,<br>
+                                                <div class="p-1">
+                                                    <span class="col-md-2 text-muted">Contact</span>
+                                                    <div class="col-md-10"><div id="spcust_contact"><?php echo $sale->customer_contact ?></div></div>
+                                                </div><div class="clearfix"></div>
+                                                <div class="p-1">
+                                                    <span class="col-md-2 text-muted">Customer</span>
+                                                    <div class="col-md-10">
+                                                        <div class="input-group">
+                                                            <div class="input-group-btn">
+                                                                <input type="text" class="form-control input-sm" id="customer_fname" placeholder="Customer First Name" value="<?php echo $sale->customer_fname ?>">
+                                                                <input type="hidden" id="idcustomer" value="<?php echo $sale->idcustomer ?>">
+                                                                <input type="hidden" id="idsale" value="<?php echo $sale->id_sale ?>">
+                                                            </div>
+                                                            <div class="input-group-btn">
+                                                                <input type="text" class="form-control input-sm" id="customer_lname" placeholder="Customer First Name" value="<?php echo $sale->customer_lname ?>">
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <div class="input-group-btn">
-                                                        <input type="text" class="form-control input-sm" id="customer_lname" placeholder="Customer First Name" value="<?php echo $sale->customer_lname ?>">
+                                                </div><div class="clearfix"></div>
+                                                <div class="p-1">
+                                                    <span class="col-md-2 text-muted">Address</span>
+                                                    <div class="col-md-10">
+                                                        <input type="text" class="form-control input-sm" id="customer_address" value="<?php echo $sale->customer_address ?>" />
                                                     </div>
-                                                </div>
-                                            </div>
-                                        </div><div class="clearfix"></div>
-                                        <div class="p-1">
-                                            <span class="col-md-2 text-muted">Address</span>
-                                            <div class="col-md-10">
-                                                <input type="text" class="form-control input-sm" id="customer_address" value="<?php echo $sale->customer_address ?>" />
-                                            </div>
-                                        </div><div class="clearfix"></div>
-                                        <div class="p-1">
-                                            <span class="col-md-2 text-muted">Pincode</span>
-                                            <div class="col-md-10">
-                                                <input type="text" class="form-control input-sm" id="pincode" value="<?php echo $sale->customer_pincode ?>" />
-                                            </div>
-                                        </div><div class="clearfix"></div>
-                                        <div class="p-1">
-                                            <span class="col-md-2 text-muted">State</span>
-                                            <div class="col-md-10">
-                                                <input type="hidden" id="customer_idstate" value="<?php echo $sale->customer_idstate ?>">
-                                                <input type="hidden" id="config_edit" value="1">
-                                                <input type="hidden" id="branch_idstate" value="<?php echo $sale->branch_idstate ?>">
-                                                <input type="hidden" id="gst_type" value="<?php echo $sale->gst_type ?>">
-                                                <select name="idstate" id="idstate" style="width: 100%" class="form-control input-sm">
-                                                    <option value="">Select State</option>
-                                                    <option value="<?php echo $sale->customer_idstate; ?>" selected="" ><?php echo $sale->customer_state; ?></option>
-                                                    <?php foreach ($state_data as $state) { ?>
-                                                    <option value="<?php echo $state->id_state; ?>" ><?php echo $state->state_name; ?></option>
-                                                    <?php } ?>
-                                                </select>
-                                            </div>
-                                        </div><div class="clearfix"></div>
-                                        <div class="p-1">
-                                            <span class="col-md-2 text-muted">GSTIN</span>
-                                            <div class="col-md-10">
-                                                <input type="text" class="form-control input-sm" id="customer_gst" value="<?php echo $sale->customer_gst ?>" placeholder="Enter GSTIN" />
-                                                <input type="hidden" class="form-control input-sm" id="oldgst" value="<?php echo $sale->customer_gst ?>"  />
-                                                <input type="hidden" class="form-control input-sm" id="gstdate" value="<?php echo $gstdate ?>"  />
-                                                <input type="hidden" class="form-control input-sm" id="cdate" value="<?php echo $cdate ?>"  />
+                                                </div><div class="clearfix"></div>
+                                                <div class="p-1">
+                                                    <span class="col-md-2 text-muted">Pincode</span>
+                                                    <div class="col-md-10">
+                                                        <input type="text" class="form-control input-sm" id="pincode" value="<?php echo $sale->customer_pincode ?>" />
+                                                    </div>
+                                                </div><div class="clearfix"></div>
+                                                <div class="p-1">
+                                                    <span class="col-md-2 text-muted">State</span>
+                                                    <div class="col-md-10">
+                                                        <input type="hidden" id="customer_idstate" value="<?php echo $sale->customer_idstate ?>">
+                                                        <input type="hidden" id="config_edit" value="1">
+                                                        <input type="hidden" id="branch_idstate" value="<?php echo $sale->branch_idstate ?>">
+                                                        <input type="hidden" id="gst_type" value="<?php echo $sale->gst_type ?>">
+                                                        <select name="idstate" id="idstate" style="width: 100%" class="form-control input-sm">
+                                                            <option value="">Select State</option>
+                                                            <option value="<?php echo $sale->customer_idstate; ?>" selected="" ><?php echo $sale->customer_state; ?></option>
+                                                            <?php foreach ($state_data as $state) { ?>
+                                                                <option value="<?php echo $state->id_state; ?>" ><?php echo $state->state_name; ?></option>
+                                                            <?php } ?>
+                                                        </select>
+                                                    </div>
+                                                </div><div class="clearfix"></div>
+                                                <div class="p-1">
+                                                    <span class="col-md-2 text-muted">GSTIN</span>
+                                                    <div class="col-md-10">
+                                                        <input type="text" class="form-control input-sm" id="customer_gst" value="<?php echo $sale->customer_gst ?>" placeholder="Enter GSTIN" />
+                                                        <input type="hidden" class="form-control input-sm" id="oldgst" value="<?php echo $sale->customer_gst ?>"  />
+                                                        <input type="hidden" class="form-control input-sm" id="gstdate" value="<?php echo $gstdate ?>"  />
+                                                        <input type="hidden" class="form-control input-sm" id="cdate" value="<?php echo $cdate ?>"  />
+                                                    </div><div class="clearfix"></div>
+                                                    <div class="col-md-12 p-2">
+                                                        <div class="pull-right">
+                                                            <a href="javascript:void(0)" class="btn btn-sm btn-primary btn-outline" id="customer_edit_btn" ><i class="mdi mdi-account-edit"></i> Edit Customer</a>
+                                                            <a href="javascript:void(0)" class="btn btn-sm btn-warning btn-outline" data-toggle="modal" data-target="#customer_selection_form"><i class="mdi mdi-account-plus"></i> Change Customer</a>
+                                                        </div>
+                                                    </div>
+                                                </div><div class="clearfix"></div>
+                                                <?php if($level != 1){?>
+                                                    <script>
+                                                        $(document).ready(function (){
+                                                         $('#customer_gst').change(function (){
+                                                          var cdate =  $('#cdate').val();
+                                                          var gstdate =  $('#gstdate').val();
+                                                          var oldgst =  $('#oldgst').val();
+                                                          if(cdate > gstdate){
+                                                              alert("Not Allowed to Edit GSTIN after " +gstdate);
+                                                              $('#customer_gst').val(oldgst);
+                                                              return false;
+                                                          }
+                                                      }); 
+                                                     });
+                                                 </script>
+                                             <?php } ?>
+                                         </div>
+                                         <div class="col-md-5"><br>
+                                            <div class="">
+                                                <span class="text-muted col-md-3">Sale Id:</span>
+                                                <div class="col-md-9"><?php echo $sale->id_sale ?></div>
                                             </div><div class="clearfix"></div>
-                                            <div class="col-md-12 p-2">
-                                                <div class="pull-right">
-                                                    <a href="javascript:void(0)" class="btn btn-sm btn-primary btn-outline" id="customer_edit_btn" ><i class="mdi mdi-account-edit"></i> Edit Customer</a>
-                                                    <a href="javascript:void(0)" class="btn btn-sm btn-warning btn-outline" data-toggle="modal" data-target="#customer_selection_form"><i class="mdi mdi-account-plus"></i> Change Customer</a>
-                                                </div>
-                                            </div>
+                                            <div class="">
+                                                <span class="text-muted col-md-3">Invoice Date</span>
+                                                <div class="col-md-9"><?php echo date('d/m/Y', strtotime($sale->date)); ?></div>
+                                            </div><div class="clearfix"></div>
+                                            <div class="">
+                                                <div class="text-muted col-md-3">Invoice No</div>
+                                                <div class="col-md-9"><?php echo $sale->inv_no ?></div>
+                                            </div><div class="clearfix"></div>
+                                            <div class="">
+                                                <span class="text-muted col-md-3">Entry time</span>
+                                                <div class="col-md-9"><?php echo date('d/m/Y h:i a', strtotime($sale->entry_time)) ?></div>
+                                            </div><div class="clearfix"></div>
+                                            <div class="">
+                                                <span class="text-muted col-md-3">Remark</span>
+                                                <div class="col-md-9"><?php echo $sale->remark ?></div>
+                                            </div><div class="clearfix"></div>
                                         </div><div class="clearfix"></div>
-                                        <script>
-                                            $(document).ready(function (){
-                                               $('#customer_gst').change(function (){
-                                                  var cdate =  $('#cdate').val();
-                                                  var gstdate =  $('#gstdate').val();
-                                                  var oldgst =  $('#oldgst').val();
-//                                                  if(cdate > gstdate){
-//                                                      alert("Not Allowed to Edit GSTIN after " +gstdate);
-//                                                      $('#customer_gst').val(oldgst);
-//                                                      return false;
-//                                                  }
-                                               }); 
-                                            });
-                                        </script>
-                                    </div>
-                                    <div class="col-md-5"><br>
-                                        <div class="">
-                                            <span class="text-muted col-md-3">Sale Id:</span>
-                                            <div class="col-md-9"><?php echo $sale->id_sale ?></div>
-                                        </div><div class="clearfix"></div>
-                                        <div class="">
-                                            <span class="text-muted col-md-3">Invoice Date</span>
-                                            <div class="col-md-9"><?php echo date('d/m/Y', strtotime($sale->date)); ?></div>
-                                        </div><div class="clearfix"></div>
-                                        <div class="">
-                                            <div class="text-muted col-md-3">Invoice No</div>
-                                            <div class="col-md-9"><?php echo $sale->inv_no ?></div>
-                                        </div><div class="clearfix"></div>
-                                        <div class="">
-                                            <span class="text-muted col-md-3">Entry time</span>
-                                            <div class="col-md-9"><?php echo date('d/m/Y h:i a', strtotime($sale->entry_time)) ?></div>
-                                        </div><div class="clearfix"></div>
-                                        <div class="">
-                                            <span class="text-muted col-md-3">Remark</span>
-                                            <div class="col-md-9"><?php echo $sale->remark ?></div>
-                                        </div><div class="clearfix"></div>
-                                    </div><div class="clearfix"></div>
-                                    <div class="modal fade" id="customer_selection_form" tabindex="-1" role="dialog">
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <a href="" class="popup-close" data-dismiss="modal" aria-label="Close">x</a>
-                                                    <h4 class="modal-title text-center"><span class="mdi mdi-account-switch" style="font-size: 28px"></span> Select Customer
-                                                        <a href="<?php echo base_url('Sale/customer_list') ?>" target="_blank" class="btn btn-warning btn-floating waves-effect pull-right" style="line-height: 10px"><i class="mdi mdi-table fa-lg"></i></a>
-                                                    </h4>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div class="col-md-2">Mobile</div>
-                                                    <div class="col-md-7">
-                                                        <input list="text" maxlength="10" class="form-control input-sm" name="cust_mobile" id="cust_mobile" required="" placeholder="Customer Mobile No" pattern="[6789][0-9]{9}" />
+                                        <div class="modal fade" id="customer_selection_form" tabindex="-1" role="dialog">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <a href="" class="popup-close" data-dismiss="modal" aria-label="Close">x</a>
+                                                        <h4 class="modal-title text-center"><span class="mdi mdi-account-switch" style="font-size: 28px"></span> Select Customer
+                                                            <a href="<?php echo base_url('Sale/customer_list') ?>" target="_blank" class="btn btn-warning btn-floating waves-effect pull-right" style="line-height: 10px"><i class="mdi mdi-table fa-lg"></i></a>
+                                                        </h4>
                                                     </div>
-                                                    <div class="col-md-3">
-                                                        <a class="btn btn-sm btn-danger btn-outline" id="verify_get_customer"><i class="mdi mdi-account-plus"></i> Get Customer</a>
-                                                    </div>
-                                                    <div class="clearfix"></div><br>
-                                                    <center id="empty_block"><h3 style="font-family: Kurale"><i class="mdi mdi-chevron-double-up"></i><br>Enter Mobile Number & click on Get Customer Button</h3><br></center>
-                                                    <div id="customer_block" style="display: none">
-                                                        <center id="empty_block"><h4 style="font-family: Kurale"><i class="mdi mdi-checkbox-marked-circle-outline"></i> Selected Customer Details</h4></center>
-                                                        <ul class="list-group">
-                                                            <li class="list-group-item">
-                                                                <div class="col-md-3">Contact</div>
-                                                                <div class="col-md-9">
-                                                                    <span id="spcustomer_contact"></span>
-                                                                </div><div class="clearfix"></div>
-                                                            </li>
-                                                            <li class="list-group-item">
-                                                                <div class="col-md-3">Customer Name</div>
-                                                                <div class="col-md-9">
-                                                                    <span id="spcust_fname"></span>
-                                                                    <span id="spcust_lname"></span>
-                                                                </div><div class="clearfix"></div>
-                                                            </li>
-                                                            <li class="list-group-item">
-                                                                 <div class="col-md-3">GST No</div>
-                                                                <div class="col-md-9">
+                                                    <div class="modal-body">
+                                                        <div class="col-md-2">Mobile</div>
+                                                        <div class="col-md-7">
+                                                            <input list="text" maxlength="10" class="form-control input-sm" name="cust_mobile" id="cust_mobile" required="" placeholder="Customer Mobile No" pattern="[6789][0-9]{9}" />
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <a class="btn btn-sm btn-danger btn-outline" id="verify_get_customer"><i class="mdi mdi-account-plus"></i> Get Customer</a>
+                                                        </div>
+                                                        <div class="clearfix"></div><br>
+                                                        <center id="empty_block"><h3 style="font-family: Kurale"><i class="mdi mdi-chevron-double-up"></i><br>Enter Mobile Number & click on Get Customer Button</h3><br></center>
+                                                        <div id="customer_block" style="display: none">
+                                                            <center id="empty_block"><h4 style="font-family: Kurale"><i class="mdi mdi-checkbox-marked-circle-outline"></i> Selected Customer Details</h4></center>
+                                                            <ul class="list-group">
+                                                                <li class="list-group-item">
+                                                                    <div class="col-md-3">Contact</div>
+                                                                    <div class="col-md-9">
+                                                                        <span id="spcustomer_contact"></span>
+                                                                    </div><div class="clearfix"></div>
+                                                                </li>
+                                                                <li class="list-group-item">
+                                                                    <div class="col-md-3">Customer Name</div>
+                                                                    <div class="col-md-9">
+                                                                        <span id="spcust_fname"></span>
+                                                                        <span id="spcust_lname"></span>
+                                                                    </div><div class="clearfix"></div>
+                                                                </li>
+                                                                <li class="list-group-item">
+                                                                   <div class="col-md-3">GST No</div>
+                                                                   <div class="col-md-9">
                                                                     <div id="spgst_no"></div>
                                                                 </div><div class="clearfix"></div>
                                                             </li>
@@ -3338,601 +3344,6 @@ public function edit_sale_customer() {
                                             </div>
                                         </div>
                                     </div>
-                                    <?php // if($sale->date == date('Y-m-d')){
-            //                            echo '<center><h3><i class="mdi mdi-alert"></i> Not allowed to edit invoice after sale date...</h3>'.
-            //                                    '<img src="'.base_url().'assets/images/highAlertIcon.gif" />'
-            //                                . '</center>'; 
-            //                            }else{ ?>
-                                </div>
-                            </div>
-            <!--                        <div class="col-md-4 warning-color" style="border-left: 10px solid #fff; padding: 5px">
-                                        <a class="btn btn-block hovereffect waves-effect waves-orange" style="padding: 10px;">
-                                            Edit Sale Product
-                                        </a>
-                                    </div>
-                                    <div class="col-md-4 default-color" style="border-left: 10px solid #fff; padding: 5px">
-                                        <a class="btn btn-block hovereffect waves-effect waves-teal" style="padding: 10px;">
-                                            Edit Payment Amount, Trasaction id
-                                        </a>
-                                    </div>
-                                    <div class="col-md-4 danger-color" style="border-left: 10px solid #fff; padding: 5px">
-                                        <a class="btn btn-block hovereffect waves-effect waves-red" style="padding: 10px;">
-                                            Add New Payment Mode
-                                        </a>
-                                    </div><div class="clearfix"></div>-->
-                                    <form>
-                                    <div class="thumbnail" style="overflow: auto; padding: 2px;">
-                                        <table id="model_data" class="table table-bordered table-condensed table-full-width table-responsive table-hover" style="font-size: 13px; margin-bottom: 0">
-                                            <thead class="bg-info">
-                                                <th class="col-md-4">Product</th>
-                                                <th>IMEI/SRNO</th>
-                                                <th>HSN</th>
-                                                <th>Qty</th>
-                                                <th>MOP</th>
-                                                <th>Rate</th>
-                                                <th>Basic</th>
-                                                <th>Discount</th>
-                                                <th>Landing</th>
-                                                <th>Amount</th>
-                                                <th>Return</th>
-                                            </thead>
-                                            <tbody>
-                                                <?php foreach ($sale_product as $product) { ?>
-                                                <?php if($product->sales_return_type > 0 || $product->idsale_product_for_doa != NULL){ ?>
-                                                <tr class="product_row">
-                                                    <td><?php echo $product->product_name; if($product->idsale_product_for_doa != NULL){ echo ' [DOA Replace]'; } ?>
-                                                        <input type="hidden" id="freez_activation_code" class="freez_activation_code" value="<?php echo $product->activation_code ?>" />
-                                                    </td>
-                                                    <td><?php echo $product->imei_no; ?></td>
-                                                    <td><?php echo $product->hsn ?></td>
-                                                    <td>
-                                                        <?php echo $product->qty ?>
-                                                        <input type="hidden" id="freez_qty" class="freez_qty" value="<?php echo $product->qty ?>" />
-                                                    </td>
-                                                    <td><?php echo $product->mop ?></td>
-                                                    <td>
-                                                        <?php echo $product->price ?>
-                                                        <input type="hidden" id="freez_price" class="freez_price" value="<?php echo $product->price ?>" />
-                                                    </td>
-                                                    <td>
-                                                        <?php echo $product->basic ?>
-                                                        <input type="hidden" id="freez_basic" class="freez_basic" value="<?php echo $product->basic ?>" />
-                                                    </td>
-                                                    <td>
-                                                        <?php echo $product->discount_amt ?>
-                                                        <input type="hidden" id="freez_discount_amt" class="freez_discount_amt" value="<?php echo $product->discount_amt ?>" />
-                                                    </td>
-                                                    <td>
-                                                        <?php echo $product->landing ?>
-                                                    </td>
-                                                    <td>
-                                                        <?php echo $product->total_amount ?>
-                                                        <input type="hidden" id="freez_total_amt" class="freez_total_amt" value="<?php echo $product->total_amount ?>" />
-                                                    </td>
-                                                    <td><?php if($product->sales_return_type==2){ echo 'Replace,Upgrade Return'; }elseif($product->sales_return_type==3){ echo 'DOA Return'; }else{ echo '-'; } ?></td>
-                                                </tr>
-                                                <?php }else{ $price_diff = $product->mop - $product->landing; ?>
-                                                <tr class="product_row">
-                                                    <td>
-                                                        <?php echo $product->product_name; ?>
-                                                        <?php if($product->ssale_type != 0){ ?>
-            <!--                                            <select class="form-control input-sm">
-                                                            <option value="1929">Insurance OneAssist</option>
-                                                            <option value="1930">Insurance SHIELD Shield</option>
-                                                        </select>-->
-                                                        <input type="text" id="activation_code" class="activation_code form-control input-sm" name="activation_code[]" value="<?php echo $product->activation_code ?>" />
-                                                        <input type="hidden" class="old_activation_code" id="old_activation_code" name="old_activation_code[]" value="<?php echo $product->activation_code ?>" />
-                                                        <?php }else{ ?>
-                                                        <input type="hidden" id="activation_code" class="activation_code form-control input-sm" name="activation_code[]" value="<?php echo $product->activation_code ?>" />
-                                                        <input type="hidden" class="old_activation_code" id="old_activation_code" name="old_activation_code[]" value="<?php echo $product->activation_code ?>" />
-                                                        <?php } ?>
-                                                    </td>
-                                                    <td><?php // echo $product->imei_no ?>
-                                                        <?php if($product->ssale_type != 0){ ?>
-                                                        <input type="text" id="insurance_imei_no" class="insurance_imei_no form-control input-sm" name="insurance_imei_no[]" value="<?php echo $product->insurance_imei_no ?>" style="min-width: 150px" />
-                                                        <input type="hidden" class="old_insurance_imei_no" id="old_insurance_imei_no" name="old_insurance_imei_no[]" value="<?php echo $product->insurance_imei_no ?>" />
-                                                        <input type="hidden" class="old_imei_no" id="old_imei_no" name="old_imei_no[]" value="<?php echo $product->insurance_imei_no ?>" />
-                                                        <input type="hidden" class="new_imei_no" id="new_imei_no" name="new_imei_no[]" value="<?php echo $product->insurance_imei_no ?>" />
-                                                        <?php }else{ ?>
-                                                            <input type="hidden" id="insurance_imei_no" class="insurance_imei_no form-control input-sm" name="insurance_imei_no[]" value="<?php echo $product->insurance_imei_no ?>" style="min-width: 150px" />
-                                                            <input type="hidden" class="old_insurance_imei_no" id="old_insurance_imei_no" name="old_insurance_imei_no[]" value="<?php echo $product->insurance_imei_no ?>" />
-                                                            <input type="hidden" class="old_imei_no" id="old_imei_no" name="old_imei_no[]" value="<?php echo $product->imei_no ?>" />
-                                                            <input type="text" class="new_imei_no form-control input-sm" id="new_imei_no" name="new_imei_no[]" value="<?php echo $product->imei_no ?>" style="min-width: 150px" />
-                                                            <?php // echo $product->imei_no;
-                                                        } ?>
-                                                    </td>
-                                                    <td><?php echo $product->hsn ?></td>
-                                                    <td>
-                                                        <?php if($product->idskutype != 4){ echo $product->qty; ?>
-                                                            <input type="hidden" class="form-control input-sm qty" id="qty" name="qty[]" placeholder="Enter Qty" value="<?php echo $product->qty ?>" />
-                                                            <input type="hidden" class="old_qty" id="old_qty" name="old_qty[]" value="<?php echo $product->qty ?>" />
-                                                        <?php }else{ ?>
-                                                            <input type="number" class="form-control input-sm qty" id="qty" name="qty[]" placeholder="Enter Qty" value="<?php echo $product->qty ?>" style="min-width: 120px" />
-                                                            <input type="hidden" class="old_qty" id="old_qty" name="old_qty[]" value="<?php echo $product->qty ?>" />
-                                                        <?php } ?>
-                                                    </td>
-                                                    <td><?php echo $product->mop ?></td>
-                                                    <td><?php if($product->ssale_type != 0){ ?>
-                                                        <input type="number" class="form-control input-sm price" id="price" name="price[]" placeholder="Enter Amount" value="<?php echo $product->price ?>" style="min-width: 120px" readonly="" />
-                                                        <?php }else{ ?>
-                                                        <input type="number" class="form-control input-sm price" id="price" name="price[]" placeholder="Enter Amount" value="<?php echo $product->price ?>" style="min-width: 120px" />
-                                                        <?php } ?>
-                                                        <input type="hidden" class="old_price" id="old_price" name="old_price[]" value="<?php echo $product->price ?>" />
-                                                        <input type="hidden" class="landing" id="landing" name="landing[]" value="<?php echo $product->landing ?>" />
-                                                    </td>
-                                                    <td>
-                                                        <div class="spbasic"><?php echo $product->basic ?></div>
-                                                        <input type="hidden" class="old_basic" id="old_basic" name="old_basic[]" value="<?php echo $product->basic ?>" />
-                                                        <input type="hidden" class="basic" id="basic" name="basic[]" placeholder="Enter Amount" value="<?php echo $product->basic ?>" />
-                                                        <input type="hidden" class="ssale_type" id="ssale_type" name="ssale_type[]"  value="<?php echo $product->ssale_type ?>" />
-                                                    </td>
-                                                    <td>
-                                                        <?php if($product->ssale_type != 0){ ?>
-                                                        <input type="number" class="form-control input-sm discount_amt" id="discount_amt" name="discount_amt[]" placeholder="Enter Amount" value="<?php echo $product->discount_amt ?>" style="min-width: 120px" readonly="" />
-                                                        <?php }else{ ?>
-                                                        <input type="number" class="form-control input-sm discount_amt" id="discount_amt" name="discount_amt[]" placeholder="Enter Amount" value="<?php echo $product->discount_amt ?>" style="min-width: 120px" <?php if(!$product->is_mop){ ?>readonly=""<?php } ?> />
-                                                        <?php } ?>
-                                                        <input type="hidden" class="old_discount_amt" id="old_discount_amt" name="old_discount_amt[]" value="<?php echo $product->discount_amt ?>" />
-                                                    </td>
-                                                    <td>
-                                                        <?php echo $product->landing ?>
-                                                    </td>
-                                                    <td>
-                                                        <div class="sptotal_amt"><?php echo $product->total_amount ?></div>
-                                                        <input type="hidden" id="total_amt" class="total_amt" name="total_amount[]" value="<?php echo $product->total_amount ?>" />
-                                                        <input type="hidden" id="old_total_amt" class="old_total_amt" name="old_total_amount[]" value="<?php echo $product->total_amount ?>" />
-                                                        <input type="hidden" id="price_diff" class="price_diff" name="price_diff[]" value="<?php echo $price_diff ?>" />
-                                                        <input type="hidden" id="edited_idsaleproduct" class="edited_idsaleproduct" name="edited_idsaleproduct[]" value="0" />
-                                                        <input type="hidden" id="idsaleproduct" class="idsaleproduct" name="idsaleproduct[]" value="<?php echo $product->id_saleproduct ?>" />
-                                                        <input type="hidden" id="product_name" class="product_name" name="product_name[]" value="<?php echo $product->product_name ?>" />
-                                                        <input type="hidden" id="idvariant" class="idvariant" name="idvariant[]" value="<?php echo $product->idvariant ?>" />
-                                                        <input type="hidden" id="imei_no" class="imei_no" name="imei_no[]" value="<?php echo $product->imei_no ?>" />
-                                                        <input type="hidden" id="idgodown" class="idgodown" name="idgodown[]" value="<?php echo $product->idgodown ?>" />
-                                                    </td>
-                                                    <td><?php if($product->sales_return_type==2){ echo 'Replace,Upgrade Return'; }elseif($product->sales_return_type==3){ echo 'DOA Return ['.$product->doa_imei_no.']'; }else{ echo '-'; } ?></td>
-                                                </tr>
-                                                <?php }} ?>
-                                                <tr class="bg-info">
-                                                    <td colspan="5"></td>
-                                                    <td>Total</td>
-                                                    <td>
-                                                        <?php // echo $sale->basic_total ?>
-                                                        <div id="spbasic_total"><?php echo $sale->basic_total ?></div>
-                                                        <input type="hidden" id="basic_total" class="basic_total" name="basic_total" value="<?php echo $sale->basic_total ?>" />
-                                                        <input type="hidden" id="old_basic_total" class="old_basic_total" name="old_basic_total" value="<?php echo $sale->basic_total ?>" />
-                                                    </td>
-                                                    <td>
-                                                        <div id="spdiscount_total"><?php echo $sale->discount_total ?></div>
-                                                        <input type="hidden" id="discount_total" class="discount_total" name="discount_total" value="<?php echo $sale->discount_total ?>" />
-                                                        <input type="hidden" id="old_discount_total" class="old_discount_total" name="old_discount_total" value="<?php echo $sale->discount_total ?>" />
-                                                    </td>
-                                                    <td></td>
-                                                    <td>
-                                                        <div id="spfinal_total"><?php echo $sale->final_total ?></div>
-                                                        <input type="hidden" id="final_total" class="final_total" name="final_total" value="<?php echo $sale->final_total ?>" />
-                                                        <input type="hidden" id="old_final_total" class="old_final_total" name="old_final_total" value="<?php echo $sale->final_total ?>" />
-                                                    </td>
-                                                    <td></td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <span style="font-family: Kurale; font-size: 18px; color: #005bc0"><i class="fa fa-rupee"></i> Payment Details</span>
-                                    <div class="thumbnail" style="overflow: auto; padding: 2px;">
-                                        <table class="table table-condensed table-bordered table-hover" style="font-size: 14px; margin-bottom: 0">
-                                            <thead>
-                                                <th>Action</th>
-                                                <th>Payment Mode</th>
-                                                <th>Amount</th>
-                                                <th>Attributes</th>
-                                                <th>Value</th>
-                                                <th>Attributes</th>
-                                                <th>Value</th>
-                                                <th>Attributes</th>
-                                                <th>Value</th>
-                                            </thead>
-                                            <tbody>
-                                                <?php // die('<pre>'.print_r($sale_payment,1).'</pre>');
-                                                 $sum = 0; $cashr=0; foreach ($sale_payment as $payment){
-                                                    if((($payment->credit_type == 1 && $payment->payment_receive == 1) || ($sale->date != date('Y-m-d') && $payment->idpayment_mode == 1)) && (($this->session->userdata('id_users') != 817) )) { // || ($this->session->userdata('id_users') != 817))
-                                                    
-                                                    //if(0) { ?>
-                                                        <tr class="modes_block">
-                                                            <td>
-                                                                <a class="btn btn-sm btn-danger btn-outline" id="oldremove_payment" style="pointer-events: none"><i class="fa fa-trash-o"></i> Remove</a>
-                                                                <input type="hidden" class="idedited_sale_payments" name="idedited_sale_payments[]" value="0" disabled="true" />
-                                                                <input type="hidden" class="idremoved_sale_payments" name="idremoved_sale_payments[]" value="0" disabled="true" />
-                                                                <input type="hidden" class="idsale_payment" name="idsale_payment[]" value="<?php echo $payment->id_salepayment ?>" disabled="true" />
-                                                                <input type="hidden" class="payment_mode" value="<?php echo $payment->payment_mode.' '.$payment->payment_head ?>" disabled="true" />
-                                                                <input type="hidden" class="payment_amount" value="<?php echo $payment->amount ?>" disabled="true" />
-                                                                <input type="hidden" name="idpayment_mode[]" value="<?php echo $payment->idpayment_mode ?>" disabled="true" />
-                                                                <input type="hidden" name="idpayment_head[]" value="<?php echo $payment->idpayment_head ?>" disabled="true" />
-                                                            </td>
-                                                            <td><?php echo $payment->payment_mode.' <small>'.$payment->payment_head.'</small>' ?></td>
-                                                            <td>
-                                                                <input type="number" class="form-control input-sm edit_amount" id="edit_amount<?php echo $payment->idpayment_head ?>" name="edit_amount[]" placeholder="Enter Amount" value="<?php echo $payment->amount ?>" style="min-width: 120px" disabled="true" />
-                                                                <input type="hidden" class="form-control input-sm old_edit_amount" id="old_edit_amount<?php echo $payment->idpayment_head ?>" name="old_edit_amount[]" value="<?php echo $payment->amount ?>" disabled="true" />
-                                                            </td>
-                                                            <?php if($payment->bounce_charges != 0){ ?>
-                                                            <td><span class="text-muted">Bounce Charges</span></td>
-                                                            <td><?php echo $payment->bounce_charges;?></td>
-                                                            <?php } ?>
-                                                            <?php if($payment->tranxid_type != NULL){ ?>
-                                                            <td><span class="text-muted"><?php echo $payment->tranxid_type ?></span></td>
-                                                            <td>
-                                                                <input type="text" class="form-control input-sm transaction_id" name="transaction_id[<?php echo $payment->id_salepayment ?>]" placeholder="Enter Transaction Id" value="<?php echo $payment->transaction_id ?>" style="min-width: 150px" disabled="true"/>
-                                                                <input type="hidden" class="form-control input-sm old_transaction_id" name="old_transaction_id[<?php echo $payment->id_salepayment ?>]" value="<?php echo $payment->transaction_id ?>" disabled="true"/>
-                                                            </td>
-                                                            <?php } foreach ($payment_head_has_attributes as $has_attributes){ 
-                                                                if($has_attributes->idpayment_head == $payment->idpayment_head){ ?>
-                                                                <td><span class="text-muted"><?php if($payment->idpayment_mode == 17){ echo 'Bank UTR'; }else{ echo $has_attributes->attribute_name; } ?></span></td>
-                                                                <td><?php $clm = $has_attributes->column_name; ?>
-                                                                    <input type="text" class="form-control input-sm attr_value" name="<?php echo $has_attributes->column_name ?>[<?php echo $payment->id_salepayment ?>]" placeholder="Enter <?php echo $has_attributes->attribute_name ?>" value="<?php echo $payment->$clm ?>" required="" style="min-width: 120px" disabled="true" />
-                                                                    <input type="hidden" name="old_<?php echo $has_attributes->column_name ?>[<?php echo $payment->id_salepayment ?>]" value="<?php echo $payment->$clm ?>" disabled="true"/>
-                                                                </td>
-                                                            <?php }} ?>
-                                                        </tr>
-                                                    <?php }else{ ?>
-                                                        <tr class="modes_block">
-                                                            <td>
-                                                                <a class="btn btn-sm btn-danger btn-outline" id="oldremove_payment"><i class="fa fa-trash-o"></i> Remove</a>
-                                                                <input type="hidden" class="idedited_sale_payments" name="idedited_sale_payments[]" value="0" />
-                                                                <input type="hidden" class="idremoved_sale_payments" name="idremoved_sale_payments[]" value="0" />
-                                                                <input type="hidden" class="idsale_payment" name="idsale_payment[]" value="<?php echo $payment->id_salepayment ?>" />
-                                                                <input type="hidden" class="payment_mode" value="<?php echo $payment->payment_mode.' '.$payment->payment_head ?>" />
-                                                                <input type="hidden" class="payment_amount" value="<?php echo $payment->amount ?>" />
-                                                                <input type="hidden" name="idpayment_mode[]" value="<?php echo $payment->idpayment_mode ?>" />
-                                                                <input type="hidden" name="idpayment_head[]" value="<?php echo $payment->idpayment_head ?>" />
-                                                            </td>
-                                                            <td><?php echo $payment->payment_mode.' <small>'.$payment->payment_head.'</small>' ?></td>
-                                                            <td>
-                                                                <input type="number" class="form-control input-sm edit_amount" id="edit_amount<?php echo $payment->idpayment_head ?>" name="edit_amount[]" placeholder="Enter Amount" value="<?php echo $payment->amount ?>" style="min-width: 120px" />
-                                                                <input type="hidden" class="form-control input-sm old_edit_amount" id="old_edit_amount<?php echo $payment->idpayment_head ?>" name="old_edit_amount[]" value="<?php echo $payment->amount ?>" />
-                                                            </td>
-                                                            <?php if($payment->bounce_charges != 0){ ?>
-                                                            <td><span class="text-muted">Bounce Charges</span></td>
-                                                            <td><?php echo $payment->bounce_charges;?></td>
-                                                            <?php } ?>
-                                                            <?php if($payment->tranxid_type != NULL){ ?>
-                                                            <td><span class="text-muted"><?php echo $payment->tranxid_type ?></span></td>
-                                                            <td>
-                                                                <input type="text" class="form-control input-sm transaction_id" name="transaction_id[<?php echo $payment->id_salepayment ?>]" placeholder="Enter Transaction Id" value="<?php echo $payment->transaction_id ?>" style="min-width: 150px"/>
-                                                                <input type="hidden" class="form-control input-sm old_transaction_id" name="old_transaction_id[<?php echo $payment->id_salepayment ?>]" value="<?php echo $payment->transaction_id ?>"/>
-                                                            </td>
-                                                            <?php } foreach ($payment_head_has_attributes as $has_attributes){ 
-                                                                if($has_attributes->idpayment_head == $payment->idpayment_head){ ?>
-                                                                <td><span class="text-muted"><?php if($payment->idpayment_mode == 17){ echo 'Bank UTR'; }else{ echo $has_attributes->attribute_name; } ?></span></td>
-                                                                <td><?php $clm = $has_attributes->column_name; ?>
-                                                                    <input type="text" class="form-control input-sm attr_value" name="<?php echo $has_attributes->column_name ?>[<?php echo $payment->id_salepayment ?>]" placeholder="Enter <?php echo $has_attributes->attribute_name ?>" value="<?php echo $payment->$clm ?>" required="" style="min-width: 120px"/>
-                                                                    <input type="hidden" name="old_<?php echo $has_attributes->column_name ?>[<?php echo $payment->id_salepayment ?>]" value="<?php echo $payment->$clm ?>" />
-                                                                </td>
-                                                            <?php }} ?>
-                                                        </tr>
-                                                    <?php } ?>
-                                                <?php $sum += $payment->amount; if($payment->idpayment_mode == 1){ $cashr = 1; }} ?>
-                                                <tr style="font-weight: bold">
-                                                    <td></td>
-                                                    <td>Total</td>
-                                                    <td><div id="enfinal_total"><?php echo $sum ?></div></td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div><br>
-                                    <div style="font-size: 13px">
-                                        <div class="col-md-3" >
-                                            <span style="font-family: Kurale; font-size: 18px; color: #005bc0"><i class="mdi mdi-plus-circle-outline"></i> Add Payment Mode</span>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <select name="select_payment_type[]" id="select_payment_type" class="chosen-select" style="width: 100%">
-                                                <option value="">Select Payment Mode</option>
-                                                <?php foreach ($payment_mode as $mode){ 
-            //                                            if($cashr != $mode->id_paymentmode){ ?>
-                                                <option value="<?php echo $mode->id_paymentmode; ?>" paymenthead="<?php echo $mode->idpaymenthead; ?>" headname="<?php echo $mode->payment_head ?>" modename="<?php echo $mode->payment_mode ?>" credit_type="<?php echo $mode->credit_type ?>"><?php echo $mode->payment_mode.' '.$mode->payment_head; ?></option>
-                                                <?php // }
-                                                } ?>
-                                            </select>
-                                        </div><div class="clearfix"></div><br>
-                                        <div class="payment_block"></div>
-                                        <div class="clearfix"></div><hr>
-                                    </div>
-                                    <span style="font-family: Kurale; font-size: 18px; color: #005bc0"><i class="fa fa-rupee"></i> Payment Reconciliation Details</span>
-                                    <div class="thumbnail" style="overflow: auto;padding: 2px">
-                                        <table class="table table-bordered table-condensed table-hover" style="font-size: 14px; margin-bottom: 0">
-                                            <thead>
-                                                <th>Mode</th>
-                                                <th>Amount</th>
-                                                <th>Txn No</th>
-                                                <th>Reconciliation</th>
-                                                <th>Pending</th>
-                                                <th>Bank</th>
-                                                <th>UTR</th>
-                                                <th>Received Date</th>
-                                            </thead>
-                                            <tbody>
-                                                <?php $total_remain=0; $total_received=0; $total_amt = 0;
-                                                    foreach ($sale_reconciliation as $recon){ $remain=0;
-                                                    $remain = $recon->amount - $recon->received_amount;
-                                                    $total_remain += $remain; 
-                                                    $total_amt += $recon->amount;
-                                                    $total_received += $recon->received_amount; ?>
-                                                <tr <?php if(($recon->payment_receive) == 1){?> class="bg-danger" <?php } ?>>
-                                                    <td><?php echo $recon->payment_mode ?></td>
-                                                    <td><?php echo $recon->amount ?></td>
-                                                    <td><?php echo $recon->transaction_id ?></td>
-                                                    <td><?php echo $recon->received_amount ?></td>
-                                                    <td><?php echo $remain ?></td>
-                                                    <td><?php echo $recon->bank_name ?></td>
-                                                    <td><?php echo $recon->utr_no ?></td>
-                                                    <td><?php if($recon->received_amount > 0){ echo date('d/m/Y H:i:s', strtotime($recon->received_entry_time)); } ?></td>
-                                                </tr>
-                                                <?php } ?>
-                                            </tbody>
-                                            <thead>
-                                                <th>Total</th>
-                                                <th><?php echo $total_amt ?></th>
-                                                <th></th>
-                                                <th><?php echo $total_received ?></th>
-                                                <th><?php echo $total_remain ?></th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                            </thead>
-                                        </table>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <div class="thumbnail" style="margin-bottom: 5px;padding: 0px;font-size: 14px;font-family: Kurale">
-                                            <table class="table table-bordered" style="margin-bottom: 0">
-                                                <tbody>
-                                                    <tr>
-                                                        <td class="col-md-2">Invoice Amount</td>
-                                                        <td class="col-md-2"><span id="invoice_amount"><?php echo $sale->final_total ?></span> <i class="mdi mdi-currency-inr fa-lg"></i></td>
-                                                        <td class="col-md-2">Entered Total</td>
-                                                        <td class="col-md-2"><span id="entered_amout"><?php echo $sale->final_total ?></span> <i class="mdi mdi-currency-inr fa-lg"></i></td>
-                                                        <td class="col-md-2">Remaining Amount</td>
-                                                        <td class="col-md-2"><span id="remaining_amount">0</span> <i class="mdi mdi-currency-inr fa-lg"></i></td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <input type="hidden" name="inv_no" value="<?php echo $sale->inv_no ?>" />
-                                        <input type="hidden" name="invoice_entry_time" value="<?php echo $sale->entry_time ?>" />
-                                        <input type="hidden" name="invoice_date" value="<?php echo $sale->date ?>" />
-                                        <input type="hidden" name="idsale" value="<?php echo $sale->id_sale ?>" />
-                                        <input type="hidden" name="idcustomer" value="<?php echo $sale->idcustomer ?>">
-                                        <input type="hidden" name="idbranch" id="idbranch" value="<?php echo $sale->id_branch ?>">
-                                        <button type="button" id="reverse_value" class="btn btn-warning waves-effect waves-light">Clear</button>
-                                        <button type="submit" formaction="<?php echo base_url('Sale/edit_invoice') ?>" formmethod="POST" id="correction_submit" class="btn btn-primary waves-effect waves-light">Submit</button>
-                                    </div><div class="clearfix"></div>
-                                </form>
-                                <?php // } ?>
-                        </div>
-                    <?php }
-//                }else{
-//                    echo '<center><h3><i class="mdi mdi-alert"></i> You have allowed for edit before '.$mnt.' </h3>'.
-//                            '<img src="'.base_url().'assets/images/highAlertIcon.gif" />'
-//                        . '</center>'; 
-//                }
-
-            }
-            else{
-                echo '<center><h3><i class="mdi mdi-alert"></i> You Enter Wrong Invoice Number</h3>'.
-                    '<img src="'.base_url().'assets/images/highAlertIcon.gif" />'
-                . '</center>'; 
-            }
-        }
-    }*/
-    
-    
-    public function ajax_search_invoice_for_edit_config() {
-        $invno = $this->input->post('invno');
-        $level = $this->input->post('level');
-        if($level != 1 && $level != 3){
-            echo '<center><h3><i class="mdi mdi-alert"></i> You do not have authority to edit invoice. </h3>'.
-            '<img src="'.base_url().'assets/images/highAlertIcon.gif" />'
-            . '</center>'; 
-        }else{
-            $sale_data = $this->Sale_model->get_config_sale_byinvno_for_edit($invno);
-            if(count($sale_data) > 0){
-                $mnt = date('Y-m-03', strtotime($sale_data[0]->date. "+1 month"));
-                $gstdate = date('Y-m-d', strtotime($sale_data[0]->date. "+2 days"));
-                $cdate = date('Y-m-d');
-//                if(date('Y-m-d') < $mnt){  
-                foreach ($sale_data as $sale){
-                    $idsale = $sale->id_sale;
-                    $sale_product = $this->Sale_model->get_sale_product_byid($idsale);
-                    $sale_payment = $this->Sale_model->get_sale_payment_byid_invoice_edit($idsale);
-                    $sale_reconciliation = $this->Sale_model->get_sale_reconciliation_byid($idsale);
-                    $payment_head_has_attributes = $this->General_model->get_payment_head_has_attributes();
-                    $payment_mode = $this->General_model->get_active_payment_mode_head();
-                    $state_data = $this->General_model->get_state_data(); ?>
-                    <div style="font-family: K2D; font-size: 15px;">
-                        <div class="">
-                            <div class="thumbnail">
-                                <div class="col-md-7">
-                                    To,<br>
-                                    <div class="p-1">
-                                        <span class="col-md-2 text-muted">Contact</span>
-                                        <div class="col-md-10"><div id="spcust_contact"><?php echo $sale->customer_contact ?></div></div>
-                                    </div><div class="clearfix"></div>
-                                    <div class="p-1">
-                                        <span class="col-md-2 text-muted">Customer</span>
-                                        <div class="col-md-10">
-                                            <div class="input-group">
-                                                <div class="input-group-btn">
-                                                    <input type="text" class="form-control input-sm" id="customer_fname" placeholder="Customer First Name" value="<?php echo $sale->customer_fname ?>">
-                                                    <input type="hidden" id="idcustomer" value="<?php echo $sale->idcustomer ?>">
-                                                    <input type="hidden" id="idsale" value="<?php echo $sale->id_sale ?>">
-                                                </div>
-                                                <div class="input-group-btn">
-                                                    <input type="text" class="form-control input-sm" id="customer_lname" placeholder="Customer First Name" value="<?php echo $sale->customer_lname ?>">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div><div class="clearfix"></div>
-                                    <div class="p-1">
-                                        <span class="col-md-2 text-muted">Address</span>
-                                        <div class="col-md-10">
-                                            <input type="text" class="form-control input-sm" id="customer_address" value="<?php echo $sale->customer_address ?>" />
-                                        </div>
-                                    </div><div class="clearfix"></div>
-                                    <div class="p-1">
-                                        <span class="col-md-2 text-muted">Pincode</span>
-                                        <div class="col-md-10">
-                                            <input type="text" class="form-control input-sm" id="pincode" value="<?php echo $sale->customer_pincode ?>" />
-                                        </div>
-                                    </div><div class="clearfix"></div>
-                                    <div class="p-1">
-                                        <span class="col-md-2 text-muted">State</span>
-                                        <div class="col-md-10">
-                                            <input type="hidden" id="customer_idstate" value="<?php echo $sale->customer_idstate ?>">
-                                            <input type="hidden" id="config_edit" value="1">
-                                            <input type="hidden" id="branch_idstate" value="<?php echo $sale->branch_idstate ?>">
-                                            <input type="hidden" id="gst_type" value="<?php echo $sale->gst_type ?>">
-                                            <select name="idstate" id="idstate" style="width: 100%" class="form-control input-sm">
-                                                <option value="">Select State</option>
-                                                <option value="<?php echo $sale->customer_idstate; ?>" selected="" ><?php echo $sale->customer_state; ?></option>
-                                                <?php foreach ($state_data as $state) { ?>
-                                                    <option value="<?php echo $state->id_state; ?>" ><?php echo $state->state_name; ?></option>
-                                                <?php } ?>
-                                            </select>
-                                        </div>
-                                    </div><div class="clearfix"></div>
-                                    <div class="p-1">
-                                        <span class="col-md-2 text-muted">GSTIN</span>
-                                        <div class="col-md-10">
-                                            <input type="text" class="form-control input-sm" id="customer_gst" value="<?php echo $sale->customer_gst ?>" placeholder="Enter GSTIN" />
-                                            <input type="hidden" class="form-control input-sm" id="oldgst" value="<?php echo $sale->customer_gst ?>"  />
-                                            <input type="hidden" class="form-control input-sm" id="gstdate" value="<?php echo $gstdate ?>"  />
-                                            <input type="hidden" class="form-control input-sm" id="cdate" value="<?php echo $cdate ?>"  />
-                                        </div><div class="clearfix"></div>
-                                        <div class="col-md-12 p-2">
-                                            <div class="pull-right">
-                                                <a href="javascript:void(0)" class="btn btn-sm btn-primary btn-outline" id="customer_edit_btn" ><i class="mdi mdi-account-edit"></i> Edit Customer</a>
-                                                <a href="javascript:void(0)" class="btn btn-sm btn-warning btn-outline" data-toggle="modal" data-target="#customer_selection_form"><i class="mdi mdi-account-plus"></i> Change Customer</a>
-                                            </div>
-                                        </div>
-                                    </div><div class="clearfix"></div>
-                                    <?php if($level != 1){?>
-                                        <script>
-                                            $(document).ready(function (){
-                                             $('#customer_gst').change(function (){
-                                              var cdate =  $('#cdate').val();
-                                              var gstdate =  $('#gstdate').val();
-                                              var oldgst =  $('#oldgst').val();
-                                              if(cdate > gstdate){
-                                                  alert("Not Allowed to Edit GSTIN after " +gstdate);
-                                                  $('#customer_gst').val(oldgst);
-                                                  return false;
-                                              }
-                                          }); 
-                                         });
-                                     </script>
-                                 <?php } ?>
-                             </div>
-                             <div class="col-md-5"><br>
-                                <div class="">
-                                    <span class="text-muted col-md-3">Sale Id:</span>
-                                    <div class="col-md-9"><?php echo $sale->id_sale ?></div>
-                                </div><div class="clearfix"></div>
-                                <div class="">
-                                    <span class="text-muted col-md-3">Invoice Date</span>
-                                    <div class="col-md-9"><?php echo date('d/m/Y', strtotime($sale->date)); ?></div>
-                                </div><div class="clearfix"></div>
-                                <div class="">
-                                    <div class="text-muted col-md-3">Invoice No</div>
-                                    <div class="col-md-9"><?php echo $sale->inv_no ?></div>
-                                </div><div class="clearfix"></div>
-                                <div class="">
-                                    <span class="text-muted col-md-3">Entry time</span>
-                                    <div class="col-md-9"><?php echo date('d/m/Y h:i a', strtotime($sale->entry_time)) ?></div>
-                                </div><div class="clearfix"></div>
-                                <div class="">
-                                    <span class="text-muted col-md-3">Remark</span>
-                                    <div class="col-md-9"><?php echo $sale->remark ?></div>
-                                </div><div class="clearfix"></div>
-                            </div><div class="clearfix"></div>
-                            <div class="modal fade" id="customer_selection_form" tabindex="-1" role="dialog">
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <a href="" class="popup-close" data-dismiss="modal" aria-label="Close">x</a>
-                                            <h4 class="modal-title text-center"><span class="mdi mdi-account-switch" style="font-size: 28px"></span> Select Customer
-                                                <a href="<?php echo base_url('Sale/customer_list') ?>" target="_blank" class="btn btn-warning btn-floating waves-effect pull-right" style="line-height: 10px"><i class="mdi mdi-table fa-lg"></i></a>
-                                            </h4>
-                                        </div>
-                                        <div class="modal-body">
-                                            <div class="col-md-2">Mobile</div>
-                                            <div class="col-md-7">
-                                                <input list="text" maxlength="10" class="form-control input-sm" name="cust_mobile" id="cust_mobile" required="" placeholder="Customer Mobile No" pattern="[6789][0-9]{9}" />
-                                            </div>
-                                            <div class="col-md-3">
-                                                <a class="btn btn-sm btn-danger btn-outline" id="verify_get_customer"><i class="mdi mdi-account-plus"></i> Get Customer</a>
-                                            </div>
-                                            <div class="clearfix"></div><br>
-                                            <center id="empty_block"><h3 style="font-family: Kurale"><i class="mdi mdi-chevron-double-up"></i><br>Enter Mobile Number & click on Get Customer Button</h3><br></center>
-                                            <div id="customer_block" style="display: none">
-                                                <center id="empty_block"><h4 style="font-family: Kurale"><i class="mdi mdi-checkbox-marked-circle-outline"></i> Selected Customer Details</h4></center>
-                                                <ul class="list-group">
-                                                    <li class="list-group-item">
-                                                        <div class="col-md-3">Contact</div>
-                                                        <div class="col-md-9">
-                                                            <span id="spcustomer_contact"></span>
-                                                        </div><div class="clearfix"></div>
-                                                    </li>
-                                                    <li class="list-group-item">
-                                                        <div class="col-md-3">Customer Name</div>
-                                                        <div class="col-md-9">
-                                                            <span id="spcust_fname"></span>
-                                                            <span id="spcust_lname"></span>
-                                                        </div><div class="clearfix"></div>
-                                                    </li>
-                                                    <li class="list-group-item">
-                                                       <div class="col-md-3">GST No</div>
-                                                       <div class="col-md-9">
-                                                        <div id="spgst_no"></div>
-                                                    </div><div class="clearfix"></div>
-                                                </li>
-                                                <li class="list-group-item">
-                                                    <div class="col-md-3">Pincode</div>
-                                                    <div class="col-md-9">
-                                                        <div id="spcust_pincode"></div>
-                                                    </div><div class="clearfix"></div>
-                                                </li>
-                                                <li class="list-group-item">
-                                                    <div class="col-md-3">State</div>
-                                                    <div class="col-md-9">
-                                                        <div id="spcustomer_state"></div>
-                                                    </div><div class="clearfix"></div>
-                                                </li>
-                                                <li class="list-group-item">
-                                                    <div class="col-md-3">Address</div>
-                                                    <div class="col-md-9">
-                                                        <div id="spaddress"></div>
-                                                    </div><div class="clearfix"></div>
-                                                </li>
-                                            </ul> 
-                                            <div class="col-md-12 p-2">
-                                                <div class="pull-right">
-                                                    <a href="javascript:void(0)" class="btn btn-sm btn-danger btn-outline" data-dismiss="modal" >Cancel</a>
-                                                    <a href="javascript:void(0)" class="btn btn-sm btn-primary btn-outline" id="add_selected_customer" ><i class="mdi mdi-account-edit"></i> Add Selected Customer</a>
-                                                </div>
-                                            </div><div class="clearfix"></div>
-                                        </div>
-                                        <input type="hidden" id="nidcustomer" value=""/>
-                                        <input type="hidden" id="cust_fname" value=""/>
-                                        <input type="hidden" id="customer_contact" value=""/>
-                                        <input type="hidden" id="cust_lname" value=""/>
-                                        <input type="hidden" id="gst_no" value=""/>
-                                        <input type="hidden" id="cust_pincode" value=""/>
-                                        <input type="hidden" id="cust_idstate" value=""/>
-                                        <input type="hidden" id="address" value=""/>
-                                        <input type="hidden" id="customer_state" value=""/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                                     <?php // if($sale->date == date('Y-m-d')){
             //                            echo '<center><h3><i class="mdi mdi-alert"></i> Not allowed to edit invoice after sale date...</h3>'.
             //                                    '<img src="'.base_url().'assets/images/highAlertIcon.gif" />'
@@ -4150,7 +3561,7 @@ public function edit_sale_customer() {
                                                                     if($payment->payment_mode != 'Cash'  && $payment->reconciliation_status!=1){ ?>
                                                                         <a class="btn btn-sm btn-danger btn-outline" id="oldremove_payment" style="pointer-events: none"><i class="fa fa-trash-o"></i> Remove</a>
                                                                     <?php }else{
-                                                                        
+
                                                                     }
                                                                 }else{ ?>
                                                                     <a class="btn btn-sm btn-danger btn-outline" id="oldremove_payment" style="pointer-events: none"><i class="fa fa-trash-o"></i> Remove</a>
@@ -4201,12 +3612,12 @@ public function edit_sale_customer() {
                                                                     <?php }
                                                                 } else{ 
                                                                     if($payment->payment_mode != 'Cash' && $payment->reconciliation_status!=1){ ?>
-                                                                        
+
                                                                         <a class="btn btn-sm btn-danger btn-outline" id="oldremove_payment"><i class="fa fa-trash-o"></i> Remove</a>
                                                                     <?php }else{ ?>
                                                                      <a class="btn btn-sm btn-danger btn-outline" id="oldremove_payment"><i class="fa fa-trash-o"></i> Remove</a>
                                                                  <?php }
-                                                                 
+
                                                              } ?>
                                                              <input type="hidden" class="idedited_sale_payments" name="idedited_sale_payments[]" value="0" />
                                                              <input type="hidden" class="idremoved_sale_payments" name="idremoved_sale_payments[]" value="0" />
@@ -4369,621 +3780,651 @@ public function edit_sale_customer() {
                 . '</center>'; 
             }
         }
-    }
-    
-    public function edit_invoice(){
-//        die('<pre>'.print_r($_POST,1).'</pre>');
-        $this->db->trans_begin();
-        $date = date('Y-m-d');
-        $datetime = date('Y-m-d H:i:s');
-        $invoice_entry_time = $this->input->post('invoice_entry_time');
-        $invoice_date = $this->input->post('invoice_date');
-        $inv_no = $this->input->post('inv_no');
-        $idsale = $this->input->post('idsale');
-        $idcustomer = $this->input->post('idcustomer');
-        $idremoved_sale_payments = $this->input->post('idremoved_sale_payments');
-        $idedited_sale_payments = $this->input->post('idedited_sale_payments');
-        $edited_idsaleproduct = $this->input->post('edited_idsaleproduct');
-        $edit_types = '';
-        if(array_sum($edited_idsaleproduct) > 0){
-            $edit_types .= 'Edit Product, ';
-        }
-        if(array_sum($idedited_sale_payments) > 0){
-            $edit_types .= 'Edit Payment, ';
-        }
-        if(array_sum($idremoved_sale_payments) > 0){
-            $edit_types .= 'Remove Payment';
-        }
-//        die($edit_types);
-        $sale_data = array(
-            'inv_no' => $inv_no,
-            'invoice_date' => $invoice_date,
-            'idsale' => $idsale,
-            'date' => $date,
-            'idcustomer' => $idcustomer,
-            'basic_total' => $this->input->post('basic_total'),
-            'old_basic_total' => $this->input->post('old_basic_total'),
-            'discount_total' => $this->input->post('discount_total'),
-            'old_discount_total' => $this->input->post('old_discount_total'),
-            'final_total' => $this->input->post('final_total'),
-            'old_final_total' => $this->input->post('old_final_total'),
-            'idbranch' => $this->input->post('idbranch'),
-            'entry_time' => $datetime,
-            'created_by' => $this->session->userdata('id_users'),
-            'edit_types' => $edit_types,
-        );
-        $sale_product = [];
-        $sale_product_edit_history = [];
-        $insurance_recon = [];
-        $idsale_history = $this->Sale_model->save_sale_edit_history_data($sale_data);
+    }else{
+      echo '<center><h3><i class="mdi mdi-alert"></i> E Invoice Done for this Invoice No</h3>'.
+      '<img src="'.base_url().'assets/images/highAlertIcon.gif" />'
+      . '</center>'; 
+  }
+}
 
-        
+public function edit_invoice(){
+//        die('<pre>'.print_r($_POST,1).'</pre>');
+    $this->db->trans_begin();
+    $date = date('Y-m-d');
+    $datetime = date('Y-m-d H:i:s');
+    $invoice_entry_time = $this->input->post('invoice_entry_time');
+    $invoice_date = $this->input->post('invoice_date');
+    $inv_no = $this->input->post('inv_no');
+    $idsale = $this->input->post('idsale');
+    $idcustomer = $this->input->post('idcustomer');
+    $idremoved_sale_payments = $this->input->post('idremoved_sale_payments');
+    $idedited_sale_payments = $this->input->post('idedited_sale_payments');
+    $edited_idsaleproduct = $this->input->post('edited_idsaleproduct');
+    $edit_types = '';
+    if(array_sum($edited_idsaleproduct) > 0){
+        $edit_types .= 'Edit Product, ';
+    }
+    if(array_sum($idedited_sale_payments) > 0){
+        $edit_types .= 'Edit Payment, ';
+    }
+    if(array_sum($idremoved_sale_payments) > 0){
+        $edit_types .= 'Remove Payment';
+    }
+//        die($edit_types);
+    $sale_data = array(
+        'inv_no' => $inv_no,
+        'invoice_date' => $invoice_date,
+        'idsale' => $idsale,
+        'date' => $date,
+        'idcustomer' => $idcustomer,
+        'basic_total' => $this->input->post('basic_total'),
+        'old_basic_total' => $this->input->post('old_basic_total'),
+        'discount_total' => $this->input->post('discount_total'),
+        'old_discount_total' => $this->input->post('old_discount_total'),
+        'final_total' => $this->input->post('final_total'),
+        'old_final_total' => $this->input->post('old_final_total'),
+        'idbranch' => $this->input->post('idbranch'),
+        'entry_time' => $datetime,
+        'created_by' => $this->session->userdata('id_users'),
+        'edit_types' => $edit_types,
+    );
+    $sale_product = [];
+    $sale_product_edit_history = [];
+    $insurance_recon = [];
+    $idsale_history = $this->Sale_model->save_sale_edit_history_data($sale_data);
+
+
         // sale product edit
-        if(array_sum($edited_idsaleproduct) > 0){
-            for($i=0;$i<count($edited_idsaleproduct);$i++){
-                if($edited_idsaleproduct[$i] != 0){
-                    $qty = $this->input->post('qty');
-                    $old_qty = $this->input->post('old_qty');
-                    $price = $this->input->post('price');
-                    $old_price = $this->input->post('old_price');
-                    $discount_amt = $this->input->post('discount_amt');
-                    $old_discount_amt = $this->input->post('old_discount_amt');
-                    $insurance_imei_no = $this->input->post('insurance_imei_no');
-                    $old_insurance_imei_no = $this->input->post('old_insurance_imei_no');
-                    $activation_code = $this->input->post('activation_code');
-                    $old_activation_code = $this->input->post('old_activation_code');
-                    $old_imei_no = $this->input->post('old_imei_no');
-                    $new_imei_no = $this->input->post('new_imei_no');
-                    if($qty[$i] != $old_qty[$i] || $price[$i] != $old_price[$i] || $discount_amt[$i] != $old_discount_amt[$i] 
-                        || $insurance_imei_no[$i] != $old_insurance_imei_no[$i] || $activation_code[$i] != $old_activation_code[$i] 
-                        || $old_imei_no[$i] != $new_imei_no[$i]){
-                        $sale_product_edit_history[] = array(
-                            'idsale_edit_history' => $idsale_history,
+    if(array_sum($edited_idsaleproduct) > 0){
+        for($i=0;$i<count($edited_idsaleproduct);$i++){
+            if($edited_idsaleproduct[$i] != 0){
+                $qty = $this->input->post('qty');
+                $old_qty = $this->input->post('old_qty');
+                $price = $this->input->post('price');
+                $old_price = $this->input->post('old_price');
+                $discount_amt = $this->input->post('discount_amt');
+                $old_discount_amt = $this->input->post('old_discount_amt');
+                $insurance_imei_no = $this->input->post('insurance_imei_no');
+                $old_insurance_imei_no = $this->input->post('old_insurance_imei_no');
+                $activation_code = $this->input->post('activation_code');
+                $old_activation_code = $this->input->post('old_activation_code');
+                $old_imei_no = $this->input->post('old_imei_no');
+                $new_imei_no = $this->input->post('new_imei_no');
+                if($qty[$i] != $old_qty[$i] || $price[$i] != $old_price[$i] || $discount_amt[$i] != $old_discount_amt[$i] 
+                    || $insurance_imei_no[$i] != $old_insurance_imei_no[$i] || $activation_code[$i] != $old_activation_code[$i] 
+                    || $old_imei_no[$i] != $new_imei_no[$i]){
+                    $sale_product_edit_history[] = array(
+                        'idsale_edit_history' => $idsale_history,
+                        'idsale_product' => $edited_idsaleproduct[$i],
+                        'idvariant' => $this->input->post('idvariant['.$i.']'),
+                        'product_name' => $this->input->post('product_name['.$i.']'),
+                        'imei_no' => $new_imei_no[$i],
+                        'qty' => $qty[$i],
+                        'old_qty' => $old_qty[$i],
+                        'price' => $price[$i],
+                        'old_price' => $old_price[$i],
+                        'discount_amt' => $discount_amt[$i],
+                        'old_discount_amt' => $old_discount_amt[$i],
+                        'basic' => $this->input->post('basic['.$i.']'),
+                        'old_basic' => $this->input->post('old_basic['.$i.']'),
+                        'total_amount' => $this->input->post('total_amount['.$i.']'),
+                        'old_total_amount' => $this->input->post('old_total_amount['.$i.']'),
+                    );
+                    $sale_product[] = array(
+                        'id_saleproduct' => $edited_idsaleproduct[$i],
+                        'qty' => $qty[$i],
+                        'price' => $price[$i],
+                        'discount_amt' => $discount_amt[$i],
+                        'imei_no' => $new_imei_no[$i],
+                        'basic' => $this->input->post('basic['.$i.']'),
+                        'total_amount' => $this->input->post('total_amount['.$i.']'),
+                        'insurance_imei_no' => $this->input->post('insurance_imei_no['.$i.']'),
+                        'activation_code' => $this->input->post('activation_code['.$i.']'),
+                    );
+                    $ssale_type = $this->input->post('ssale_type['.$i.']');
+                    if($ssale_type != 0){
+                        $insurance_recon[]=array(
                             'idsale_product' => $edited_idsaleproduct[$i],
-                            'idvariant' => $this->input->post('idvariant['.$i.']'),
-                            'product_name' => $this->input->post('product_name['.$i.']'),
-                            'imei_no' => $new_imei_no[$i],
-                            'qty' => $qty[$i],
-                            'old_qty' => $old_qty[$i],
-                            'price' => $price[$i],
-                            'old_price' => $old_price[$i],
-                            'discount_amt' => $discount_amt[$i],
-                            'old_discount_amt' => $old_discount_amt[$i],
-                            'basic' => $this->input->post('basic['.$i.']'),
-                            'old_basic' => $this->input->post('old_basic['.$i.']'),
-                            'total_amount' => $this->input->post('total_amount['.$i.']'),
-                            'old_total_amount' => $this->input->post('old_total_amount['.$i.']'),
-                        );
-                        $sale_product[] = array(
-                            'id_saleproduct' => $edited_idsaleproduct[$i],
-                            'qty' => $qty[$i],
-                            'price' => $price[$i],
-                            'discount_amt' => $discount_amt[$i],
-                            'imei_no' => $new_imei_no[$i],
-                            'basic' => $this->input->post('basic['.$i.']'),
-                            'total_amount' => $this->input->post('total_amount['.$i.']'),
                             'insurance_imei_no' => $this->input->post('insurance_imei_no['.$i.']'),
                             'activation_code' => $this->input->post('activation_code['.$i.']'),
+                            'qty' => $this->input->post('qty['.$i.']'),
+                            'total_amount' => $this->input->post('qty['.$i.']'),
                         );
-                        $ssale_type = $this->input->post('ssale_type['.$i.']');
-                        if($ssale_type != 0){
-                            $insurance_recon[]=array(
-                                'idsale_product' => $edited_idsaleproduct[$i],
-                                'insurance_imei_no' => $this->input->post('insurance_imei_no['.$i.']'),
-                                'activation_code' => $this->input->post('activation_code['.$i.']'),
-                                'qty' => $this->input->post('qty['.$i.']'),
-                                'total_amount' => $this->input->post('qty['.$i.']'),
-                            );
-                        }
+                    }
 //                        die($old_imei_no[$i].' '.$new_imei_no[$i]);s
-                        if($old_imei_no[$i] != $new_imei_no[$i]){
-                            $this->Sale_model->edit_batch_imei_history(4, $idsale,$old_imei_no[$i],$new_imei_no[$i]);
-                            $this->Sale_model->update_stock_byimei($new_imei_no[$i], $old_imei_no[$i]);
-                        }
+                    if($old_imei_no[$i] != $new_imei_no[$i]){
+                        $this->Sale_model->edit_batch_imei_history(4, $idsale,$old_imei_no[$i],$new_imei_no[$i]);
+                        $this->Sale_model->update_stock_byimei($new_imei_no[$i], $old_imei_no[$i]);
                     }
                 }
             }
-            if(count($sale_product_edit_history) > 0){
-                if($this->Sale_model->save_sale_product_edit_history($sale_product_edit_history)){
-                    $this->Sale_model->edit_sale_product($sale_product);
-                }
-                if($ssale_type != 0){
-                    $this->Sale_model->edit_batch_insurance_recon($insurance_recon);
-                }
-                $edit_sale = array(
-                    'id_sale' => $idsale,
-                    'basic_total' => $this->input->post('basic_total'),
-                    'discount_total' => $this->input->post('discount_total'),
-                    'final_total' => $this->input->post('final_total'),
-                );
-                $this->Sale_model->edit_sale($idsale, $edit_sale);
+        }
+        if(count($sale_product_edit_history) > 0){
+            if($this->Sale_model->save_sale_product_edit_history($sale_product_edit_history)){
+                $this->Sale_model->edit_sale_product($sale_product);
             }
-        }
-        
-        
-//        $sale_payment_edit_history = [];
-        $sale_payment_remove_history = array();
-        for($i=0;$i<count($idremoved_sale_payments);$i++){
-            if($idremoved_sale_payments[$i] != 0){
-                $idrem = $idremoved_sale_payments[$i];
-                $sale_payment_edit_history = array(
-                    'idsale_payment' => $idremoved_sale_payments[$i],
-                    'idsale' => $idsale,
-                    'date' => $date,
-                    'idsale_edit_history' => $idsale_history,
-                    'entry_time' => $datetime,
-                    'inv_no' => $inv_no,
-                    'idbranch' => $this->input->post('idbranch'),
-                    'idpayment_head' => $this->input->post('idpayment_head['.$i.']'),
-                    'idpayment_mode' => $this->input->post('idpayment_mode['.$i.']'),
-                    'amount' => $this->input->post('edit_amount['.$i.']'),
-                    'old_amount' => $this->input->post('old_edit_amount['.$i.']'),
-                    'old_transaction_id' => $this->input->post('old_transaction_id['.$idrem.']'),
-                    'old_product_model_name' => $this->input->post('old_product_model_name['.$idrem.']'),
-                    'old_product_imei_no' => $this->input->post('old_product_imei_no['.$idrem.']'),
-                    'old_approved_by' => $this->input->post('old_approved_by['.$idrem.']'),
-                    'old_customer_bank_name' => $this->input->post('old_customer_bank_name['.$idrem.']'),
-                    'old_buyback_vendor_name' => $this->input->post('old_buyback_vendor_name['.$idrem.']'),
-                    'old_swipe_card_number' => $this->input->post('old_swipe_card_number['.$idrem.']'),
-                    'old_referral_name' => $this->input->post('old_referral_name['.$idrem.']'),
-                    'old_finance_promoter_name' => $this->input->post('old_finance_promoter_name['.$idrem.']'),
-                    'old_scheme_code' => $this->input->post('old_scheme_code['.$idrem.']'),
-                    'entry_type' => 'Removed',
-                    'identry_type' => 3, // Removed
-                );
-                $this->Sale_model->save_sale_payment_edit_history($sale_payment_edit_history);
-                if($this->input->post('idpayment_head['.$i.']') == 1){
-                    $this->Sale_model->remove_daybook_cash_amount($idsale, 1);
-                }
-            }
-            // remved list need to enter
-        }
-        
-        // Add new payment mode
-        if($this->input->post('idpaymentmode')){
-            $idpaymentmode = $this->input->post('idpaymentmode');
-            $idpaymenthead = $this->input->post('idpaymenthead');
-            $tranxid = $this->input->post('tranxid');
-            $amount = $this->input->post('amount');
-            $credittype = $this->input->post('credittype');
-            for($i=0; $i<count($idpaymentmode);$i++){
-                $payment_receive=0;$received_amount=0;$pending_amt=$amount[$i];$received_entry_time=NULL;
-                if($idpaymentmode[$i] == 1){
-                    $received_amount = $amount[$i];
-                    $pending_amt=0;$received_entry_time=$invoice_entry_time;$payment_receive=1;
-                    $srpayment = array(
-                        'date' => $invoice_date,
-                        'inv_no' => $inv_no,
-                        'entry_type' => 1,
-                        'idbranch' => $this->input->post('idbranch'),
-                        'idtable' => $idsale,
-                        'table_name' => 'sale',
-                        'amount' => $amount[$i],
-                        'entry_time' => $invoice_entry_time
-                    );
-                    $this->Sale_model->save_daybook_cash_payment($srpayment);
-                }
-                $payment = array(
-                    'date' => $invoice_date,
-                    'idsale' => $idsale,
-                    'amount' => $amount[$i],
-                    'idpayment_head' => $idpaymenthead[$i],
-                    'idpayment_mode' => $idpaymentmode[$i],
-                    'transaction_id' => $tranxid[$i],
-                    'inv_no' => $inv_no,
-                    'idcustomer' => $idcustomer,
-                    'idbranch' => $this->input->post('idbranch'),
-                    'created_by' => $this->input->post('created_by'),
-                    'entry_time' => $invoice_entry_time,
-                    'received_amount' => $received_amount,
-                    'received_entry_time'=>$received_entry_time,
-                    'payment_receive' => $payment_receive,
-                    'product_model_name' => $this->input->post('new_product_model_name['.$i.']'),
-                    'product_imei_no' => $this->input->post('new_product_imei_no['.$i.']'),
-                    'approved_by' => $this->input->post('new_approved_by['.$i.']'),
-                    'customer_bank_name' => $this->input->post('new_customer_bank_name['.$i.']'),
-                    'buyback_vendor_name' => $this->input->post('new_buyback_vendor_name['.$i.']'),
-                    'swipe_card_number' => $this->input->post('new_swipe_card_number['.$i.']'),
-                    'referral_name' => $this->input->post('new_referral_name['.$i.']'),
-                    'finance_promoter_name' => $this->input->post('new_finance_promoter_name['.$i.']'),
-                    'scheme_code' => $this->input->post('new_scheme_code['.$i.']'),
-                );
-//                die(print_r($payment));
-                $id_sale_payment = $this->Sale_model->save_sale_payment($payment);
-                if($credittype[$i] == 0){
-                    $npayment = array(
-                        'idsale_payment' => $id_sale_payment,
-                        'inv_no' => $inv_no,
-                        'idsale' => $idsale,
-                        'date' => $invoice_date,
-                        'idcustomer' => $idcustomer,
-                        'idbranch' => $this->input->post('idbranch'),
-                        'amount' => $amount[$i],
-                        'idpayment_head' => $idpaymenthead[$i],
-                        'idpayment_mode' => $idpaymentmode[$i],
-                        'transaction_id' => $tranxid[$i],
-                        'created_by' => $this->input->post('created_by'),
-                        'entry_time' => $invoice_entry_time,
-                        'received_amount' => $received_amount,
-                        'pending_amt' => $pending_amt,
-                        'received_entry_time'=>$received_entry_time,
-                        'payment_receive' => $payment_receive,
-                        'product_model_name' => $this->input->post('new_product_model_name['.$i.']'),
-                        'product_imei_no' => $this->input->post('new_product_imei_no['.$i.']'),
-                        'approved_by' => $this->input->post('new_approved_by['.$i.']'),
-                        'customer_bank_name' => $this->input->post('new_customer_bank_name['.$i.']'),
-                        'buyback_vendor_name' => $this->input->post('new_buyback_vendor_name['.$i.']'),
-                        'swipe_card_number' => $this->input->post('new_swipe_card_number['.$i.']'),
-                        'referral_name' => $this->input->post('new_referral_name['.$i.']'),
-                        'finance_promoter_name' => $this->input->post('new_finance_promoter_name['.$i.']'),
-                        'scheme_code' => $this->input->post('new_scheme_code['.$i.']'),
-                        'correction_date' => $date,
-                    );
-                    $this->Sale_model->save_payment_reconciliation($npayment);
-                }
-                $sale_payment_edit_history = array(
-                    'idsale_payment' => $id_sale_payment,
-                    'idsale' => $idsale,
-                    'date' => $date,
-                    'idsale_edit_history' => $idsale_history,
-                    'entry_time' => $datetime,
-                    'inv_no' => $inv_no,
-                    'idbranch' => $this->input->post('idbranch'),
-                    'idpayment_head' => $idpaymenthead[$i],
-                    'idpayment_mode' => $idpaymentmode[$i],
-                    'transaction_id' => $tranxid[$i],
-                    'amount' => $amount[$i],
-                    'product_model_name' => $this->input->post('new_product_model_name['.$i.']'),
-                    'product_imei_no' => $this->input->post('new_product_imei_no['.$i.']'),
-                    'approved_by' => $this->input->post('new_approved_by['.$i.']'),
-                    'customer_bank_name' => $this->input->post('new_customer_bank_name['.$i.']'),
-                    'buyback_vendor_name' => $this->input->post('new_buyback_vendor_name['.$i.']'),
-                    'swipe_card_number' => $this->input->post('new_swipe_card_number['.$i.']'),
-                    'referral_name' => $this->input->post('new_referral_name['.$i.']'),
-                    'finance_promoter_name' => $this->input->post('new_finance_promoter_name['.$i.']'),
-                    'scheme_code' => $this->input->post('new_scheme_code['.$i.']'),
-                    'entry_type' => 'New Added',
-                    'identry_type' => 1, // Add
-                );
-                $this->Sale_model->save_sale_payment_edit_history($sale_payment_edit_history);
-            }
-        }
-        
-        
-//        die('<pre>'.print_r($sale_payment_edit_history,1).'</pre>');
-        
-        
-        $sale_payment = [];
-        $payment_recon_new = [];
-        $edit_daybook_cash = [];
-//        $edit_daybook_cash = [];
-        // sale payment edit
-        for($i=0;$i<count($idedited_sale_payments);$i++){
-            if($idedited_sale_payments[$i] != 0){
-                $idedi = $idedited_sale_payments[$i];
-                $sale_payment_edit_history = array(
-                    'idsale_payment' => $idedited_sale_payments[$i],
-                    'idsale' => $idsale,
-                    'date' => $date,
-                    'idsale_edit_history' => $idsale_history,
-                    'entry_time' => $datetime,
-                    'inv_no' => $inv_no,
-                    'idbranch' => $this->input->post('idbranch'),
-                    'idpayment_head' => $this->input->post('idpayment_head['.$i.']'),
-                    'idpayment_mode' => $this->input->post('idpayment_mode['.$i.']'),
-                    'amount' => $this->input->post('edit_amount['.$i.']'),
-                    'old_amount' => $this->input->post('old_edit_amount['.$i.']'),
-                    'transaction_id' => $this->input->post('transaction_id['.$idedi.']'),
-                    'old_transaction_id' => $this->input->post('old_transaction_id['.$idedi.']'),
-                    'product_model_name' => $this->input->post('product_model_name['.$idedi.']'),
-                    'product_imei_no' => $this->input->post('product_imei_no['.$idedi.']'),
-                    'approved_by' => $this->input->post('approved_by['.$idedi.']'),
-                    'customer_bank_name' => $this->input->post('customer_bank_name['.$idedi.']'),
-                    'buyback_vendor_name' => $this->input->post('buyback_vendor_name['.$idedi.']'),
-                    'swipe_card_number' => $this->input->post('swipe_card_number['.$idedi.']'),
-                    'referral_name' => $this->input->post('referral_name['.$idedi.']'),
-                    'finance_promoter_name' => $this->input->post('finance_promoter_name['.$idedi.']'),
-                    'scheme_code' => $this->input->post('scheme_code['.$idedi.']'),
-                    'old_product_model_name' => $this->input->post('old_product_model_name['.$idedi.']'),
-                    'old_product_imei_no' => $this->input->post('old_product_imei_no['.$idedi.']'),
-                    'old_approved_by' => $this->input->post('old_approved_by['.$idedi.']'),
-                    'old_customer_bank_name' => $this->input->post('old_customer_bank_name['.$idedi.']'),
-                    'old_buyback_vendor_name' => $this->input->post('old_buyback_vendor_name['.$idedi.']'),
-                    'old_swipe_card_number' => $this->input->post('old_swipe_card_number['.$idedi.']'),
-                    'old_referral_name' => $this->input->post('old_referral_name['.$idedi.']'),
-                    'old_finance_promoter_name' => $this->input->post('old_finance_promoter_name['.$idedi.']'),
-                    'old_scheme_code' => $this->input->post('old_scheme_code['.$idedi.']'),
-                    'entry_type' => 'Edited',
-                    'identry_type' => 2, // Edited
-                );
-                $sale_payment[$i] = array(
-                    'id_salepayment' => $idedited_sale_payments[$i],
-                    'amount' => $this->input->post('edit_amount['.$i.']'),
-                    'transaction_id' => $this->input->post('transaction_id['.$idedi.']'),
-                    'product_model_name' => $this->input->post('product_model_name['.$idedi.']'),
-                    'product_imei_no' => $this->input->post('product_imei_no['.$idedi.']'),
-                    'approved_by' => $this->input->post('approved_by['.$idedi.']'),
-                    'customer_bank_name' => $this->input->post('customer_bank_name['.$idedi.']'),
-                    'swipe_card_number' => $this->input->post('swipe_card_number['.$idedi.']'),
-                    'referral_name' => $this->input->post('referral_name['.$idedi.']'),
-                    'finance_promoter_name' => $this->input->post('finance_promoter_name['.$idedi.']'),
-                    'scheme_code' => $this->input->post('scheme_code['.$idedi.']'),
-                );
-                $payment_recon_new[$i] = array(
-                    'idsale_payment' => $idedited_sale_payments[$i],
-                    'amount' => $this->input->post('edit_amount['.$i.']'),
-                    'transaction_id' => $this->input->post('transaction_id['.$idedi.']'),
-                    'product_model_name' => $this->input->post('product_model_name['.$idedi.']'),
-                    'product_imei_no' => $this->input->post('product_imei_no['.$idedi.']'),
-                    'approved_by' => $this->input->post('approved_by['.$idedi.']'),
-                    'customer_bank_name' => $this->input->post('customer_bank_name['.$idedi.']'),
-                    'swipe_card_number' => $this->input->post('swipe_card_number['.$idedi.']'),
-                    'referral_name' => $this->input->post('referral_name['.$idedi.']'),
-                    'finance_promoter_name' => $this->input->post('finance_promoter_name['.$idedi.']'),
-                    'scheme_code' => $this->input->post('scheme_code['.$idedi.']'),
-                    'correction_date' => $date,
-                );
-                if($this->input->post('idpayment_head['.$i.']') == 1){
-                    $cash_received = array(
-                        'received_amount' => $this->input->post('edit_amount['.$i.']'),
-                    );
-                    $sale_payment[$i] = array_merge($sale_payment[$i], $cash_received);
-                    $payment_recon_new[$i] = array_merge($payment_recon_new[$i], $cash_received);
-                    $edit_daybook_cash = array(
-//                        'idtable' => $idsale,
-                        'amount' => $this->input->post('edit_amount['.$i.']'),
-                    );
-                }
-//                $this->Sale_model->edit_sale_payment($idedited_sale_payments[$i], $sale_payment);
-//                $this->Sale_model->edit_sale_reconciliation($idedited_sale_payments[$i], $sale_payment);
-                $this->Sale_model->save_sale_payment_edit_history($sale_payment_edit_history);
-            }
-        }
-//        die('<pre>'.print_r($sale_payment_edit_history,1).'</pre>');
-//        die('<pre>'.print_r($edit_daybook_cash,1).'</pre>');
-        if(count($edit_daybook_cash) > 0){
-            $this->Sale_model->edit_daybook_cash_byidtable_entry_type($idsale, 1, $edit_daybook_cash);
-        }
-
-//        if(count($sale_payment_edit_history) > 0){
-//            $this->Sale_model->save_sale_payment_edit_history($sale_payment_edit_history);
-//        }
-        if(count($sale_payment) > 0){
-            $this->Sale_model->batch_edit_sale_payment($sale_payment);
-        }
-        if(count($payment_recon_new) > 0){
-            $this->Sale_model->batch_edit_sale_reconciliation($payment_recon_new);
-        }
-//        if(count($edit_daybook_cash) > 0){
-//            $this->Sale_model->edit_daybook_cash_byidtable_entry_type($edit_daybook_cash);
-//        }
-        
-        if(array_sum($idremoved_sale_payments) > 0){
-            $this->Sale_model->remove_sale_payment($idremoved_sale_payments);
-            $this->Sale_model->remove_payment_reconciliation($idremoved_sale_payments);
-        } 
-//        die('hi');
-        if ($this->db->trans_status() === FALSE){
-            $this->db->trans_rollback();
-            $this->session->set_flashdata('save_data', 'Invoice billing is aborted. Try again with same details');
-        }else{
-            $this->db->trans_commit();
-            $this->session->set_flashdata('save_data', 'Invoice bill generated');
-        }
-//        die('<pre>'.print_r($_POST,1).'</pre>');
-        return redirect('Sale/sale_details/'.$idsale);
-    }
-    public function ajax_check_valid_imei() {
-//        die(print_r($_POST));
-        $new_imei_no = $this->input->post('new_imei_no');
-        $idvariant = $this->input->post('idvariant');
-        $idgodown = $this->input->post('idgodown');
-        $idbranch  = $this->input->post('idbranch');
-        $res = $this->Sale_model->ajax_check_valid_imei($idbranch,$idgodown,$idvariant,$new_imei_no);
-//        die(count($res));
-        if(count($res)){
-            $q = 'Success';
-        }else{
-            $q = 'Failed';
-        }
-        echo json_encode($q);
-    }
-    public function edit_invoice1(){
-//        die('<pre>'.print_r($_POST,1).'</pre>');
-        $this->db->trans_begin();
-        $date = date('Y-m-d');
-        $datetime = date('Y-m-d H:i:s');
-        $inv_no = $this->input->post('inv_no');
-        $idsale = $this->input->post('idsale');
-        $idcustomer = $this->input->post('idcustomer');
-        $idremoved_sale_payments = $this->input->post('idremoved_sale_payments');
-        $idedited_sale_payments = $this->input->post('idedited_sale_payments');
-        $edited_idsaleproduct = $this->input->post('edited_idsaleproduct');
-        $edit_types = '';
-        if(array_sum($edited_idsaleproduct) > 0){
-            $edit_types .= 'Edit Product, ';
-        }
-        if(array_sum($idedited_sale_payments) > 0){
-            $edit_types .= 'Edit Payment, ';
-        }
-        if(array_sum($idremoved_sale_payments) > 0){
-            $edit_types .= 'Remove Payment';
-        }
-//        die($edit_types);
-        // remove entries
-        $sale_data = array(
-            'inv_no' => $inv_no,
-            'idsale' => $idsale,
-            'date' => $date,
-            'idcustomer' => $idcustomer,
-            'basic_total' => $this->input->post('basic_total'),
-            'old_basic_total' => $this->input->post('old_basic_total'),
-            'discount_total' => $this->input->post('discount_total'),
-            'old_discount_total' => $this->input->post('old_discount_total'),
-            'final_total' => $this->input->post('final_total'),
-            'old_final_total' => $this->input->post('old_final_total'),
-            'idbranch' => $this->input->post('idbranch'),
-            'entry_time' => $datetime,
-            'created_by' => $this->session->userdata('id_users'),
-            'edit_types' => $edit_types,
-        );
-        $sale_product = array();
-        if($idsale_history = $this->Sale_model->save_sale_edit_history_data($sale_data)){
-            $sale_product_edit_history = array(); 
-            for($i=0;$i<count($edited_idsaleproduct);$i++){
-                if($edited_idsaleproduct[$i] != 0){
-                    $qty = $this->input->post('qty');
-                    $old_qty = $this->input->post('old_qty');
-                    $price = $this->input->post('price');
-                    $old_price = $this->input->post('old_price');
-                    $discount_amt = $this->input->post('discount_amt');
-                    $old_discount_amt = $this->input->post('old_discount_amt');
-                    if($qty != $old_qty || $price != $old_price || $discount_amt != $old_discount_amt){
-                        $sale_product_edit_history[] = array(
-                            'idsale_edit_history' => $idsale_history,
-                            'idsale_product' => $edited_idsaleproduct[$i],
-                            'idvariant' => $this->input->post('idvariant['.$i.']'),
-                            'product_name' => $this->input->post('product_name['.$i.']'),
-                            'imei_no' => $this->input->post('imei_no['.$i.']'),
-                            'qty' => $qty[$i],
-                            'old_qty' => $old_qty[$i],
-                            'price' => $price[$i],
-                            'old_price' => $old_price[$i],
-                            'discount_amt' => $discount_amt[$i],
-                            'old_discount_amt' => $old_discount_amt[$i],
-                            'basic' => $this->input->post('basic['.$i.']'),
-                            'old_basic' => $this->input->post('old_basic['.$i.']'),
-                            'total_amount' => $this->input->post('total_amount['.$i.']'),
-                            'old_total_amount' => $this->input->post('old_total_amount['.$i.']'),
-                        );
-                        $sale_product[] = array(
-                            'id_saleproduct' => $edited_idsaleproduct[$i],
-                            'qty' => $qty[$i],
-                            'price' => $price[$i],
-                            'discount_amt' => $discount_amt[$i],
-                            'basic' => $this->input->post('basic['.$i.']'),
-                            'total_amount' => $this->input->post('total_amount['.$i.']'),
-                        );
-                    }
-                }
-            }
-            if(count($sale_product_edit_history) > 0){
-//                die('<pre>'.print_r($sale_product_edit_history,1).'</pre>');
-                $this->Sale_model->save_sale_product_edit_history($sale_product_edit_history);
+            if($ssale_type != 0){
+                $this->Sale_model->edit_batch_insurance_recon($insurance_recon);
             }
             $edit_sale = array(
+                'id_sale' => $idsale,
                 'basic_total' => $this->input->post('basic_total'),
                 'discount_total' => $this->input->post('discount_total'),
                 'final_total' => $this->input->post('final_total'),
             );
             $this->Sale_model->edit_sale($idsale, $edit_sale);
         }
-        $sale_payment_edit_history = array();
-        for($i=0;$i<count($idedited_sale_payments);$i++){
-            if($idedited_sale_payments[$i] != 0){
-                $idedi = $idedited_sale_payments[$i];
-                $sale_payment_edit_history[] = array(
-                    'idsale_payment' => $idedited_sale_payments[$i],
-                    'idsale' => $idsale,
-                    'date' => $date,
-                    'idsale_edit_history' => $idsale_history,
-                    'entry_time' => $datetime,
-                    'inv_no' => $inv_no,
-                    'idbranch' => $this->input->post('idbranch'),
-                    'idpayment_head' => $this->input->post('idpayment_head['.$i.']'),
-                    'idpayment_mode' => $this->input->post('idpayment_mode['.$i.']'),
-                    'amount' => $this->input->post('edit_amount['.$i.']'),
-                    'old_amount' => $this->input->post('old_edit_amount['.$i.']'),
-                    'transaction_id' => $this->input->post('transaction_id['.$idedi.']'),
-                    'old_transaction_id' => $this->input->post('old_transaction_id['.$idedi.']'),
-                    'product_model_name' => $this->input->post('product_model_name['.$idedi.']'),
-                    'product_imei_no' => $this->input->post('product_imei_no['.$idedi.']'),
-                    'approved_by' => $this->input->post('approved_by['.$idedi.']'),
-                    'customer_bank_name' => $this->input->post('customer_bank_name['.$idedi.']'),
-                    'buyback_vendor_name' => $this->input->post('buyback_vendor_name['.$idedi.']'),
-                    'old_product_model_name' => $this->input->post('old_product_model_name['.$idedi.']'),
-                    'old_product_imei_no' => $this->input->post('old_product_imei_no['.$idedi.']'),
-                    'old_approved_by' => $this->input->post('old_approved_by['.$idedi.']'),
-                    'old_customer_bank_name' => $this->input->post('old_customer_bank_name['.$idedi.']'),
-                    'old_buyback_vendor_name' => $this->input->post('old_buyback_vendor_name['.$idedi.']'),
-                    'entry_type' => 'Edited'
+    }
+
+
+//        $sale_payment_edit_history = [];
+    $sale_payment_remove_history = array();
+    for($i=0;$i<count($idremoved_sale_payments);$i++){
+        if($idremoved_sale_payments[$i] != 0){
+            $idrem = $idremoved_sale_payments[$i];
+            $sale_payment_edit_history = array(
+                'idsale_payment' => $idremoved_sale_payments[$i],
+                'idsale' => $idsale,
+                'date' => $date,
+                'idsale_edit_history' => $idsale_history,
+                'entry_time' => $datetime,
+                'inv_no' => $inv_no,
+                'idbranch' => $this->input->post('idbranch'),
+                'idpayment_head' => $this->input->post('idpayment_head['.$i.']'),
+                'idpayment_mode' => $this->input->post('idpayment_mode['.$i.']'),
+                'amount' => $this->input->post('edit_amount['.$i.']'),
+                'old_amount' => $this->input->post('old_edit_amount['.$i.']'),
+                'old_transaction_id' => $this->input->post('old_transaction_id['.$idrem.']'),
+                'old_product_model_name' => $this->input->post('old_product_model_name['.$idrem.']'),
+                'old_product_imei_no' => $this->input->post('old_product_imei_no['.$idrem.']'),
+                'old_approved_by' => $this->input->post('old_approved_by['.$idrem.']'),
+                'old_customer_bank_name' => $this->input->post('old_customer_bank_name['.$idrem.']'),
+                'old_buyback_vendor_name' => $this->input->post('old_buyback_vendor_name['.$idrem.']'),
+                'old_swipe_card_number' => $this->input->post('old_swipe_card_number['.$idrem.']'),
+                'old_referral_name' => $this->input->post('old_referral_name['.$idrem.']'),
+                'old_finance_promoter_name' => $this->input->post('old_finance_promoter_name['.$idrem.']'),
+                'old_scheme_code' => $this->input->post('old_scheme_code['.$idrem.']'),
+                'entry_type' => 'Removed',
+                    'identry_type' => 3, // Removed
                 );
-                $sale_payment = array(
-                    'amount' => $this->input->post('edit_amount['.$i.']'),
-                    'transaction_id' => $this->input->post('transaction_id['.$idedi.']'),
-                    'product_model_name' => $this->input->post('product_model_name['.$idedi.']'),
-                    'product_imei_no' => $this->input->post('product_imei_no['.$idedi.']'),
-                    'approved_by' => $this->input->post('approved_by['.$idedi.']'),
-                    'customer_bank_name' => $this->input->post('customer_bank_name['.$idedi.']'),
-                );
-                $this->Sale_model->edit_sale_payment($idedited_sale_payments[$i], $sale_payment);
-                $this->Sale_model->edit_sale_reconciliation($idedited_sale_payments[$i], $sale_payment);
+            $this->Sale_model->save_sale_payment_edit_history($sale_payment_edit_history);
+            if($this->input->post('idpayment_head['.$i.']') == 1){
+                $this->Sale_model->remove_daybook_cash_amount($idsale, 1);
             }
         }
-//        $sale_payment_remove_history = array();
-        for($i=0;$i<count($idremoved_sale_payments);$i++){
-            if($idremoved_sale_payments[$i] != 0){
-                $idrem = $idremoved_sale_payments[$i];
-                $sale_payment_edit_history[] = array(
-                    'idsale_payment' => $idremoved_sale_payments[$i],
-                    'idsale' => $idsale,
-                    'date' => $date,
-                    'idsale_edit_history' => $idsale_history,
-                    'entry_time' => $datetime,
-                    'inv_no' => $inv_no,
-                    'idbranch' => $this->input->post('idbranch'),
-                    'idpayment_head' => $this->input->post('idpayment_head['.$i.']'),
-                    'idpayment_mode' => $this->input->post('idpayment_mode['.$i.']'),
-                    'amount' => $this->input->post('edit_amount['.$i.']'),
-                    'old_amount' => $this->input->post('old_edit_amount['.$i.']'),
-                    'old_transaction_id' => $this->input->post('old_transaction_id['.$idrem.']'),
-                    'old_product_model_name' => $this->input->post('old_product_model_name['.$idrem.']'),
-                    'old_product_imei_no' => $this->input->post('old_product_imei_no['.$idrem.']'),
-                    'old_approved_by' => $this->input->post('old_approved_by['.$idrem.']'),
-                    'old_customer_bank_name' => $this->input->post('old_customer_bank_name['.$idrem.']'),
-                    'old_buyback_vendor_name' => $this->input->post('old_buyback_vendor_name['.$idrem.']'),
-                    'entry_type' => 'Removed'
-                );
-            }
-            $this->Sale_model->remove_sale_payment($idremoved_sale_payments[$i]);
-            $this->Sale_model->remove_payment_reconciliation($idremoved_sale_payments[$i]);
             // remved list need to enter
-        }
-        if($this->input->post('idpaymentmode')){
-            $idpaymentmode = $this->input->post('idpaymentmode');
-            $idpaymenthead = $this->input->post('idpaymenthead');
-            $tranxid = $this->input->post('tranxid');
-            $amount = $this->input->post('amount');
-            $credittype = $this->input->post('credittype');
-            for($i=0; $i<count($idpaymentmode);$i++){
-                $payment_receive=0;$received_amount=0;$pending_amt=$amount[$i];$received_entry_time=NULL;
-                if($idpaymentmode[$i] == 1){
-                    $received_amount = $amount[$i];
-                    $pending_amt=0;$received_entry_time=$datetime;$payment_receive=1;
-                    $srpayment = array(
-                        'date' => $date,
-                        'inv_no' => $inv_no,
-                        'entry_type' => 1,
-                        'idbranch' => $this->input->post('idbranch'),
-                        'idtable' => $idsale,
-                        'table_name' => 'sale',
-                        'amount' => $amount[$i],
-                    );
-                    $this->Sale_model->save_daybook_cash_payment($srpayment);
-                }
-                $payment = array(
-                    'date' => $date,
+    }
+
+        // Add new payment mode
+    if($this->input->post('idpaymentmode')){
+        $idpaymentmode = $this->input->post('idpaymentmode');
+        $idpaymenthead = $this->input->post('idpaymenthead');
+        $tranxid = $this->input->post('tranxid');
+        $amount = $this->input->post('amount');
+        $credittype = $this->input->post('credittype');
+        for($i=0; $i<count($idpaymentmode);$i++){
+            $payment_receive=0;$received_amount=0;$pending_amt=$amount[$i];$received_entry_time=NULL;
+            if($idpaymentmode[$i] == 1){
+                $received_amount = $amount[$i];
+                $pending_amt=0;$received_entry_time=$invoice_entry_time;$payment_receive=1;
+                $srpayment = array(
+                    'date' => $invoice_date,
+                    'inv_no' => $inv_no,
+                    'entry_type' => 1,
+                    'idbranch' => $this->input->post('idbranch'),
+                    'idtable' => $idsale,
+                    'table_name' => 'sale',
+                    'amount' => $amount[$i],
+                    'entry_time' => $invoice_entry_time
+                );
+                $this->Sale_model->save_daybook_cash_payment($srpayment);
+            }
+            $payment = array(
+                'date' => $invoice_date,
+                'idsale' => $idsale,
+                'amount' => $amount[$i],
+                'idpayment_head' => $idpaymenthead[$i],
+                'idpayment_mode' => $idpaymentmode[$i],
+                'transaction_id' => $tranxid[$i],
+                'inv_no' => $inv_no,
+                'idcustomer' => $idcustomer,
+                'idbranch' => $this->input->post('idbranch'),
+                'created_by' => $this->input->post('created_by'),
+                'entry_time' => $invoice_entry_time,
+                'received_amount' => $received_amount,
+                'received_entry_time'=>$received_entry_time,
+                'payment_receive' => $payment_receive,
+                'product_model_name' => $this->input->post('new_product_model_name['.$i.']'),
+                'product_imei_no' => $this->input->post('new_product_imei_no['.$i.']'),
+                'approved_by' => $this->input->post('new_approved_by['.$i.']'),
+                'customer_bank_name' => $this->input->post('new_customer_bank_name['.$i.']'),
+                'buyback_vendor_name' => $this->input->post('new_buyback_vendor_name['.$i.']'),
+                'swipe_card_number' => $this->input->post('new_swipe_card_number['.$i.']'),
+                'referral_name' => $this->input->post('new_referral_name['.$i.']'),
+                'finance_promoter_name' => $this->input->post('new_finance_promoter_name['.$i.']'),
+                'scheme_code' => $this->input->post('new_scheme_code['.$i.']'),
+            );
+//                die(print_r($payment));
+            $id_sale_payment = $this->Sale_model->save_sale_payment($payment);
+            if($credittype[$i] == 0){
+                $npayment = array(
+                    'idsale_payment' => $id_sale_payment,
+                    'inv_no' => $inv_no,
                     'idsale' => $idsale,
+                    'date' => $invoice_date,
+                    'idcustomer' => $idcustomer,
+                    'idbranch' => $this->input->post('idbranch'),
                     'amount' => $amount[$i],
                     'idpayment_head' => $idpaymenthead[$i],
                     'idpayment_mode' => $idpaymentmode[$i],
                     'transaction_id' => $tranxid[$i],
+                    'created_by' => $this->input->post('created_by'),
+                    'entry_time' => $invoice_entry_time,
+                    'received_amount' => $received_amount,
+                    'pending_amt' => $pending_amt,
+                    'received_entry_time'=>$received_entry_time,
+                    'payment_receive' => $payment_receive,
+                    'product_model_name' => $this->input->post('new_product_model_name['.$i.']'),
+                    'product_imei_no' => $this->input->post('new_product_imei_no['.$i.']'),
+                    'approved_by' => $this->input->post('new_approved_by['.$i.']'),
+                    'customer_bank_name' => $this->input->post('new_customer_bank_name['.$i.']'),
+                    'buyback_vendor_name' => $this->input->post('new_buyback_vendor_name['.$i.']'),
+                    'swipe_card_number' => $this->input->post('new_swipe_card_number['.$i.']'),
+                    'referral_name' => $this->input->post('new_referral_name['.$i.']'),
+                    'finance_promoter_name' => $this->input->post('new_finance_promoter_name['.$i.']'),
+                    'scheme_code' => $this->input->post('new_scheme_code['.$i.']'),
+                    'correction_date' => $date,
+                );
+                $this->Sale_model->save_payment_reconciliation($npayment);
+            }
+            $sale_payment_edit_history = array(
+                'idsale_payment' => $id_sale_payment,
+                'idsale' => $idsale,
+                'date' => $date,
+                'idsale_edit_history' => $idsale_history,
+                'entry_time' => $datetime,
+                'inv_no' => $inv_no,
+                'idbranch' => $this->input->post('idbranch'),
+                'idpayment_head' => $idpaymenthead[$i],
+                'idpayment_mode' => $idpaymentmode[$i],
+                'transaction_id' => $tranxid[$i],
+                'amount' => $amount[$i],
+                'product_model_name' => $this->input->post('new_product_model_name['.$i.']'),
+                'product_imei_no' => $this->input->post('new_product_imei_no['.$i.']'),
+                'approved_by' => $this->input->post('new_approved_by['.$i.']'),
+                'customer_bank_name' => $this->input->post('new_customer_bank_name['.$i.']'),
+                'buyback_vendor_name' => $this->input->post('new_buyback_vendor_name['.$i.']'),
+                'swipe_card_number' => $this->input->post('new_swipe_card_number['.$i.']'),
+                'referral_name' => $this->input->post('new_referral_name['.$i.']'),
+                'finance_promoter_name' => $this->input->post('new_finance_promoter_name['.$i.']'),
+                'scheme_code' => $this->input->post('new_scheme_code['.$i.']'),
+                'entry_type' => 'New Added',
+                    'identry_type' => 1, // Add
+                );
+            $this->Sale_model->save_sale_payment_edit_history($sale_payment_edit_history);
+        }
+    }
+
+
+//        die('<pre>'.print_r($sale_payment_edit_history,1).'</pre>');
+
+
+    $sale_payment = [];
+    $payment_recon_new = [];
+    $edit_daybook_cash = [];
+//        $edit_daybook_cash = [];
+        // sale payment edit
+    for($i=0;$i<count($idedited_sale_payments);$i++){
+        if($idedited_sale_payments[$i] != 0){
+            $idedi = $idedited_sale_payments[$i];
+            $sale_payment_edit_history = array(
+                'idsale_payment' => $idedited_sale_payments[$i],
+                'idsale' => $idsale,
+                'date' => $date,
+                'idsale_edit_history' => $idsale_history,
+                'entry_time' => $datetime,
+                'inv_no' => $inv_no,
+                'idbranch' => $this->input->post('idbranch'),
+                'idpayment_head' => $this->input->post('idpayment_head['.$i.']'),
+                'idpayment_mode' => $this->input->post('idpayment_mode['.$i.']'),
+                'amount' => $this->input->post('edit_amount['.$i.']'),
+                'old_amount' => $this->input->post('old_edit_amount['.$i.']'),
+                'transaction_id' => $this->input->post('transaction_id['.$idedi.']'),
+                'old_transaction_id' => $this->input->post('old_transaction_id['.$idedi.']'),
+                'product_model_name' => $this->input->post('product_model_name['.$idedi.']'),
+                'product_imei_no' => $this->input->post('product_imei_no['.$idedi.']'),
+                'approved_by' => $this->input->post('approved_by['.$idedi.']'),
+                'customer_bank_name' => $this->input->post('customer_bank_name['.$idedi.']'),
+                'buyback_vendor_name' => $this->input->post('buyback_vendor_name['.$idedi.']'),
+                'swipe_card_number' => $this->input->post('swipe_card_number['.$idedi.']'),
+                'referral_name' => $this->input->post('referral_name['.$idedi.']'),
+                'finance_promoter_name' => $this->input->post('finance_promoter_name['.$idedi.']'),
+                'scheme_code' => $this->input->post('scheme_code['.$idedi.']'),
+                'old_product_model_name' => $this->input->post('old_product_model_name['.$idedi.']'),
+                'old_product_imei_no' => $this->input->post('old_product_imei_no['.$idedi.']'),
+                'old_approved_by' => $this->input->post('old_approved_by['.$idedi.']'),
+                'old_customer_bank_name' => $this->input->post('old_customer_bank_name['.$idedi.']'),
+                'old_buyback_vendor_name' => $this->input->post('old_buyback_vendor_name['.$idedi.']'),
+                'old_swipe_card_number' => $this->input->post('old_swipe_card_number['.$idedi.']'),
+                'old_referral_name' => $this->input->post('old_referral_name['.$idedi.']'),
+                'old_finance_promoter_name' => $this->input->post('old_finance_promoter_name['.$idedi.']'),
+                'old_scheme_code' => $this->input->post('old_scheme_code['.$idedi.']'),
+                'entry_type' => 'Edited',
+                    'identry_type' => 2, // Edited
+                );
+            $sale_payment[$i] = array(
+                'id_salepayment' => $idedited_sale_payments[$i],
+                'amount' => $this->input->post('edit_amount['.$i.']'),
+                'transaction_id' => $this->input->post('transaction_id['.$idedi.']'),
+                'product_model_name' => $this->input->post('product_model_name['.$idedi.']'),
+                'product_imei_no' => $this->input->post('product_imei_no['.$idedi.']'),
+                'approved_by' => $this->input->post('approved_by['.$idedi.']'),
+                'customer_bank_name' => $this->input->post('customer_bank_name['.$idedi.']'),
+                'swipe_card_number' => $this->input->post('swipe_card_number['.$idedi.']'),
+                'referral_name' => $this->input->post('referral_name['.$idedi.']'),
+                'finance_promoter_name' => $this->input->post('finance_promoter_name['.$idedi.']'),
+                'scheme_code' => $this->input->post('scheme_code['.$idedi.']'),
+            );
+            $payment_recon_new[$i] = array(
+                'idsale_payment' => $idedited_sale_payments[$i],
+                'amount' => $this->input->post('edit_amount['.$i.']'),
+                'transaction_id' => $this->input->post('transaction_id['.$idedi.']'),
+                'product_model_name' => $this->input->post('product_model_name['.$idedi.']'),
+                'product_imei_no' => $this->input->post('product_imei_no['.$idedi.']'),
+                'approved_by' => $this->input->post('approved_by['.$idedi.']'),
+                'customer_bank_name' => $this->input->post('customer_bank_name['.$idedi.']'),
+                'swipe_card_number' => $this->input->post('swipe_card_number['.$idedi.']'),
+                'referral_name' => $this->input->post('referral_name['.$idedi.']'),
+                'finance_promoter_name' => $this->input->post('finance_promoter_name['.$idedi.']'),
+                'scheme_code' => $this->input->post('scheme_code['.$idedi.']'),
+                'correction_date' => $date,
+            );
+            if($this->input->post('idpayment_head['.$i.']') == 1){
+                $cash_received = array(
+                    'received_amount' => $this->input->post('edit_amount['.$i.']'),
+                );
+                $sale_payment[$i] = array_merge($sale_payment[$i], $cash_received);
+                $payment_recon_new[$i] = array_merge($payment_recon_new[$i], $cash_received);
+                $edit_daybook_cash = array(
+//                        'idtable' => $idsale,
+                    'amount' => $this->input->post('edit_amount['.$i.']'),
+                );
+            }
+//                $this->Sale_model->edit_sale_payment($idedited_sale_payments[$i], $sale_payment);
+//                $this->Sale_model->edit_sale_reconciliation($idedited_sale_payments[$i], $sale_payment);
+            $this->Sale_model->save_sale_payment_edit_history($sale_payment_edit_history);
+        }
+    }
+//        die('<pre>'.print_r($sale_payment_edit_history,1).'</pre>');
+//        die('<pre>'.print_r($edit_daybook_cash,1).'</pre>');
+    if(count($edit_daybook_cash) > 0){
+        $this->Sale_model->edit_daybook_cash_byidtable_entry_type($idsale, 1, $edit_daybook_cash);
+    }
+
+//        if(count($sale_payment_edit_history) > 0){
+//            $this->Sale_model->save_sale_payment_edit_history($sale_payment_edit_history);
+//        }
+    if(count($sale_payment) > 0){
+        $this->Sale_model->batch_edit_sale_payment($sale_payment);
+    }
+    if(count($payment_recon_new) > 0){
+        $this->Sale_model->batch_edit_sale_reconciliation($payment_recon_new);
+    }
+//        if(count($edit_daybook_cash) > 0){
+//            $this->Sale_model->edit_daybook_cash_byidtable_entry_type($edit_daybook_cash);
+//        }
+
+    if(array_sum($idremoved_sale_payments) > 0){
+        $this->Sale_model->remove_sale_payment($idremoved_sale_payments);
+        $this->Sale_model->remove_payment_reconciliation($idremoved_sale_payments);
+    } 
+//        die('hi');
+    if ($this->db->trans_status() === FALSE){
+        $this->db->trans_rollback();
+        $this->session->set_flashdata('save_data', 'Invoice billing is aborted. Try again with same details');
+    }else{
+        $this->db->trans_commit();
+        $this->session->set_flashdata('save_data', 'Invoice bill generated');
+    }
+//        die('<pre>'.print_r($_POST,1).'</pre>');
+    return redirect('Sale/sale_details/'.$idsale);
+}
+public function ajax_check_valid_imei() {
+//        die(print_r($_POST));
+    $new_imei_no = $this->input->post('new_imei_no');
+    $idvariant = $this->input->post('idvariant');
+    $idgodown = $this->input->post('idgodown');
+    $idbranch  = $this->input->post('idbranch');
+    $res = $this->Sale_model->ajax_check_valid_imei($idbranch,$idgodown,$idvariant,$new_imei_no);
+//        die(count($res));
+    if(count($res)){
+        $q = 'Success';
+    }else{
+        $q = 'Failed';
+    }
+    echo json_encode($q);
+}
+public function edit_invoice1(){
+//        die('<pre>'.print_r($_POST,1).'</pre>');
+    $this->db->trans_begin();
+    $date = date('Y-m-d');
+    $datetime = date('Y-m-d H:i:s');
+    $inv_no = $this->input->post('inv_no');
+    $idsale = $this->input->post('idsale');
+    $idcustomer = $this->input->post('idcustomer');
+    $idremoved_sale_payments = $this->input->post('idremoved_sale_payments');
+    $idedited_sale_payments = $this->input->post('idedited_sale_payments');
+    $edited_idsaleproduct = $this->input->post('edited_idsaleproduct');
+    $edit_types = '';
+    if(array_sum($edited_idsaleproduct) > 0){
+        $edit_types .= 'Edit Product, ';
+    }
+    if(array_sum($idedited_sale_payments) > 0){
+        $edit_types .= 'Edit Payment, ';
+    }
+    if(array_sum($idremoved_sale_payments) > 0){
+        $edit_types .= 'Remove Payment';
+    }
+//        die($edit_types);
+        // remove entries
+    $sale_data = array(
+        'inv_no' => $inv_no,
+        'idsale' => $idsale,
+        'date' => $date,
+        'idcustomer' => $idcustomer,
+        'basic_total' => $this->input->post('basic_total'),
+        'old_basic_total' => $this->input->post('old_basic_total'),
+        'discount_total' => $this->input->post('discount_total'),
+        'old_discount_total' => $this->input->post('old_discount_total'),
+        'final_total' => $this->input->post('final_total'),
+        'old_final_total' => $this->input->post('old_final_total'),
+        'idbranch' => $this->input->post('idbranch'),
+        'entry_time' => $datetime,
+        'created_by' => $this->session->userdata('id_users'),
+        'edit_types' => $edit_types,
+    );
+    $sale_product = array();
+    if($idsale_history = $this->Sale_model->save_sale_edit_history_data($sale_data)){
+        $sale_product_edit_history = array(); 
+        for($i=0;$i<count($edited_idsaleproduct);$i++){
+            if($edited_idsaleproduct[$i] != 0){
+                $qty = $this->input->post('qty');
+                $old_qty = $this->input->post('old_qty');
+                $price = $this->input->post('price');
+                $old_price = $this->input->post('old_price');
+                $discount_amt = $this->input->post('discount_amt');
+                $old_discount_amt = $this->input->post('old_discount_amt');
+                if($qty != $old_qty || $price != $old_price || $discount_amt != $old_discount_amt){
+                    $sale_product_edit_history[] = array(
+                        'idsale_edit_history' => $idsale_history,
+                        'idsale_product' => $edited_idsaleproduct[$i],
+                        'idvariant' => $this->input->post('idvariant['.$i.']'),
+                        'product_name' => $this->input->post('product_name['.$i.']'),
+                        'imei_no' => $this->input->post('imei_no['.$i.']'),
+                        'qty' => $qty[$i],
+                        'old_qty' => $old_qty[$i],
+                        'price' => $price[$i],
+                        'old_price' => $old_price[$i],
+                        'discount_amt' => $discount_amt[$i],
+                        'old_discount_amt' => $old_discount_amt[$i],
+                        'basic' => $this->input->post('basic['.$i.']'),
+                        'old_basic' => $this->input->post('old_basic['.$i.']'),
+                        'total_amount' => $this->input->post('total_amount['.$i.']'),
+                        'old_total_amount' => $this->input->post('old_total_amount['.$i.']'),
+                    );
+                    $sale_product[] = array(
+                        'id_saleproduct' => $edited_idsaleproduct[$i],
+                        'qty' => $qty[$i],
+                        'price' => $price[$i],
+                        'discount_amt' => $discount_amt[$i],
+                        'basic' => $this->input->post('basic['.$i.']'),
+                        'total_amount' => $this->input->post('total_amount['.$i.']'),
+                    );
+                }
+            }
+        }
+        if(count($sale_product_edit_history) > 0){
+//                die('<pre>'.print_r($sale_product_edit_history,1).'</pre>');
+            $this->Sale_model->save_sale_product_edit_history($sale_product_edit_history);
+        }
+        $edit_sale = array(
+            'basic_total' => $this->input->post('basic_total'),
+            'discount_total' => $this->input->post('discount_total'),
+            'final_total' => $this->input->post('final_total'),
+        );
+        $this->Sale_model->edit_sale($idsale, $edit_sale);
+    }
+    $sale_payment_edit_history = array();
+    for($i=0;$i<count($idedited_sale_payments);$i++){
+        if($idedited_sale_payments[$i] != 0){
+            $idedi = $idedited_sale_payments[$i];
+            $sale_payment_edit_history[] = array(
+                'idsale_payment' => $idedited_sale_payments[$i],
+                'idsale' => $idsale,
+                'date' => $date,
+                'idsale_edit_history' => $idsale_history,
+                'entry_time' => $datetime,
+                'inv_no' => $inv_no,
+                'idbranch' => $this->input->post('idbranch'),
+                'idpayment_head' => $this->input->post('idpayment_head['.$i.']'),
+                'idpayment_mode' => $this->input->post('idpayment_mode['.$i.']'),
+                'amount' => $this->input->post('edit_amount['.$i.']'),
+                'old_amount' => $this->input->post('old_edit_amount['.$i.']'),
+                'transaction_id' => $this->input->post('transaction_id['.$idedi.']'),
+                'old_transaction_id' => $this->input->post('old_transaction_id['.$idedi.']'),
+                'product_model_name' => $this->input->post('product_model_name['.$idedi.']'),
+                'product_imei_no' => $this->input->post('product_imei_no['.$idedi.']'),
+                'approved_by' => $this->input->post('approved_by['.$idedi.']'),
+                'customer_bank_name' => $this->input->post('customer_bank_name['.$idedi.']'),
+                'buyback_vendor_name' => $this->input->post('buyback_vendor_name['.$idedi.']'),
+                'old_product_model_name' => $this->input->post('old_product_model_name['.$idedi.']'),
+                'old_product_imei_no' => $this->input->post('old_product_imei_no['.$idedi.']'),
+                'old_approved_by' => $this->input->post('old_approved_by['.$idedi.']'),
+                'old_customer_bank_name' => $this->input->post('old_customer_bank_name['.$idedi.']'),
+                'old_buyback_vendor_name' => $this->input->post('old_buyback_vendor_name['.$idedi.']'),
+                'entry_type' => 'Edited'
+            );
+            $sale_payment = array(
+                'amount' => $this->input->post('edit_amount['.$i.']'),
+                'transaction_id' => $this->input->post('transaction_id['.$idedi.']'),
+                'product_model_name' => $this->input->post('product_model_name['.$idedi.']'),
+                'product_imei_no' => $this->input->post('product_imei_no['.$idedi.']'),
+                'approved_by' => $this->input->post('approved_by['.$idedi.']'),
+                'customer_bank_name' => $this->input->post('customer_bank_name['.$idedi.']'),
+            );
+            $this->Sale_model->edit_sale_payment($idedited_sale_payments[$i], $sale_payment);
+            $this->Sale_model->edit_sale_reconciliation($idedited_sale_payments[$i], $sale_payment);
+        }
+    }
+//        $sale_payment_remove_history = array();
+    for($i=0;$i<count($idremoved_sale_payments);$i++){
+        if($idremoved_sale_payments[$i] != 0){
+            $idrem = $idremoved_sale_payments[$i];
+            $sale_payment_edit_history[] = array(
+                'idsale_payment' => $idremoved_sale_payments[$i],
+                'idsale' => $idsale,
+                'date' => $date,
+                'idsale_edit_history' => $idsale_history,
+                'entry_time' => $datetime,
+                'inv_no' => $inv_no,
+                'idbranch' => $this->input->post('idbranch'),
+                'idpayment_head' => $this->input->post('idpayment_head['.$i.']'),
+                'idpayment_mode' => $this->input->post('idpayment_mode['.$i.']'),
+                'amount' => $this->input->post('edit_amount['.$i.']'),
+                'old_amount' => $this->input->post('old_edit_amount['.$i.']'),
+                'old_transaction_id' => $this->input->post('old_transaction_id['.$idrem.']'),
+                'old_product_model_name' => $this->input->post('old_product_model_name['.$idrem.']'),
+                'old_product_imei_no' => $this->input->post('old_product_imei_no['.$idrem.']'),
+                'old_approved_by' => $this->input->post('old_approved_by['.$idrem.']'),
+                'old_customer_bank_name' => $this->input->post('old_customer_bank_name['.$idrem.']'),
+                'old_buyback_vendor_name' => $this->input->post('old_buyback_vendor_name['.$idrem.']'),
+                'entry_type' => 'Removed'
+            );
+        }
+        $this->Sale_model->remove_sale_payment($idremoved_sale_payments[$i]);
+        $this->Sale_model->remove_payment_reconciliation($idremoved_sale_payments[$i]);
+            // remved list need to enter
+    }
+    if($this->input->post('idpaymentmode')){
+        $idpaymentmode = $this->input->post('idpaymentmode');
+        $idpaymenthead = $this->input->post('idpaymenthead');
+        $tranxid = $this->input->post('tranxid');
+        $amount = $this->input->post('amount');
+        $credittype = $this->input->post('credittype');
+        for($i=0; $i<count($idpaymentmode);$i++){
+            $payment_receive=0;$received_amount=0;$pending_amt=$amount[$i];$received_entry_time=NULL;
+            if($idpaymentmode[$i] == 1){
+                $received_amount = $amount[$i];
+                $pending_amt=0;$received_entry_time=$datetime;$payment_receive=1;
+                $srpayment = array(
+                    'date' => $date,
                     'inv_no' => $inv_no,
+                    'entry_type' => 1,
+                    'idbranch' => $this->input->post('idbranch'),
+                    'idtable' => $idsale,
+                    'table_name' => 'sale',
+                    'amount' => $amount[$i],
+                );
+                $this->Sale_model->save_daybook_cash_payment($srpayment);
+            }
+            $payment = array(
+                'date' => $date,
+                'idsale' => $idsale,
+                'amount' => $amount[$i],
+                'idpayment_head' => $idpaymenthead[$i],
+                'idpayment_mode' => $idpaymentmode[$i],
+                'transaction_id' => $tranxid[$i],
+                'inv_no' => $inv_no,
+                'idcustomer' => $idcustomer,
+                'idbranch' => $this->input->post('idbranch'),
+                'created_by' => $this->input->post('created_by'),
+                'entry_time' => $datetime,
+                'received_amount' => $received_amount,
+                'received_entry_time'=>$received_entry_time,
+                'payment_receive' => $payment_receive,
+                'product_model_name' => $this->input->post('new_product_model_name['.$i.']'),
+                'product_imei_no' => $this->input->post('new_product_imei_no['.$i.']'),
+                'approved_by' => $this->input->post('new_approved_by['.$i.']'),
+                'customer_bank_name' => $this->input->post('new_customer_bank_name['.$i.']'),
+                'buyback_vendor_name' => $this->input->post('new_buyback_vendor_name['.$i.']'),
+            );
+            $id_sale_payment = $this->Sale_model->save_sale_payment($payment);
+            if($credittype[$i] == 0){
+                $npayment = array(
+                    'idsale_payment' => $id_sale_payment,
+                    'inv_no' => $inv_no,
+                    'idsale' => $idsale,
+                    'date' => $date,
                     'idcustomer' => $idcustomer,
                     'idbranch' => $this->input->post('idbranch'),
+                    'amount' => $amount[$i],
+                    'idpayment_head' => $idpaymenthead[$i],
+                    'idpayment_mode' => $idpaymentmode[$i],
+                    'transaction_id' => $tranxid[$i],
                     'created_by' => $this->input->post('created_by'),
                     'entry_time' => $datetime,
                     'received_amount' => $received_amount,
+                    'pending_amt' => $pending_amt,
                     'received_entry_time'=>$received_entry_time,
                     'payment_receive' => $payment_receive,
                     'product_model_name' => $this->input->post('new_product_model_name['.$i.']'),
@@ -4992,137 +4433,112 @@ public function edit_sale_customer() {
                     'customer_bank_name' => $this->input->post('new_customer_bank_name['.$i.']'),
                     'buyback_vendor_name' => $this->input->post('new_buyback_vendor_name['.$i.']'),
                 );
-                $id_sale_payment = $this->Sale_model->save_sale_payment($payment);
-                if($credittype[$i] == 0){
-                    $npayment = array(
-                        'idsale_payment' => $id_sale_payment,
-                        'inv_no' => $inv_no,
-                        'idsale' => $idsale,
-                        'date' => $date,
-                        'idcustomer' => $idcustomer,
-                        'idbranch' => $this->input->post('idbranch'),
-                        'amount' => $amount[$i],
-                        'idpayment_head' => $idpaymenthead[$i],
-                        'idpayment_mode' => $idpaymentmode[$i],
-                        'transaction_id' => $tranxid[$i],
-                        'created_by' => $this->input->post('created_by'),
-                        'entry_time' => $datetime,
-                        'received_amount' => $received_amount,
-                        'pending_amt' => $pending_amt,
-                        'received_entry_time'=>$received_entry_time,
-                        'payment_receive' => $payment_receive,
-                        'product_model_name' => $this->input->post('new_product_model_name['.$i.']'),
-                        'product_imei_no' => $this->input->post('new_product_imei_no['.$i.']'),
-                        'approved_by' => $this->input->post('new_approved_by['.$i.']'),
-                        'customer_bank_name' => $this->input->post('new_customer_bank_name['.$i.']'),
-                        'buyback_vendor_name' => $this->input->post('new_buyback_vendor_name['.$i.']'),
-                    );
-                    $this->Sale_model->save_payment_reconciliation($npayment);
-                }
-                $sale_payment_edit_history[] = array(
-                    'idsale_payment' => $id_sale_payment,
-                    'idsale' => $idsale,
-                    'date' => $date,
-                    'idsale_edit_history' => $idsale_history,
-                    'entry_time' => $datetime,
-                    'inv_no' => $inv_no,
-                    'idbranch' => $this->input->post('idbranch'),
-                    'idpayment_head' => $idpaymenthead[$i],
-                    'idpayment_mode' => $idpaymentmode[$i],
-                    'transaction_id' => $tranxid[$i],
-                    'amount' => $amount[$i],
-                    'product_model_name' => $this->input->post('new_product_model_name['.$i.']'),
-                    'product_imei_no' => $this->input->post('new_product_imei_no['.$i.']'),
-                    'approved_by' => $this->input->post('new_approved_by['.$i.']'),
-                    'customer_bank_name' => $this->input->post('new_customer_bank_name['.$i.']'),
-                    'buyback_vendor_name' => $this->input->post('new_buyback_vendor_name['.$i.']'),
-                    'entry_type' => 'New Added'
-                );
+                $this->Sale_model->save_payment_reconciliation($npayment);
             }
+            $sale_payment_edit_history[] = array(
+                'idsale_payment' => $id_sale_payment,
+                'idsale' => $idsale,
+                'date' => $date,
+                'idsale_edit_history' => $idsale_history,
+                'entry_time' => $datetime,
+                'inv_no' => $inv_no,
+                'idbranch' => $this->input->post('idbranch'),
+                'idpayment_head' => $idpaymenthead[$i],
+                'idpayment_mode' => $idpaymentmode[$i],
+                'transaction_id' => $tranxid[$i],
+                'amount' => $amount[$i],
+                'product_model_name' => $this->input->post('new_product_model_name['.$i.']'),
+                'product_imei_no' => $this->input->post('new_product_imei_no['.$i.']'),
+                'approved_by' => $this->input->post('new_approved_by['.$i.']'),
+                'customer_bank_name' => $this->input->post('new_customer_bank_name['.$i.']'),
+                'buyback_vendor_name' => $this->input->post('new_buyback_vendor_name['.$i.']'),
+                'entry_type' => 'New Added'
+            );
         }
-        if(count($sale_payment_edit_history) > 0){
-            $this->Sale_model->save_sale_payment_edit_history($sale_payment_edit_history);
-        }
-        if(count($sale_product) > 0){
-            $this->Sale_model->edit_sale_product($sale_product);
-        }
-        if ($this->db->trans_status() === FALSE){
-            $this->db->trans_rollback();
-            $this->session->set_flashdata('save_data', 'Invoice billing is aborted. Try again with same details');
-        }else{
-            $this->db->trans_commit();
-            $this->session->set_flashdata('save_data', 'Invoice bill generated');
-        }
-        return redirect('Sale/sale_details/'.$idsale);
     }
-    public function invoice_correction_report() {
-        $q['tab_active'] = 'Report';
-        $iduser = $_SESSION['id_users'];
-        if($_SESSION['level'] == 1){
-            $q['branch_data'] = $this->General_model->get_active_branch_data();
-        }elseif($_SESSION['level'] == 3){
-            $q['branch_data'] = $this->General_model->get_branches_by_user($iduser);
-        }
-        $this->load->view('report/invoice_correction_report', $q);
+    if(count($sale_payment_edit_history) > 0){
+        $this->Sale_model->save_sale_payment_edit_history($sale_payment_edit_history);
     }
-    public function ajax_invoice_correction_report(){
-        $idbranch = $this->input->post('idbranch');
-        $datefrom = $this->input->post('datefrom');
-        $dateto = $this->input->post('dateto');
-        $branches = $this->input->post('branches');
+    if(count($sale_product) > 0){
+        $this->Sale_model->edit_sale_product($sale_product);
+    }
+    if ($this->db->trans_status() === FALSE){
+        $this->db->trans_rollback();
+        $this->session->set_flashdata('save_data', 'Invoice billing is aborted. Try again with same details');
+    }else{
+        $this->db->trans_commit();
+        $this->session->set_flashdata('save_data', 'Invoice bill generated');
+    }
+    return redirect('Sale/sale_details/'.$idsale);
+}
+public function invoice_correction_report() {
+    $q['tab_active'] = 'Report';
+    $iduser = $_SESSION['id_users'];
+    if($_SESSION['level'] == 1){
+        $q['branch_data'] = $this->General_model->get_active_branch_data();
+    }elseif($_SESSION['level'] == 3){
+        $q['branch_data'] = $this->General_model->get_branches_by_user($iduser);
+    }
+    $this->load->view('report/invoice_correction_report', $q);
+}
+public function ajax_invoice_correction_report(){
+    $idbranch = $this->input->post('idbranch');
+    $datefrom = $this->input->post('datefrom');
+    $dateto = $this->input->post('dateto');
+    $branches = $this->input->post('branches');
 
-        $invoice_correction_data = $this->Sale_model->get_invoice_correction_report($idbranch, $datefrom, $dateto, $branches);
+    $invoice_correction_data = $this->Sale_model->get_invoice_correction_report($idbranch, $datefrom, $dateto, $branches);
 //        die('<pre>'.print_r($invoice_correction_data,1).'</pre>');
-        if(count($invoice_correction_data) > 0){ ?>
-            <thead>
-                <th>Sr</th>
-                <th>Entry Time</th>
-                <th>Invoice Time</th>
-                <th>Branch</th>
-                <th>Invoice No</th>
-                <th>Old Basic</th>
-                <th>Corrected Basic</th>
-                <th>Old Discount</th>
-                <th>Corrected Discount</th>
-                <th>Old final total</th>
-                <th>Corrected final total</th>
-                <th>Edit Type</th>
-                <th>Action</th>
-            </thead>
-            <tbody>
-                <?php $i=1; foreach ($invoice_correction_data as $inv){ ?>
-                    <tr>
-                        <td><?php echo $i; ?></td>
-                        <td><?php echo $inv->entry_time ?></td>
-                        <td><?php echo $inv->invoice_date ?></td>
-                        <td><?php echo $inv->branch_name ?></td>
-                        <td><?php echo $inv->inv_no ?></td>
-                        <td><?php echo $inv->old_basic_total ?></td>
-                        <td><?php echo $inv->basic_total ?></td>
-                        <td><?php echo $inv->old_discount_total ?></td>
-                        <td><?php echo $inv->discount_total ?></td>
-                        <td><?php echo $inv->old_final_total ?></td>
-                        <td><?php echo $inv->final_total ?></td>
-                        <td><?php echo $inv->edit_types ?></td>
-                        <td><a class="btn btn-floating" href="<?php echo base_url('Sale/invoice_correction_details/'.$inv->id_sale_edit_history) ?>" target="_blank"><i class="fa fa-info"></i></a></td>
-                    </tr>
-                    <?php $i++; } ?>
-                </tbody>
-            <?php }
-        }
-        public function invoice_correction_details($id_sale_edit_history){
-            $q['tab_active'] = 'Report';
-            $q['sale_product_edit'] = $this->Sale_model->get_sale_product_edit_history_byid($id_sale_edit_history);
-            $q['sale_payment_edit'] = $this->Sale_model->get_sale_payment_edit_history_byid($id_sale_edit_history);
-            $q['invoice_edit_details'] = $this->Sale_model->get_invoice_edit_details_byid($id_sale_edit_history);
-            $this->load->view('report/invoice_correction_details', $q);
-        }
-        
-        public function sale_einvoice_report(){
-            $q['tab_active'] = 'Report';
+    if(count($invoice_correction_data) > 0){ ?>
+        <thead>
+            <th>Sr</th>
+            <th>Entry Time</th>
+            <th>Invoice Time</th>
+            <th>Branch</th>
+            <th>Invoice No</th>
+            <th>Old Basic</th>
+            <th>Corrected Basic</th>
+            <th>Old Discount</th>
+            <th>Corrected Discount</th>
+            <th>Old final total</th>
+            <th>Corrected final total</th>
+            <th>Edit Type</th>
+            <th>Action</th>
+        </thead>
+        <tbody>
+            <?php $i=1; foreach ($invoice_correction_data as $inv){ ?>
+                <tr>
+                    <td><?php echo $i; ?></td>
+                    <td><?php echo $inv->entry_time ?></td>
+                    <td><?php echo $inv->invoice_date ?></td>
+                    <td><?php echo $inv->branch_name ?></td>
+                    <td><?php echo $inv->inv_no ?></td>
+                    <td><?php echo $inv->old_basic_total ?></td>
+                    <td><?php echo $inv->basic_total ?></td>
+                    <td><?php echo $inv->old_discount_total ?></td>
+                    <td><?php echo $inv->discount_total ?></td>
+                    <td><?php echo $inv->old_final_total ?></td>
+                    <td><?php echo $inv->final_total ?></td>
+                    <td><?php echo $inv->edit_types ?></td>
+                    <td><a class="btn btn-floating" href="<?php echo base_url('Sale/invoice_correction_details/'.$inv->id_sale_edit_history) ?>" target="_blank"><i class="fa fa-info"></i></a></td>
+                </tr>
+                <?php $i++; } ?>
+            </tbody>
+        <?php }
+    }
+    public function invoice_correction_details($id_sale_edit_history){
+        $q['tab_active'] = 'Report';
+        $q['sale_product_edit'] = $this->Sale_model->get_sale_product_edit_history_byid($id_sale_edit_history);
+        $q['sale_payment_edit'] = $this->Sale_model->get_sale_payment_edit_history_byid($id_sale_edit_history);
+        $q['invoice_edit_details'] = $this->Sale_model->get_invoice_edit_details_byid($id_sale_edit_history);
+        $this->load->view('report/invoice_correction_details', $q);
+    }
 
-            if($this->session->userdata('level') == 1){
-                $q['branch_data'] = $this->Audit_model->get_active_branch_data();
+    public function sale_einvoice_report(){
+        $q['tab_active'] = 'Report';
+
+        if($this->session->userdata('level') == 1){
+            $q['branch_data'] = $this->Audit_model->get_active_branch_data();
         }elseif($this->session->userdata('level') == 2){   // Branch Accountant
             $q['branch_data'] = $_SESSION['idbranch'];
         }elseif($this->session->userdata('level') == 3){ 
@@ -5364,7 +4780,7 @@ public function tally_sale_report(){
                 <tbody class="data_1">
                     <?php  $sr=1; $totalround = 0; $total =0; $total_base=0;$total_cgst=0;$total_sgst=0;$total_igst=0;$cmobine=0; $saleid=0;
                     foreach ($sale_data as $sale) { 
-                        
+
                         if($saleid != 0 && $saleid == $sale->idsale){
                             $cmobine = 1;
                         }
@@ -5529,7 +4945,7 @@ public function ajax_get_tally_sale_report(){
                     <?php  $sr=1; $totalround = 0; $total =0; $total_base=0;$total_cgst=0;$total_sgst=0;$total_igst=0;$cmobine=0; $saleid=0;
                     $old_inv=null;
                     foreach ($sale_data as $sale) { 
-                       
+
                         if($sale->is_mop == 1){
                             if($sale->total_amount > $sale->mop){
                                 $sale_amount = $sale->total_amount;
@@ -6044,7 +5460,7 @@ public function ageing_sale_report(){
           });
       </script> 
   <?php }
-  
+
 }
 
 public function corporate_sale_report(){
@@ -6153,7 +5569,7 @@ public function corporate_sale_report(){
           });
       </script> 
   <?php }
-  
+
 }
 
 
@@ -6641,7 +6057,7 @@ public function online_sale() {
             $models = $this->Sale_model->ajax_online_stock_data_byimei_branch($imei, $idbranch);
             if(count($models)){
                 foreach($models as $model){
-                    
+
                     $ageing_data = $this->Stock_model->get_ageing_stock_data($model->idproductcategory, $model->idbrand, $model->idmodel, $model->id_variant, $model->idbranch);
                     if($ageing_data){
                         $ageing = 1;
@@ -7191,7 +6607,7 @@ public function online_sale() {
         <?php }
         
         if(count($imei_history) > 0){ ?>
-            
+
             <div class="col-md-8 col-md-offset-2" style="padding: 0;">
                 <header>
                     <div class="text-center">

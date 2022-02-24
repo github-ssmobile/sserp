@@ -876,8 +876,9 @@ class Catalogue extends CI_Controller
             $this->General_model->save_db_variant_images($data);            
         }
         
-         $this->session->set_flashdata('save_data', 'Model Created');
-         return redirect('Catalogue/model_details');
+         // $this->session->set_flashdata('save_data', 'Model Created');
+         // return redirect('Catalogue/model_details');
+         return redirect('hb-item-master/'.$id_model);
     }else{
          $this->session->set_flashdata('save_data', 'Fail to create model');
     }
@@ -1016,8 +1017,9 @@ class Catalogue extends CI_Controller
         }
         
         
-        $this->session->set_flashdata('save_data', 'Model Updated');
-         return redirect('Catalogue/model_details');
+        // $this->session->set_flashdata('save_data', 'Model Updated');
+        //  return redirect('Catalogue/model_details');
+         return redirect('hb-item-master/'.$id_model);
          
     }else{
          $this->session->set_flashdata('save_data', 'Fail to update model');

@@ -24,8 +24,9 @@ class Hostbook_Acc_Model extends CI_Model {
 	function hbGenerateMaster($data, $Secret_Key) {
 		$url="https://sandboxin2accounts.hostbooks.in/hostbook/api/master/add";
 		$authorization = $Secret_Key;
-		print_r(json_encode($data));
 		$result = $this->rest->request($url, "POST", json_encode($data), 0, $authorization);
+		print_r(json_encode($data));
+		print_r(json_encode($result));
 		
 		$result = json_decode($result, true);
 		return $result;

@@ -29,6 +29,7 @@ class Hostbook_Api extends CI_Controller
         $to_comp_id= $this->common_model->getSingleRow('branch',array('id_branch'=>$to_branch));
 
         $hb_login_data=$this->hb_login($comp_id['idcompany']);
+        
         $from_comp_data= $this->common_model->getSingleRow('company',array('company_id'=>$comp_id['idcompany']));
         $to_comp_data= $this->common_model->getSingleRow('company',array('company_id'=>$to_comp_id['idcompany']));
         if(substr($to_comp_data['company_gstin'],0,2)!=substr($from_comp_data['company_gstin'],0,2)){
@@ -575,7 +576,7 @@ class Hostbook_Api extends CI_Controller
             $q['outward_data']= $this->Hostbook_Model->get_sale_byid($idoutword);
 
             // $q['sale_product']= $this->common_model->getRecords('sale_product','*',array('idsale'=>$q['outward_data'][0]->id_outward));
-                $q['sale_product'] = $this->Hostbook_Model->get_branch_sale_by_id($idallocation,$q['outward_data'][0]->id_outward);
+            $q['sale_product'] = $this->Hostbook_Model->get_branch_sale_by_id($idallocation,$q['outward_data'][0]->id_outward);
                 // print_r($q['sale_product']);die();
         }else{
             $q['outward_data']= $this->Hostbook_Model->get_outword_byid($idoutword);
@@ -676,315 +677,319 @@ class Hostbook_Api extends CI_Controller
                             <td><?php echo $sale_inv->inv_no;?></td>
                             <td><?php echo $sale_inv->customer_fname.' '.$sale_inv->customer_lname;?></td>
                             <td><?php echo $sale_inv->customer_gst;?></td>
-                            <td><button type="button" class="btn btn-sm btn-info generate-inv" data-id="<?php echo $sale_inv->id_sale;?>">Generate</button></td>
+                            <?php if(empty($eway_type_data)){ ?>                           
+                             <td><button type="button" class="btn btn-sm btn-info generate-inv" data-id="<?php echo $sale_inv->id_sale;?>">Generate</button></td>
+                         <?php }else{ ?>
+                            <td><button type="button" class="btn btn-sm btn-success" data-id="<?php echo $sale_inv->id_sale;?>" disabled>Generated</button></td>
+                        <?php } ?>
 
-                            <td> <?php if(!empty($eway_type_data)){ ?>
-                                <a href="<?php echo base_url().'Print-e-invoice/'.$sale_inv->id_sale.'/1'?>" target="_blank"><button type="button" class="btn btn-sm btn-success" data-id="<?php echo $sale_inv->id_sale;?>">Print</button></a><?php } ?>
-                            </td>
+                        <td> <?php if(!empty($eway_type_data)){ ?>
+                            <a href="<?php echo base_url().'Print-e-invoice/'.$sale_inv->id_sale.'/1'?>" target="_blank"><button type="button" class="btn btn-sm btn-success" data-id="<?php echo $sale_inv->id_sale;?>">Print</button></a><?php } ?>
+                        </td>
 
-                        </tr>
-                    <?php }  ?>
+                    </tr>
+                <?php }  ?>
 
-                </tbody>
-            </table>
-        <?php }  
+            </tbody>
+        </table>
+    <?php }  
 
-    }
+}
 
-    public function generateEinvoiceB2Bsale(){
+public function generateEinvoiceB2Bsale(){
 
-        for($g=0;$g<sizeof($this->input->post('id_sale'));$g++){
-            $id_sale=$this->input->post('id_sale')[$g];
-            $sale_inv_data= $this->common_model->getSingleRow('sale',array('id_sale'=>$id_sale));
-            $comp_id= $this->common_model->getSingleRow('branch',array('id_branch'=>$sale_inv_data['idbranch']));
+    for($g=0;$g<sizeof($this->input->post('id_sale'));$g++){
+        $id_sale=$this->input->post('id_sale')[$g];
+        $sale_inv_data= $this->common_model->getSingleRow('sale',array('id_sale'=>$id_sale));
+        $comp_id= $this->common_model->getSingleRow('branch',array('id_branch'=>$sale_inv_data['idbranch']));
 
-            $hb_login_data=$this->hb_einv_login($comp_id['idcompany']);
+        $hb_login_data=$this->hb_einv_login($comp_id['idcompany']);
 
-            if($hb_login_data['isSuccess']==1){
-                $hb_config_data= $this->common_model->getSingleRow('hostbook_config',array('company_id'=>$comp_id['idcompany'],'api_type'=>2));
-
-
-                $hbdata['hb_token']=$hb_login_data['hbLoginRes']['token'];
-                $hbdata['hb_userid']=$hb_login_data['hbLoginRes']['user_account_no'];
-                $ins= $this->common_model->updateRow('hostbook_config', $hbdata, array('company_id'=>$comp_id['idcompany'],'api_type'=>2));
-                $hb_auth_data=$this->hb_einv_authenticate($comp_id['idcompany']);
-                if($hb_auth_data['isSuccess']==1){
-
-                    $hb_einvdata['hb_einvtoken']=$hb_auth_data['hbToken'];
-                    $hb_einvdata['hb_einvsecretkey']=$hb_auth_data['hbsecretkey'];
-                    $auth_upd= $this->common_model->updateRow('hostbook_config', $hb_einvdata, array('company_id'=>$comp_id['idcompany'],'api_type'=>2));
-                    $hb_auth_token_data=$this->hb_einv_auth_token($comp_id['idcompany']);
-
-                    if($hb_auth_token_data['isSuccess']==1){
-
-                        $customer_data= $this->common_model->getSingleRow('customer',array('id_customer'=>$sale_inv_data['idcustomer']));
-
-                        $from_comp_data= $this->common_model->getSingleRow('company',array('company_id'=>$comp_id['idcompany']));
+        if($hb_login_data['isSuccess']==1){
+            $hb_config_data= $this->common_model->getSingleRow('hostbook_config',array('company_id'=>$comp_id['idcompany'],'api_type'=>2));
 
 
-                        $item_list=array();
-                        $ValDtls=array();
-                        $mainhsncode=0;
-                        $tot_bill_value=0;
-                        $tot_bill_value_tax=0;
-                        $itmNO=0;
-                        $tot_cgst=0;
-                        $tot_sgst=0;
-                        $tot_igst=0;
+            $hbdata['hb_token']=$hb_login_data['hbLoginRes']['token'];
+            $hbdata['hb_userid']=$hb_login_data['hbLoginRes']['user_account_no'];
+            $ins= $this->common_model->updateRow('hostbook_config', $hbdata, array('company_id'=>$comp_id['idcompany'],'api_type'=>2));
+            $hb_auth_data=$this->hb_einv_authenticate($comp_id['idcompany']);
+            if($hb_auth_data['isSuccess']==1){
 
-                        $sale_Product_data= $this->common_model->getRecords('sale_product','*',array('idsale'=>$sale_inv_data['id_sale']));
-                        foreach($sale_Product_data as $item_data){
-                            $itmNO=$itmNO+1;
-                            $product_data= $this->common_model->getSingleRow('model_variants',array('id_variant'=>$item_data['idvariant']));
-                            $hsn_data= $this->common_model->getSingleRow('category',array('id_category'=>$item_data['idcategory']));
+                $hb_einvdata['hb_einvtoken']=$hb_auth_data['hbToken'];
+                $hb_einvdata['hb_einvsecretkey']=$hb_auth_data['hbsecretkey'];
+                $auth_upd= $this->common_model->updateRow('hostbook_config', $hb_einvdata, array('company_id'=>$comp_id['idcompany'],'api_type'=>2));
+                $hb_auth_token_data=$this->hb_einv_auth_token($comp_id['idcompany']);
 
+                if($hb_auth_token_data['isSuccess']==1){
 
-                            $cgst_amt=$sgst_amt= $igst_amt=0;
+                    $customer_data= $this->common_model->getSingleRow('customer',array('id_customer'=>$sale_inv_data['idcustomer']));
 
-                            $doctype='INV';
-                            if(substr($customer_data['customer_gst'],0,2)==substr($hb_config_data['hb_gstid'],0,2)){                               
-                                $prod_cgst=$item_data['cgst_per'];
-                                $prod_sgst=$item_data['sgst_per'];
-                                $prod_igst=0;
-                                $gst=$prod_cgst+$prod_sgst;
-                                $gst_amount=($item_data['price']*$gst)/($gst+100);
-                                $cgst_amt= ($gst_amount/2);
-                                $sgst_amt= ($gst_amount/2);
-
-                            }else{
-                                $prod_cgst=0;
-                                $prod_sgst=0;
-                                $prod_igst=$item_data['igst_per'];
-                                $gst=$prod_igst;
-                                $gst_amount=($item_data['price']*$gst)/($gst+100);
-                                $igst_amt= ($gst_amount);
-                            }            
-
-                            $subSupplyType=1;
-                            $taxeble_amount=$item_data['price']-$gst_amount;
-                            $tot_bill_value=$tot_bill_value+$taxeble_amount;
-                            $tot_bill_value_tax=$tot_bill_value_tax+$item_data['price'];
-                            $tot_cgst=$tot_cgst+$cgst_amt;
-                            $tot_sgst=$tot_sgst+$sgst_amt;
-                            $tot_igst=$tot_igst+$igst_amt;
-
-                            $item_array=array(
-                                "SlNo"=> "$itmNO", 
-                                "PrdDesc"=> substr($product_data['full_name'],0,95), 
-                                "IsServc"=> 'N', 
-                                "HsnCd"=> $hsn_data['hsn'], 
-                                "Qty"=> $item_data['qty'], 
-                                "Unit"=> "NOS", 
-                                "UnitPrice"=> round($taxeble_amount), 
-                                "TotAmt"=> round($taxeble_amount),
-                                "AssAmt"=> round($taxeble_amount),
-                                "GstRt"=> $gst,
-                                "SgstAmt"=> round($sgst_amt), 
-                                "CgstAmt"=> round($cgst_amt), 
-                                "IgstAmt"=> round($igst_amt), 
-                                "TotItemVal"=> $item_data['price']
-                            );
-                            array_push($item_list,$item_array);
-
-                        }
-
-                        $ValDtls=array(
-                            "AssVal"   => round($tot_bill_value),
-                            "SgstVal"  => round($tot_sgst),
-                            "CgstVal"  => round($tot_cgst),
-                            "IgstVal"  => round($tot_igst),  
-                            "TotInvVal"=> round($tot_bill_value_tax)
-                        );
-
-                        $itmData=array();
-                        $TranDtls=array(
-                            "TaxSch"=>"GST",
-                            "SupTyp"=>"B2B",
-                            "RegRev"=>"N"
-                        );
-                        $DocDtls=array(
-                            "Typ"=> "INV",
-                            "No" => $sale_inv_data['inv_no'],
-                            "Dt" => date('d/m/Y',strtotime($sale_inv_data['date']))
-                        );
-
-                        $SellerDtls=array(
-                            "Gstin" => '27AADCK7940H006',
-// "Gstin" => $hb_config_data['hb_gstid'],
-                            "LglNm" => substr($comp_id['branch_name'],0,95),
-                            "TrdNm" => substr($comp_id['branch_name'],0,95),
-                            "Addr1" => substr($comp_id['branch_address'],0,95),
-                            "Loc"   => $comp_id['branch_state_name'],
-                            "Pin"   => $comp_id['branch_pincode'],
-                            "Stcd"  => substr($hb_config_data['hb_gstid'],0,2)
-
-                        );
-                        $BuyerDtls=array(
-                            "Gstin"=> $customer_data['customer_gst'],
-                            "LglNm"=> substr($customer_data['customer_fname'],0,95),
-                            "TrdNm"=> substr($customer_data['customer_fname'],0,95),
-                            "Pos"  => substr($customer_data['customer_gst'],0,2),
-                            "Addr1"=> substr($customer_data['customer_address'],0,95),
-                            "Loc"  => $customer_data['customer_state'],
-                            "Pin"  => $customer_data['customer_pincode'],
-                            "Stcd" => substr($customer_data['customer_gst'],0,2)
-                        );
-
-                        $api_data=array(
-                            "Version"   => '1.1',
-                            "TranDtls"  => $TranDtls,
-                            "DocDtls"   => $DocDtls,
-                            "SellerDtls"=> $SellerDtls,
-                            "BuyerDtls" => $BuyerDtls,
-                            "ItemList"  => $item_list,
-                            "ValDtls"  => $ValDtls
-
-                        );
-
-                        $Secret_Key=array('Secret-Key:'.$hb_config_data['hb_einvsecretkey'],'Authorization:Bearer '.$hb_config_data['hb_einvtoken']);
-                        $hb_einv_irn_data=$this->Hostbook_Model->hb_einv_irn_number($api_data,$Secret_Key);
+                    $from_comp_data= $this->common_model->getSingleRow('company',array('company_id'=>$comp_id['idcompany']));
 
 
-                        if($hb_einv_irn_data['isSuccess']==1){
+                    $item_list=array();
+                    $ValDtls=array();
+                    $mainhsncode=0;
+                    $tot_bill_value=0;
+                    $tot_bill_value_tax=0;
+                    $itmNO=0;
+                    $tot_cgst=0;
+                    $tot_sgst=0;
+                    $tot_igst=0;
 
-                            $eway_ins_data=array(
-                                "idoutword_no" => $sale_inv_data['id_sale'],
-                                "bill_type" => '3',
-                                "ewb_irnno" => $hb_einv_irn_data['respObj']['irn'],
-                                "ewb_signedInvoice" => $hb_einv_irn_data['respObj']['signedInvoice'],
-                                "ewb_signedQRCode" => $hb_einv_irn_data['respObj']['signedQRCode']
-                            );
+                    $sale_Product_data= $this->common_model->getRecords('sale_product','*',array('idsale'=>$sale_inv_data['id_sale']));
+                    foreach($sale_Product_data as $item_data){
+                        $itmNO=$itmNO+1;
+                        $product_data= $this->common_model->getSingleRow('model_variants',array('id_variant'=>$item_data['idvariant']));
+                        $hsn_data= $this->common_model->getSingleRow('category',array('id_category'=>$item_data['idcategory']));
 
-                            $ele = $this->common_model->insertRow($eway_ins_data,'eway_einvoice_data');
-                            $response['status']=true;
-                            $response['message']='E Invoice Bill Generated with IRN no '.$hb_einv_irn_data['respObj']['irn'];
+
+                        $cgst_amt=$sgst_amt= $igst_amt=0;
+
+                        $doctype='INV';
+                        if(substr($customer_data['customer_gst'],0,2)==substr($hb_config_data['hb_gstid'],0,2)){                               
+                            $prod_cgst=$item_data['cgst_per'];
+                            $prod_sgst=$item_data['sgst_per'];
+                            $prod_igst=0;
+                            $gst=$prod_cgst+$prod_sgst;
+                            $gst_amount=($item_data['price']*$gst)/($gst+100);
+                            $cgst_amt= ($gst_amount/2);
+                            $sgst_amt= ($gst_amount/2);
 
                         }else{
-                            $response['status']=false;
-                            $response['message']=$hb_einv_irn_data['txnOutcome'];
-                            echo json_encode($response);
-                            exit;
-                        }
+                            $prod_cgst=0;
+                            $prod_sgst=0;
+                            $prod_igst=$item_data['igst_per'];
+                            $gst=$prod_igst;
+                            $gst_amount=($item_data['price']*$gst)/($gst+100);
+                            $igst_amt= ($gst_amount);
+                        }            
+
+                        $subSupplyType=1;
+                        $taxeble_amount=$item_data['price']-$gst_amount;
+                        $tot_bill_value=$tot_bill_value+$taxeble_amount;
+                        $tot_bill_value_tax=$tot_bill_value_tax+$item_data['price'];
+                        $tot_cgst=$tot_cgst+$cgst_amt;
+                        $tot_sgst=$tot_sgst+$sgst_amt;
+                        $tot_igst=$tot_igst+$igst_amt;
+
+                        $item_array=array(
+                            "SlNo"=> "$itmNO", 
+                            "PrdDesc"=> substr($product_data['full_name'],0,95), 
+                            "IsServc"=> 'N', 
+                            "HsnCd"=> $hsn_data['hsn'], 
+                            "Qty"=> $item_data['qty'], 
+                            "Unit"=> "NOS", 
+                            "UnitPrice"=> round($taxeble_amount), 
+                            "TotAmt"=> round($taxeble_amount),
+                            "AssAmt"=> round($taxeble_amount),
+                            "GstRt"=> $gst,
+                            "SgstAmt"=> round($sgst_amt), 
+                            "CgstAmt"=> round($cgst_amt), 
+                            "IgstAmt"=> round($igst_amt), 
+                            "TotItemVal"=> $item_data['price']
+                        );
+                        array_push($item_list,$item_array);
+
+                    }
+
+                    $ValDtls=array(
+                        "AssVal"   => round($tot_bill_value),
+                        "SgstVal"  => round($tot_sgst),
+                        "CgstVal"  => round($tot_cgst),
+                        "IgstVal"  => round($tot_igst),  
+                        "TotInvVal"=> round($tot_bill_value_tax)
+                    );
+
+                    $itmData=array();
+                    $TranDtls=array(
+                        "TaxSch"=>"GST",
+                        "SupTyp"=>"B2B",
+                        "RegRev"=>"N"
+                    );
+                    $DocDtls=array(
+                        "Typ"=> "INV",
+                        "No" => $sale_inv_data['inv_no'],
+                        "Dt" => date('d/m/Y',strtotime($sale_inv_data['date']))
+                    );
+
+                    $SellerDtls=array(
+                        "Gstin" => '27AADCK7940H006',
+// "Gstin" => $hb_config_data['hb_gstid'],
+                        "LglNm" => substr($comp_id['branch_name'],0,95),
+                        "TrdNm" => substr($comp_id['branch_name'],0,95),
+                        "Addr1" => substr($comp_id['branch_address'],0,95),
+                        "Loc"   => $comp_id['branch_state_name'],
+                        "Pin"   => $comp_id['branch_pincode'],
+                        "Stcd"  => substr($hb_config_data['hb_gstid'],0,2)
+
+                    );
+                    $BuyerDtls=array(
+                        "Gstin"=> $customer_data['customer_gst'],
+                        "LglNm"=> substr($customer_data['customer_fname'],0,95),
+                        "TrdNm"=> substr($customer_data['customer_fname'],0,95),
+                        "Pos"  => substr($customer_data['customer_gst'],0,2),
+                        "Addr1"=> substr($customer_data['customer_address'],0,95),
+                        "Loc"  => $customer_data['customer_state'],
+                        "Pin"  => $customer_data['customer_pincode'],
+                        "Stcd" => substr($customer_data['customer_gst'],0,2)
+                    );
+
+                    $api_data=array(
+                        "Version"   => '1.1',
+                        "TranDtls"  => $TranDtls,
+                        "DocDtls"   => $DocDtls,
+                        "SellerDtls"=> $SellerDtls,
+                        "BuyerDtls" => $BuyerDtls,
+                        "ItemList"  => $item_list,
+                        "ValDtls"  => $ValDtls
+
+                    );
+
+                    $Secret_Key=array('Secret-Key:'.$hb_config_data['hb_einvsecretkey'],'Authorization:Bearer '.$hb_config_data['hb_einvtoken']);
+                    $hb_einv_irn_data=$this->Hostbook_Model->hb_einv_irn_number($api_data,$Secret_Key);
+
+
+                    if($hb_einv_irn_data['isSuccess']==1){
+
+                        $eway_ins_data=array(
+                            "idoutword_no" => $sale_inv_data['id_sale'],
+                            "bill_type" => '3',
+                            "ewb_irnno" => $hb_einv_irn_data['respObj']['irn'],
+                            "ewb_signedInvoice" => $hb_einv_irn_data['respObj']['signedInvoice'],
+                            "ewb_signedQRCode" => $hb_einv_irn_data['respObj']['signedQRCode']
+                        );
+
+                        $ele = $this->common_model->insertRow($eway_ins_data,'eway_einvoice_data');
+                        $response['status']=true;
+                        $response['message']='E Invoice Bill Generated with IRN no '.$hb_einv_irn_data['respObj']['irn'];
 
                     }else{
                         $response['status']=false;
-                        $response['message']='Host Book Authentication Failed';
+                        $response['message']=$hb_einv_irn_data['txnOutcome'];
                         echo json_encode($response);
                         exit;
                     }
+
                 }else{
                     $response['status']=false;
                     $response['message']='Host Book Authentication Failed';
                     echo json_encode($response);
                     exit;
                 }
-
             }else{
                 $response['status']=false;
-                $response['message']='Host Book Login Failed';
+                $response['message']='Host Book Authentication Failed';
                 echo json_encode($response);
                 exit;
             }
+
+        }else{
+            $response['status']=false;
+            $response['message']='Host Book Login Failed';
+            echo json_encode($response);
+            exit;
         }
-        echo json_encode($response);
-
-
     }
+    echo json_encode($response);
 
-    function eInvoiceEwayReport(){
 
-        $q['tab_active'] = '';
-        $q['company_data'] = $this->General_model->get_company_data();
-        $this->load->view('sale/sale_einvoice_eway_report',$q);
-    }
+}
 
-    function eInvoiceEwayReportData(){
-        $sale_id='';
-        $q['sale_inv_data']= $this->common_model->getRecords('eway_einvoice_data','*',array('bill_type'=>$this->input->post('billtype')));
-        if(!empty($q['sale_inv_data'])){ ?>
-            <table class="table table-bordered table-striped table-condensed table-info" id="sale_inv_data">
-                <thead style="background: #49c5bf;">
-                    <tr>
-                        <th>Sr No </th>
-                        <th>Invoice/DC No</th>
-                        <th>Date</th>
-                        <?php if($this->input->post('billtype')!=3){ ?>
-                            <th>EWAY Bill Id</th>
-                        <?php } ?>
-                        <?php if($this->input->post('billtype')==3 || $this->input->post('billtype')==1 ){ ?>
-                            <th>IRN No</th>
-                        <?php } ?>
-                        <?php if($this->input->post('billtype')!=3){ ?>
-                            <th>EWAY Print</th>
-                        <?php } ?>
-                        <?php if($this->input->post('billtype')==3 || $this->input->post('billtype')==1 ){ ?>
-                            <th>E Invoice Print</th>
-                        <?php } ?>
+function eInvoiceEwayReport(){
 
-                    </tr>
-                </thead>
-                <tbody class="data_1">
+    $q['tab_active'] = '';
+    $q['company_data'] = $this->General_model->get_company_data();
+    $this->load->view('sale/sale_einvoice_eway_report',$q);
+}
 
-                    <?php 
-                    $srno=0;
-                    $inv_no=0;
-                    $inv_date=0;
-                    foreach($q['sale_inv_data'] as $sale_inv){ 
-                        $srno=$srno+1;                
-                        if(($sale_inv['bill_type']!='3')){
-                            $out_data= $this->common_model->getSingleRow('outward',array('id_outward'=>$sale_inv['idoutword_no']));
-                            if(empty($out_data)){
-                                $out_data= $this->common_model->getSingleRow('transfer',array('id_transfer'=>$sale_inv['idoutword_no']));
-                                $inv_no=$out_data['id_transfer'];
-                                $inv_date=$out_data['date'];
-                            }else{
-                                $inv_no=$out_data['id_outward'];
-                                $inv_date=$out_data['date'];
-                            }
+function eInvoiceEwayReportData(){
+    $sale_id='';
+    $q['sale_inv_data']= $this->common_model->getRecords('eway_einvoice_data','*',array('bill_type'=>$this->input->post('billtype')));
+    if(!empty($q['sale_inv_data'])){ ?>
+        <table class="table table-bordered table-striped table-condensed table-info" id="sale_inv_data">
+            <thead style="background: #49c5bf;">
+                <tr>
+                    <th>Sr No </th>
+                    <th>Invoice/DC No</th>
+                    <th>Date</th>
+                    <?php if($this->input->post('billtype')!=3){ ?>
+                        <th>EWAY Bill Id</th>
+                    <?php } ?>
+                    <?php if($this->input->post('billtype')==3 || $this->input->post('billtype')==1 ){ ?>
+                        <th>IRN No</th>
+                    <?php } ?>
+                    <?php if($this->input->post('billtype')!=3){ ?>
+                        <th>EWAY Print</th>
+                    <?php } ?>
+                    <?php if($this->input->post('billtype')==3 || $this->input->post('billtype')==1 ){ ?>
+                        <th>E Invoice Print</th>
+                    <?php } ?>
 
-                        }else{
-                            $out_data= $this->common_model->getSingleRow('sale',array('id_sale'=>$sale_inv['idoutword_no']));
-                            $inv_no=$out_data['inv_no'];
+                </tr>
+            </thead>
+            <tbody class="data_1">
+
+                <?php 
+                $srno=0;
+                $inv_no=0;
+                $inv_date=0;
+                foreach($q['sale_inv_data'] as $sale_inv){ 
+                    $srno=$srno+1;                
+                    if(($sale_inv['bill_type']!='3')){
+                        $out_data= $this->common_model->getSingleRow('outward',array('id_outward'=>$sale_inv['idoutword_no']));
+                        if(empty($out_data)){
+                            $out_data= $this->common_model->getSingleRow('transfer',array('id_transfer'=>$sale_inv['idoutword_no']));
+                            $inv_no=$out_data['id_transfer'];
                             $inv_date=$out_data['date'];
-
+                        }else{
+                            $inv_no=$out_data['id_outward'];
+                            $inv_date=$out_data['date'];
                         }
 
+                    }else{
+                        $out_data= $this->common_model->getSingleRow('sale',array('id_sale'=>$sale_inv['idoutword_no']));
+                        $inv_no=$out_data['inv_no'];
+                        $inv_date=$out_data['date'];
 
-                        ?>
-
-                        <tr>
-                            <td><?php echo ' '.$srno;?></td>
-                            <td><?php echo $inv_no;?></td>
-                            <td><?php echo $inv_date;?></td>
-                            <?php if($this->input->post('billtype')!=3){ ?>
-                                <td><?php echo $sale_inv['ewb_no'];?></td>
-                            <?php } ?>
-                            <?php if($this->input->post('billtype')==3 || $this->input->post('billtype')==1 ){ ?>
-                                <td><?php echo $sale_inv['ewb_irnno'];?></td>
-                            <?php }
-                            if(($sale_inv['bill_type']!='3')){ ?>
-                                <td> <a href="<?php echo base_url().'Print-e-way/'.$sale_inv['ewb_no'].'/1'?>" target="_blank"><button type="button" class="btn btn-sm btn-success" data-id="<?php echo $sale_inv['idoutword_no'];?>">Print</button></a></td>
-                            <?php } ?>                              
-
-                            <td> <?php
-                            if(!empty($sale_inv['ewb_irnno'])){
-                                if(($sale_inv['bill_type']=='3')){ ?>
-                                    <a href="<?php echo base_url().'Print-e-invoice/'.$sale_inv['idoutword_no'].'/1'?>" target="_blank"><button type="button" class="btn btn-sm btn-success" data-id="<?php echo $sale_inv['idoutword_no'];?>">Print</button></a>
-                                <?php }else{ ?>
-
-                                    <a href="<?php echo base_url().'Print-e-invoice/'.$sale_inv['idoutword_no'].'/1'?>" target="_blank"><button type="button" class="btn btn-sm btn-success" data-id="<?php echo $sale_inv['idoutword_no'];?>">Print</button></a>
-                                <?php } 
-                            } ?>
-                        </td>
+                    }
 
 
-                    </tr>
-                    <?php 
-                } ?>
+                    ?>
 
-            </tbody>
-        </table>
-    <?php }  
+                    <tr>
+                        <td><?php echo ' '.$srno;?></td>
+                        <td><?php echo $inv_no;?></td>
+                        <td><?php echo $inv_date;?></td>
+                        <?php if($this->input->post('billtype')!=3){ ?>
+                            <td><?php echo $sale_inv['ewb_no'];?></td>
+                        <?php } ?>
+                        <?php if($this->input->post('billtype')==3 || $this->input->post('billtype')==1 ){ ?>
+                            <td><?php echo $sale_inv['ewb_irnno'];?></td>
+                        <?php }
+                        if(($sale_inv['bill_type']!='3')){ ?>
+                            <td> <a href="<?php echo base_url().'Print-e-way/'.$sale_inv['ewb_no'].'/1'?>" target="_blank"><button type="button" class="btn btn-sm btn-success" data-id="<?php echo $sale_inv['idoutword_no'];?>">Print</button></a></td>
+                        <?php } ?>                              
+
+                        <td> <?php
+                        if(!empty($sale_inv['ewb_irnno'])){
+                            if(($sale_inv['bill_type']=='3')){ ?>
+                                <a href="<?php echo base_url().'Print-e-invoice/'.$sale_inv['idoutword_no'].'/1'?>" target="_blank"><button type="button" class="btn btn-sm btn-success" data-id="<?php echo $sale_inv['idoutword_no'];?>">Print</button></a>
+                            <?php }else{ ?>
+
+                                <a href="<?php echo base_url().'Print-e-invoice/'.$sale_inv['idoutword_no'].'/1'?>" target="_blank"><button type="button" class="btn btn-sm btn-success" data-id="<?php echo $sale_inv['idoutword_no'];?>">Print</button></a>
+                            <?php } 
+                        } ?>
+                    </td>
+
+
+                </tr>
+                <?php 
+            } ?>
+
+        </tbody>
+    </table>
+<?php }  
 
 }
 

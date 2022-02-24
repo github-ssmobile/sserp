@@ -126,6 +126,8 @@ class Hostbook_Model extends CI_Model {
 	function getSaleInvoiceData($fromdate,$todate,$idcompany,$sale_id){
 		return $this->db->select('id_sale, inv_no, `date`, customer_fname, customer_lname, customer_gst')->where('`date` between "'.$fromdate.'" and "'.$todate.'"')
 		->where(' customer_gst!=""')
+		 ->where('sale.idbranch = branch.id_branch')->from('branch')
+		 ->where('idcompany',$idcompany)
 		->order_by('id_sale','desc')
 		->get('sale')->result();
 	}

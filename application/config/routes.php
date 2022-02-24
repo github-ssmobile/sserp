@@ -83,6 +83,8 @@ $route['e-invoice-eway-report-data'] = 'Hostbook_Api/eInvoiceEwayReportData';
 
 //Hostbook Account Integration Start ************************160222
 $route['hb-vendour-master/(:any)'] = 'Hostbook_Acc_Api/HBVendour_Master/$1';
+$route['hb-item-master/(:any)'] = 'Hostbook_Acc_Api/HBItem_Master/$1';
 
 
 //Hostbook Account Integration End ************************
+http://117.247.90.162:8800/erp/Stock_allocation/model_allocation

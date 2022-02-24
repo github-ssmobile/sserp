@@ -32,8 +32,8 @@
             }else{
                alert("Select User Role");
                return false;
-            }
-        });
+           }
+       });
     });
 </script>
 <center><h3><span class="mdi mdi-account-circle fa-lg"></span> User Details</h3></center><hr>
@@ -47,13 +47,15 @@
             </div>
             <div class="col-md-6">
                 <div class="thumbnail">
+                    
                     <center><h4><span class="mdi mdi-account-edit" style="font-size: 28px"></span> Add User</h4></center><hr>
+             
                     <label class="col-md-4">User Role</label>
                     <div class="col-md-8">
                         <select class="select form-control" name="role" id="role" required="">
                             <?php if($this->session->userdata('level') == 2){ ?> 
-                            <option value="">Select Role</option>
-                            <?php foreach($user_role as $role){ if($role->id_userrole == 17){ ?>
+                                <option value="">Select Role</option>
+                                <?php foreach($user_role as $role){ if($role->id_userrole == 17){ ?>
                                     <option value="<?php echo $role->id_userrole ?>" level="<?php echo $role->level ?>"><?php echo $role->role ?></option>
                                 <?php }} ?>
                             <?php }else{ ?>
@@ -103,30 +105,43 @@
         <div class="col-md-3">
             <select class="form-control input-sm" id="idrole" name="idrole">
                 <option value="">Select Role</option>
-                <?php foreach($user_role as $urole){ ?>
-                <option value="<?php echo $urole->id_userrole ?>"><?php echo $urole->role?></option>
-                <?php } ?>
-            </select>
-        </div>
-        <div class="col-md-4">
-            <div class="input-group">
-                <div class="input-group-btn">
-                    <a class="btn-sm" >
-                        <i class="fa fa-search"></i> Search
-                    </a>
-                </div>
-                <input type="text" name="search" id="filter_1" class="form-control" placeholder="Search from table">
+
+                <?php 
+                if($this->session->userdata('idrole') == 30){ 
+                    foreach($user_role as $urole){
+                        if($urole->id_userrole == 17){
+                         ?>
+                         <option value="<?php echo $urole->id_userrole ?>"><?php echo $urole->role?></option>
+                     <?php }
+                 }
+             }else{  
+                foreach($user_role as $urole){ ?>
+                    <option value="<?php echo $urole->id_userrole ?>"><?php echo $urole->role?></option> 
+                <?php  }
+            }
+            ?>
+        </select>
+    </div>
+    <div class="col-md-4">
+        <div class="input-group">
+            <div class="input-group-btn">
+                <a class="btn-sm" >
+                    <i class="fa fa-search"></i> Search
+                </a>
             </div>
+            <input type="text" name="search" id="filter_1" class="form-control" placeholder="Search from table">
         </div>
-        <div class="col-md-3">
-            <div id="count_1" class="text-info"></div>
-        </div>
-        <div class="col-md-2">
-            <button class="btn btn-primary btn-sm" onclick="javascript:xport.toCSV('user_data');"><span class="fa fa-file-excel-o"></span> Excel</button>
-        </div>
-        <a class="pull-right arrow-down thumbnail waves-effect simple-tooltip btn-block" onclick="this.classList.toggle('active')" data-toggle="collapse" data-target="#pay" title="Add Branch" style="margin-bottom: 2px"></a>
-        <div class="clearfix"></div>
-        <div id="userdata"></div>
+    </div>
+    <div class="col-md-3">
+        <div id="count_1" class="text-info"></div>
+    </div>
+    <div class="col-md-2">
+        <button class="btn btn-primary btn-sm" onclick="javascript:xport.toCSV('user_data');"><span class="fa fa-file-excel-o"></span> Excel</button>
+    </div>
+    <?php if($this->session->userdata('idrole') != 30){ ?> <a class="pull-right arrow-down thumbnail waves-effect simple-tooltip btn-block" onclick="this.classList.toggle('active')" data-toggle="collapse" data-target="#pay" title="Add Branch" style="margin-bottom: 2px"></a>
+<?php } ?>
+    <div class="clearfix"></div>
+    <div id="userdata"></div>
 <!--        <table id="user_data" class="table table-condensed table-full-width table-bordered table-responsive table-hover">
             <thead>
                 <th>Sr</th>

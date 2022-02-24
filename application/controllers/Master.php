@@ -195,6 +195,7 @@ class Master extends CI_Controller {
         $q['tab_active'] = '';
         $q['user_role'] = $this->General_model->get_user_role();
         $q['user_data'] = $this->General_model->get_user_all_data();
+       
         $this->load->view('master/user_details', $q);
     }
     public function edit_user_details($iduser) {
