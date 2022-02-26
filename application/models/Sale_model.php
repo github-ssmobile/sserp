@@ -85,7 +85,7 @@ class Sale_model extends CI_Model {
         return $this->db->where('id_customer', $idcustomer)->get('customer')->result();
     }
     public function get_state_bystate_name($state_name) {
-        return $this->db->like('state_name', $state_name)->get('state')->row();
+        return $this->db->where('state_name', $state_name)->get('state')->row();
     }
     public function ajax_stock_data_byimei_branch($imei, $branch){
         return $this->db->where('imei_no', $imei)->where('idbranch', $branch)
