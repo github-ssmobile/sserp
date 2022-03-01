@@ -81,3 +81,9 @@ $route['e-invoice-eway-report-data'] = 'Hostbook_Api/eInvoiceEwayReportData';
 
 
 //Hostbook Integration End ************************
+
+
+//BFL Integration
+
+$route['bfl_sku_mapping'] = 'Bfl_Api/group_code_to_sku_details_api';
+$route['bfl_store_mapping'] = 'Bfl_Api/group_code_to_child_dealer_mapping_api';
