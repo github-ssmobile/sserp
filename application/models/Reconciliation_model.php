@@ -101,7 +101,7 @@ class Reconciliation_model extends CI_Model{
         return $this->db->where('idbranch',$idbranch)->update('cash_closure', $dtata);
     }
     public function get_sum_cash_closure_bystatus_idbranch($idbranch, $status) {
-        return $this->db->select('closure_cash as pending_closure_cash, idcombine, id_cash_closure')->where('idbranch',$idbranch)->where('status', $status)->get('cash_closure')->result();
+        return $this->db->select('closure_cash as pending_closure_cash, idcombine, id_cash_closure,date as closure_date')->where('idbranch',$idbranch)->where('status', $status)->get('cash_closure')->result();
     }
 //    public function get_todays_cash_deposit_byidbranch($idbranch) {
 //        return $this->db->select('SUM(deposit_cash) as sum_deposit_cash')->where('idbranch',$idbranch)->get('cash_deposite_to_bank')->row();
@@ -931,15 +931,57 @@ class Reconciliation_model extends CI_Model{
             $branch_arr[] = $idbranch;
         }
         if($datefrom == '' && $dateto == ''){
-            return $this->db->select('bank.bank_name,branch.branch_name,cash_deposite_to_bank.*')
+            $result =  $this->db->select('bank.bank_name,branch.branch_name,cash_deposite_to_bank.*')
                         ->where_in('cash_deposite_to_bank.idbranch', $branch_arr)
                         ->where('cash_deposite_to_bank.reconciliation_status = 0')
                         ->where('cash_deposite_to_bank.idbank = bank.id_bank')
                         ->where('cash_deposite_to_bank.idbranch = branch.id_branch')
                         ->from('branch')->from('bank')
                         ->get('cash_deposite_to_bank')->result();
+            
+              $i = 0;
+            foreach($result as $dc){
+                
+                $result1 = $this->db->select('daybook_cash.*')
+                                   ->where('daybook_cash.date =', $dc->cash_closure_date)
+                                   ->where('daybook_cash.idbranch =', $dc->idbranch)
+                                   ->where('daybook_cash.entry_type =','10')
+                                   ->get('daybook_cash')->result();
+                
+                
+                $result2 = $this->db->select('cash_closure.*')
+                                   ->where('cash_closure.date =', $dc->cash_closure_date)
+                                   ->where('cash_closure.idbranch =', $dc->idbranch)
+                                   ->get('cash_closure')->result();
+                
+               
+                if(!empty($result1)){
+                $acc_amount = $result1[0]->amount;
+                }else{
+                $acc_amount = 0;   
+                }
+                
+                
+                if(!empty($result2)){
+                $avilable = $result2[0]->closure_cash;    
+                $handset_amnt = $avilable -$acc_amount;
+                }else{
+                $total_cash_cl = $dc->total_closure_cash; 
+                $avilable = 0;
+                $handset_amnt = $total_cash_cl - $avilable;
+                }
+                
+                
+                $result[$i]->acc_closure_cash = $acc_amount;
+                $result[$i]->closure_cash_handset = $handset_amnt;
+                $i++;
+            }
+            return $result;
+            
+            
         }else{
-            return $this->db->select('bank.bank_name,branch.branch_name,cash_deposite_to_bank.*')
+            //die('ddd');
+            $result = $this->db->select('bank.bank_name,branch.branch_name,cash_deposite_to_bank.*')
                         ->where_in('cash_deposite_to_bank.idbranch', $branch_arr)
                         ->where('cash_deposite_to_bank.date >=', $datefrom)
                         ->where('cash_deposite_to_bank.date <=', $dateto)
@@ -948,6 +990,47 @@ class Reconciliation_model extends CI_Model{
                         ->where('cash_deposite_to_bank.idbranch = branch.id_branch')
                         ->from('branch')->from('bank')
                         ->get('cash_deposite_to_bank')->result();
+//            echo '<pre>';
+//            print_r($result);die;
+
+            $i = 0;
+            foreach($result as $dc){
+                
+                $result1 = $this->db->select('daybook_cash.*')
+                                   ->where('daybook_cash.date =', $dc->cash_closure_date)
+                                   ->where('daybook_cash.idbranch =', $dc->idbranch)
+                                   ->where('daybook_cash.entry_type =','10')
+                                   ->get('daybook_cash')->result();
+                 
+                
+                $result2 = $this->db->select('cash_closure.*')
+                                   ->where('cash_closure.date =', $dc->cash_closure_date)
+                                   ->where('cash_closure.idbranch =', $dc->idbranch)
+                                   ->get('cash_closure')->result();
+                
+               
+                if(!empty($result1)){
+                $acc_amount = $result1[0]->amount;
+                }else{
+                $acc_amount = 0;   
+                }
+                
+                
+                if(!empty($result2)){
+                $avilable = $result2[0]->closure_cash;    
+                $handset_amnt = $avilable -$acc_amount;
+                }else{
+                $total_cash_cl = $dc->total_closure_cash; 
+                $avilable = 0;
+                $handset_amnt = $total_cash_cl - $avilable;
+                }
+                
+                
+                $result[$i]->acc_closure_cash = $acc_amount;
+                $result[$i]->closure_cash_handset = $handset_amnt;
+                $i++;
+            }
+            return $result;
         }
     }
     public function ajax_get_cash_reconciled_report($idbranch, $idbranches, $datefrom, $dateto) {
@@ -1482,6 +1565,11 @@ class Reconciliation_model extends CI_Model{
                         ->where('payment_reconciliation.idbranch = branch.id_branch')->from('branch')
                         ->where('payment_reconciliation.idpayment_mode = payment_mode.id_paymentmode')->from('payment_mode')
                         ->get('payment_reconciliation')->result();
+    }
+    
+    public function get_accessories_cash_deposite_byidbranch($idbranch) {
+        //die('ddd');
+        return $this->db->where('idbranch',$idbranch)->get('daybook_cash')->result();
     }
    
 }

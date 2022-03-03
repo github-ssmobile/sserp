@@ -23,13 +23,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
+
 $ark_root = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
 $ark_root .= "://" . $_SERVER['HTTP_HOST'];
 $ark_root .= str_replace(basename($_SERVER['SCRIPT_NAME']), "", $_SERVER['SCRIPT_NAME']);
 $config['base_url'] = $ark_root;
 
+
 $config['image_url'] = 'assets/product_images/';
-$config['erpaccessories_url'] = 'http://192.168.1.144:8088/ssweb/index.php/';
+
 /*
 |--------------------------------------------------------------------------
 | Index File
@@ -384,9 +386,8 @@ $config['encryption_key'] = '';
 */
 $config['sess_driver'] = 'files';
 $config['sess_cookie_name'] = 'ci_session';
-$config['sess_expiration'] = 7200;
-//$config['sess_save_path'] = NULL;
-$config['sess_save_path'] = APPPATH . 'cache';
+$config['sess_expiration'] = 72000;
+$config['sess_save_path'] = NULL;
 $config['sess_match_ip'] = FALSE;
 $config['sess_time_to_update'] = 300;
 $config['sess_regenerate_destroy'] = FALSE;

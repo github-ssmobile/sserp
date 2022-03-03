@@ -3,7 +3,17 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+
             <file>file:/C:/iPalace/xampp/htdocs/sserp/application/config/routes.php</file>
+
+            <file>file:/C:/xampp/htdocs/sserp/application/views/payment/cash_closure.php</file>
+            <file>file:/C:/xampp/htdocs/sserp/application/views/master/vendor_details.php</file>
+            <file>file:/C:/xampp/htdocs/sserp/application/controllers/Accessories_deposite.php</file>
+            <file>file:/C:/xampp/htdocs/sserp/application/models/Report_model.php</file>
+            <file>file:/C:/xampp/htdocs/sserp/application/config/config.php</file>
+            <file>file:/C:/xampp/htdocs/sserp/application/controllers/Customer_loyalty.php</file>
+            <file>file:/C:/xampp/htdocs/sserp/application/controllers/Payment.php</file>
+
         </group>
     </open-files>
 </project-private>

@@ -35,6 +35,9 @@
         $pending_closure_cash = $sum_cash_closure[0]->pending_closure_cash;
         $idcombine = $sum_cash_closure[0]->idcombine;
         $id_cash_closure = $sum_cash_closure[0]->id_cash_closure;
+        $closure_date_cash =   $sum_cash_closure[0]->closure_date;
+    }else{
+        $closure_date_cash = "";
     }
 //    $available = $total_daybook + $todays_sale + $todays_salesreturn + $credit_rec + $pending_closure_cash;
 ?>
@@ -149,6 +152,7 @@
             </div>
             
             <div class="clearfix"></div><hr>
+            <input type="hidden" name="cash_closure_date" value="<?php echo $closure_date_cash ?>" />
             <input type="hidden" name="refid" value="<?php echo $idcombine ?>" />
             <input type="hidden" name="id_cash_closure" value="<?php echo $id_cash_closure ?>" />
             <input type="hidden" name="idbranch" value="<?php echo $this->session->userdata('idbranch') ?>" />

@@ -466,7 +466,12 @@ class Report extends CI_Controller {
         // Credit buyback receive
         $daybook_credit_buyback_recieve_report = $this->Report_model->ajax_get_daybook_credit_buyback_recieve_report($datefrom,$dateto,$idbranch,$branches);
         // die(print_r($daybook_expense_report));
-        $amt=array();$ssramt=array();$amt[0]=0;$ssramt[0]=0;$sramt=0;$expamt=0;$depositamt=0;$cppramt=0;$adv_bookamt[0]=0;$advref=0;$totaladv_book[0]=0; ?>
+        
+        // accessories cash
+        $daybook_accessories_report = $this->Report_model->ajax_get_daybook_accessories_report($datefrom,$dateto,$idbranch,$branches);
+        //print_r($daybook_accessories_report);die;
+        
+        $amt=array();$ssramt=array();$amt[0]=0;$ssramt[0]=0;$sramt=0;$expamt=0;$depositamt=0;$accessamt=0;$cppramt=0;$adv_bookamt[0]=0;$advref=0;$totaladv_book[0]=0; ?>
         <thead class="fixedelement">
             <th>Date</th>
             <th>Branch</th>
@@ -485,6 +490,7 @@ class Report extends CI_Controller {
                 <th><?php echo $opening_cash_bydate->daybook_cash ?></th>
             </tr>
             <?php
+                      
 // Sale Daybook
             if(count($daybook_report) > 0){ ?>
             <tr class="bg-green">
@@ -687,6 +693,38 @@ class Report extends CI_Controller {
                 <td colspan="<?php echo $payment_mode_count + 4; ?>"><h5 class="red-text"><i class="mdi mdi-alert"></i> Cash Payment Received Record Not Found...</h5></td>
             </tr>-->
             <?php } 
+            
+            
+  // Accessories daybook
+            if(count($daybook_accessories_report) > 0){ ?>
+            <tr class="bg-green">
+                 <td colspan="3"><h4 style="margin: 0;color: #1d4cc2; font-family: Kurale"><i class="mdi mdi-plus-circle-outline"></i> Accessories Cash</h4></td>
+                <td>Cash</td>
+                <td colspan="<?php echo $payment_mode_count; ?>"></td>
+            </tr>
+            <?php foreach ($daybook_accessories_report as $access_cash) { ?>
+            <tr>
+                <td><?php echo $access_cash->date ?> </td>
+                <td><?php echo $access_cash->branch_name ?> </td>
+                <td></td>
+                <td><?php echo $access_cash->access_cash; $accessamt = $accessamt + $access_cash->access_cash; ?></td>
+//                <?php for($i=1; $i < count($mode_name); $i++){ echo '<td></td>'; } ?>
+                <td><?php  echo $access_cash->access_cash; ?> </td>
+            </tr>
+            <?php } ?> 
+            <tr>
+                <th></th>
+                <th colspan="2" >Total Accessories Cash</th>
+                <th><?php echo $accessamt; ?></th>
+                <?php for($i=1; $i < count($mode_name); $i++){ echo '<td></td>'; } ?>
+                <th><?php echo $accessamt; ?></th>
+            </tr>
+            <?php // }else{ ?>
+<!--            <tr>
+                <td colspan="<?php echo $payment_mode_count + 4; ?>"><h5 class="red-text"><i class="mdi mdi-alert"></i> Expense Daybook Record Not Found...</h5></td>
+            </tr>-->
+             <?php }          
+            
 // Deposite to bank daybook
             if(count($daybook_deposite_to_bank_report) > 0){ ?>
             <tr class="bg-danger" style=" color: #AC3F34">
@@ -721,7 +759,7 @@ class Report extends CI_Controller {
                 <th></th><th></th>
                 <th>Available Cash</th>
                 <th><?php 
-                        $total_cash = $opening_cash_bydate->daybook_cash  + $amt[0] + $ssramt[0] + $cppramt - $sramt - $expamt - $depositamt + $adv_bookamt[0] - $advref;
+                        $total_cash = $opening_cash_bydate->daybook_cash  + $amt[0] + $ssramt[0] + $cppramt - $sramt - $expamt - $depositamt + $adv_bookamt[0] - $advref + $accessamt;
                         echo $total_cash; ?>
                 </th>
                 <?php $sale_amount = 0;$creditr_amount = 0;$totaladv_bookamt=0;
@@ -3991,7 +4029,10 @@ class Report extends CI_Controller {
         // Credit buyback receive
         $daybook_credit_buyback_recieve_report = $this->Report_model->ajax_get_daybook_credit_buyback_recieve_summary_report($datefrom,$dateto,$idbranch,$branches);
         // die(print_r($daybook_expense_report));
-        $amt=array();$ssramt=array();$amt[0]=0;$ssramt[0]=0;$sramt=0;$expamt=0;$depositamt=0;$cppramt=0;$adv_bookamt[0]=0;$advref=0;$totaladv_book[0]=0; ?>
+        // accessories cash
+        $daybook_accessories_report = $this->Report_model->ajax_get_daybook_accessories_report($datefrom,$dateto,$idbranch,$branches);
+        //print_r($daybook_accessories_report);die;
+        $amt=array();$ssramt=array();$amt[0]=0;$ssramt[0]=0;$sramt=0;$expamt=0;$depositamt=0;$accessamt=0;$cppramt=0;$adv_bookamt[0]=0;$advref=0;$totaladv_book[0]=0; ?>
         <thead class="fixedelement">
             <th>Date</th>
             <th>Branch</th>
@@ -4224,6 +4265,42 @@ class Report extends CI_Controller {
                 <td colspan="<?php echo $payment_mode_count + 4; ?>"><h5 class="red-text"><i class="mdi mdi-alert"></i> Cash Payment Received Record Not Found...</h5></td>
             </tr>-->
             <?php } 
+            
+            
+            // Accessories daybook
+            if(count($daybook_accessories_report) > 0){ ?>
+            <tr class="bg-green">
+                 <td colspan="3"><h4 style="margin: 0;color: #1d4cc2; font-family: Kurale"><i class="mdi mdi-plus-circle-outline"></i> Accessories Cash</h4></td>
+                 <td></td>
+                 <td>Cash</td>
+                <td colspan="<?php echo $payment_mode_count; ?>"></td>
+            </tr>
+            <?php foreach ($daybook_accessories_report as $access_cash) { ?>
+            <tr>
+                <td><?php echo $access_cash->date ?> </td>
+                <td><?php echo $access_cash->branch_name ?> </td>
+                <td></td>
+                <td></td>
+                <td><?php echo $access_cash->access_cash; $accessamt = $accessamt + $access_cash->access_cash; ?></td>
+//                <?php for($i=1; $i < count($mode_name); $i++){ echo '<td></td>'; } ?>
+                <td><?php  echo $access_cash->access_cash; ?> </td>
+            </tr>
+            <?php } ?> 
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th colspan="1" >Total Accessories Cash</th>
+                <th><?php echo $accessamt; ?></th>
+                <?php for($i=1; $i < count($mode_name); $i++){ echo '<td></td>'; } ?>
+                <th><?php echo $accessamt; ?></th>
+            </tr>
+            <?php // }else{ ?>
+<!--            <tr>
+                <td colspan="<?php echo $payment_mode_count + 4; ?>"><h5 class="red-text"><i class="mdi mdi-alert"></i> Expense Daybook Record Not Found...</h5></td>
+            </tr>-->
+             <?php }
+            
 // Deposite to bank daybook
             if(count($daybook_deposite_to_bank_report) > 0){ ?>
             <tr class="bg-danger" style=" color: #AC3F34">
@@ -4260,7 +4337,7 @@ class Report extends CI_Controller {
                 <th></th><th></th><th></th>
                 <th>Available Cash</th>
                 <th><?php 
-                        $total_cash = $opening_cash_bydate->daybook_cash  + $amt[0] + $ssramt[0] + $cppramt - $sramt - $expamt - $depositamt + $adv_bookamt[0] - $advref;
+                        $total_cash = $opening_cash_bydate->daybook_cash  + $amt[0] + $ssramt[0] + $cppramt - $sramt - $expamt - $depositamt + $adv_bookamt[0] - $advref + $accessamt;
                         echo $total_cash; ?>
                 </th>
                 <?php $sale_amount = 0;$creditr_amount = 0;$totaladv_bookamt=0;
