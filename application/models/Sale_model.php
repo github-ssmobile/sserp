@@ -85,7 +85,7 @@ class Sale_model extends CI_Model {
         return $this->db->where('id_customer', $idcustomer)->get('customer')->result();
     }
     public function get_state_bystate_name($state_name) {
-        return $this->db->like('state_name', $state_name)->get('state')->row();
+        return $this->db->where('state_name', $state_name)->get('state')->row();
     }
     public function ajax_stock_data_byimei_branch($imei, $branch){
         return $this->db->where('imei_no', $imei)->where('idbranch', $branch)
@@ -146,7 +146,7 @@ class Sale_model extends CI_Model {
         return $this->db->insert_id();
     }
     public function get_sale_byid($idsale) {
-        return $this->db->select('sale.*, sale.customer_fname as sale_customer_fname, sale.customer_lname as sale_customer_lname, sale.entry_time as invoice_date,users.user_name,print_head.*,customer.*,branch.*')->where('id_sale',$idsale)
+        return $this->db->select('customer.*,sale.*, sale.customer_fname as sale_customer_fname, sale.customer_lname as sale_customer_lname, sale.entry_time as invoice_date,users.user_name,print_head.*,branch.*')->where('id_sale',$idsale)
                         ->where('branch.idprinthead = print_head.id_print_head')->from('print_head')
                         ->where('sale.idbranch=branch.id_branch')->from('branch')
                         ->where('sale.idcustomer=customer.id_customer')->from('customer')

@@ -12,6 +12,7 @@ class App_Api extends CI_Controller {
         $this->load->model('Sale_model');
         $this->load->model('Stock_model');
 		$this->load->model('Target_model');
+		$this->load->model('Customerloyalty_model');
     }
 
     public function login() {
@@ -165,10 +166,27 @@ class App_Api extends CI_Controller {
                 $auth = $this->Api_Model->auth();
                     if($auth['status'] == 200){
                         $datetime = date('Y-m-d H:i:s');
-                        $state_name = $this->input->post('customer_state');
+                        $state_name = $this->input->post('customer_state');                        
+                        $idstate = "";
+                        $bday=TRUE;
                         $customer_gst = $this->input->post('customer_gst');
-                        $state_data = $this->Sale_model->get_state_bystate_name($state_name);
-                        if($state_data){
+                         if(isset($_POST['idstate'])){ 
+                            $idstate = $this->input->post('idstate');    
+                            $birth_date = $this->input->post('birth_date');
+                        }else{
+                            $state_data = $this->Sale_model->get_state_bystate_name($state_name);                            
+                             if($state_data){ 
+                                $idstate = $state_data->id_state;   
+                             }
+                            $birth_date = $this->input->post('birth_date');    
+                        }
+                        
+                        if($idstate!=""){
+                            if($bday==true && ($birth_date=="" || $birth_date=="0000-00-00" )){
+                                $q['customer']=array();
+                                $this->echoResponse(array('status' => 204, 'message' => 'Please enter birth date!.', 'data' => $q));                           
+                            }else{
+                         
                         $latitude = 0;
                         $longitude = 0;
                         $data = array(
@@ -179,7 +197,9 @@ class App_Api extends CI_Controller {
                             'customer_pincode' => $this->input->post('customer_pincode'),
                             'customer_city' => $this->input->post('customer_city'),
                             'customer_district' => $this->input->post('customer_district'),
-                            'idstate' => $state_data->id_state,
+                            'customer_email' => $this->input->post('customer_email'),
+                            'idstate' => $idstate,
+                            'birth_date' => $birth_date,
                             'customer_state' => $state_name,
                             'customer_address' => $this->input->post('customer_address'),
                             'idbranch' => $this->input->post('idbranch'),
@@ -199,9 +219,12 @@ class App_Api extends CI_Controller {
                                 $this->echoResponse(array('status' => 204, 'message' => 'Fail to register customer.. Try again!.', 'data' => $q));
                             }
                         } else {
+                            $q=array();
                             $this->echoResponse(array('status' => 204, 'message' => 'Fail to register customer.. Try again!.', 'data' => $q));
                         }
+                        }
                         } else {
+                            $q=array();
                             $this->echoResponse(array('status' => 204, 'message' => 'Fail to register customer.. Try again!.', 'data' => $q));
                         }
                     }
@@ -217,23 +240,42 @@ class App_Api extends CI_Controller {
                     if($auth['status'] == 200){
                         $this->db->trans_begin();
                         $datetime = date('Y-m-d H:i:s');
-                        
+                        $idstate="";
                         $idcustomer = $this->input->post('idcustomer');
                         $state_name = $this->input->post('customer_state');
+                        $bday=TRUE;
+                        if(isset($_POST['idstate'])){
+                            $idstate = $this->input->post('idstate');                            
+                            $birth_date = $this->input->post('birth_date');    
+                        }else{
+                            $state_data = $this->Sale_model->get_state_bystate_name($state_name);
+                             if($state_data){
+                                $idstate = $state_data->id_state;   
+                             }
+                             $birth_date=NULL;
+                        }                        
+                        
                         $customer_gst = $this->input->post('customer_gst');
-                        $state_data = $this->Sale_model->get_state_bystate_name($state_name);
-
                         $latitude = 0;
                         $longitude = 0;
+                        if($idstate!=""){
+                            
+                             if($bday==TRUE && ($birth_date=="" || $birth_date=="0000-00-00" )){
+                                $q['customer']=array();
+                                $this->echoResponse(array('status' => 204, 'message' => 'Please enter birth date!.', 'data' => $q));                           
+                            }else{
+                            
                         $data = array(
                             'customer_fname' => $this->input->post('customer_fname'),
                             'customer_lname' => $this->input->post('customer_lname'),
                             'customer_contact' => $this->input->post('customer_contact'),
                             'customer_gst' => $this->input->post('customer_gst'),
+                            'customer_email' => $this->input->post('customer_email'),
                             'customer_pincode' => $this->input->post('customer_pincode'),
                             'customer_city' => $this->input->post('customer_city'),
                             'customer_district' => $this->input->post('customer_district'),
-                            'idstate' => $state_data->id_state,
+                            'idstate' => $idstate,
+                            'birth_date' => $birth_date,
                             'customer_state' => $state_name,
                             'customer_address' => $this->input->post('customer_address'),
                         );
@@ -246,21 +288,26 @@ class App_Api extends CI_Controller {
                             'idcustomer' => $idcustomer,
                             'customer_gst' => $this->input->post('customer_gst'),
                             'customer_pincode' => $this->input->post('customer_pincode'),
-                            'customer_idstate' => $state_data->id_state,                
+                            'customer_idstate' => $idstate,                
                             'edited_by' => $this->input->post('iduser'),
                             'entry_time' => date('Y-m-d H:i:s'),
                         );
                         $this->General_model->save_customer_edit_history($customer_history);
-                        
+
                         if ($this->db->trans_status() === FALSE){
                             $this->db->trans_rollback();
                             $q['status'] = 204;
-                            $q['message'] = 'Fail to Update customer!';
+                            $q['message'] = 'Fail to Update customerw!';
                         }else{
                             $this->db->trans_commit();
                             $q['status'] = 200;
                             $q['message'] = "Customer Updated successfully!";
                         }
+                            }
+                    }else{
+                        $q['status'] = 204;
+                        $q['message'] = 'Fail to Update customer!';
+                    }
                         echo json_encode($q);
                        
                     }
@@ -1773,7 +1820,7 @@ class App_Api extends CI_Controller {
                         
                         //Target Achivement Per
                         if($asp > 0){
-                            $asp_ach_per = ($asp_ach/$asp)*100;
+                            $asp_ach_per = ($asp_ach/($vall/$vol))*100;
                         }else{
                             $asp_ach_per = 0;
                         }
@@ -1820,7 +1867,7 @@ class App_Api extends CI_Controller {
                             $dr[]=round($val_ach,1).'%';
                             $dr[]='';
                             $dr[]='';
-                            $dr[]=round($asp,0);
+                            $dr[]=round(($vall/$vol),0);
                             $dr[]=round($asp_ach,0);
                             $dr[]=round($asp_ach_per,0).'%';
                             $dr[]='';
@@ -1988,6 +2035,21 @@ class App_Api extends CI_Controller {
             }
         }
    }
+   public function customer_form_data(){
+//        $check_auth_client = $this->Api_Model->check_auth_client();
+//            if ($check_auth_client == true) {
+//                $auth = $this->Api_Model->auth();
+//                    if($auth['status'] == 200){
+                        $result=array();                        
+                        $q['customer_form_data']=array();
+                        $q['customer_form_data'] = $this->Customerloyalty_model->get_customer_form_data();                       
+                        $result['status']=200;
+                        $result['message']='Customer form data';
+                        $result['data']=$q;
+                        echo json_encode($result,JSON_UNESCAPED_SLASHES);   
+//                    }
+//            }
+    } 
     
     public function bajaj_finance_integration() { 
         /*$check_auth_client = $this->Api_Model->check_auth_client();

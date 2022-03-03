@@ -28,7 +28,7 @@ class Allocation_model extends CI_Model {
         $this->db->join("(select sum(s.qty) as sale_qty,s.idbranch from sale_product s WHERE s.idvariant=$variantid and s.idgodown=$idgodown and s.date between '$from' and '$to' GROUP BY s.idbranch) sp", 'sp.idbranch=b.id_branch', 'left');                
         if($allocation_type==''){}else{
             $this->db->select('sallo.allocated_qty');
-            $this->db->join('(select sad.qty as allocated_qty,sad.idbranch from stock_allocation_data sad inner join stock_allocation sa on sad.idstock_allocation=sa.id_stock_allocation WHERE sa.idwarehouse='.$idwarehouse.' and  sa.status=0 and sa.allocation_type='.$allocation_type.' and sad.idgodown='.$idgodown.' and  sad.idvariant='.$variantid.') sallo','`sallo`.`idbranch`=`b`.`id_branch`','left');
+            $this->db->join('(select sad.qty as allocated_qty,sad.idbranch from stock_allocation_data sad inner join stock_allocation sa on sad.idstock_allocation=sa.id_stock_allocation WHERE sa.idwarehouse='.$idwarehouse.' and  sa.status=0 and sa.allocation_type='.$allocation_type.' and sad.idgodown='.$idgodown.' and  sad.idvariant='.$variantid.'  GROUP BY sad.idbranch) sallo','`sallo`.`idbranch`=`b`.`id_branch`','left');
         }
         $this->db->where('mv.active', 1)->where('mv.id_variant',$variantid)->from('model_variants mv');         
         // hide ghnadhinager warehouse from allocation
@@ -44,8 +44,8 @@ class Allocation_model extends CI_Model {
         $this->db->order_by('b.idzone,b.id_branch');
         $this->db->group_by('b.id_branch');
         $query = $this->db->get(); 
-        return $query->result();
-//        die(print_r($this->db->last_query()));
+         $query->result();
+        die(print_r($this->db->last_query()));
     } 
     public function get_all_branch_allocation($status,$allocation_type){
         return $this->db->where('status', $status)->where('allocation_type', $allocation_type)->get('stock_allocation')->result();
