@@ -796,7 +796,7 @@ class General_model extends CI_Model{
                     'idproductcategory ' => $this->input->post('product_category'),
                     'idcategory' => $this->input->post('category'),
                     'modelname' => $this->input->post('model_name'),
-                    'full_name' => $full_name,
+                    // 'full_name' => $full_name,
                     'part_number' => $partnumbers[$d],
                     'idbrand' => $this->input->post('idbrand'),
                     'timestamp' => date('Y-m-d H:i:s'),
@@ -819,7 +819,7 @@ class General_model extends CI_Model{
                 'subidbrand' => $subidbrand,
                 'idsku_type' => $this->input->post('sku_type'),
                 'modelname' => $this->input->post('model_name'),
-                'full_name ' => $full_name,
+                // 'full_name ' => $full_name,
                 'is_mop' => $ismop
             );
             $this->db->where('idmodel', $id_model)->update('model_variants', $variant_arr);

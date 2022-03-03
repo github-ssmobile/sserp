@@ -163,14 +163,14 @@ class Hostbook_Acc_Api extends CI_Controller
                             "type"=> "PADR"
                         ),
                         array(
-                         "address1"=> $vendor_ins_data['vendor_address'],
-                         "street"=> $vendor_ins_data['city'],
-                         "city"=> $vendor_ins_data['city'],
-                         "state"=> $vendor_ins_data['state'],
-                         "zip"=> $vendor_ins_data['pincode'],
-                         "country"=> "India",
-                         "type"=> "BADR"
-                     )
+                            "address1"=> $vendor_ins_data['vendor_address'],
+                            "street"=> $vendor_ins_data['city'],
+                            "city"=> $vendor_ins_data['city'],
+                            "state"=> $vendor_ins_data['state'],
+                            "zip"=> $vendor_ins_data['pincode'],
+                            "country"=> "India",
+                            "type"=> "BADR"
+                        )
                     );
 
                     $contact_addd=array(
@@ -189,7 +189,7 @@ class Hostbook_Acc_Api extends CI_Controller
                         "address"=>$p_address,
                         "contactTds"=>$contactTds,
                     );
-                    
+
                     $hb_gen_master=$this->hbGenerateMaster(1,$final_array);
                     if($hb_gen_master['status']==200){
                         $this->session->set_flashdata('save_data', 'Vendor Created');
@@ -216,10 +216,8 @@ class Hostbook_Acc_Api extends CI_Controller
         }
 
     }
-
     public function HBItem_Master(){
         $product_id=$this->uri->segment(2);
-
         $hb_login=$this->hb_login(1);
         if($hb_login['status']==200){
             $hbdata['hb_einvtoken']=$hb_login['data']['user']['accessToken'];
@@ -230,75 +228,75 @@ class Hostbook_Acc_Api extends CI_Controller
             $hb_valid=$this->hb_valid(1);
             if($hb_valid['status']==200){
 
-               $product_data= $this->common_model->getSingleRow('model_variants',array('id_variant'=>$product_id));
-               $category_data= $this->common_model->getSingleRow('category',array('id_category'=>$product_data['idcategory']));
+                $product_data= $this->common_model->getRecords('model_variants',array('*'),array('idmodel'=>$product_id));
+                foreach($product_data as $p_data){
+                    $category_data= $this->common_model->getSingleRow('category',array('id_category'=>$p_data['idcategory']));
 
-               $itemDtl=array(
-                "purchaseAccountName"=> "Purchase Account",
-                "unitName"=> "Pieces",
-                "hsnSacCode"=> $category_data['hsn'],
-            );
-               $itemDetails[]=$itemDtl; 
-               $itemLst=array(
-                "trackflag"=> true,
-                "purchaseflag"=> true,
-                "salesflag"=> true,
-                "itemDetails"=>$itemDetails,
-                "inventoryMethod"=> "FIF",
-                "code"=> $product_data['idmodel'],
-                "name"=> $product_data['full_name'],
-                "inventory"=> "INVTP"
+                    $itemDtl=array(
+                        "purchaseAccountName"=> "Purchase Account",
+                        "unitName"=> "Pieces",
+                        "hsnSacCode"=> $category_data['hsn'],
+                    );
+                    $itemDetails[]=$itemDtl; 
+                    $itemLst=array(
+                        "trackflag"=> true,
+                        "purchaseflag"=> true,
+                        "salesflag"=> true,
+                        "itemDetails"=>$itemDetails,
+                        "inventoryMethod"=> "FIF",
+                        "code"=> $p_data['id_variant'],
+                        "name"=> $p_data['full_name'],
+                        "inventory"=> "INVTP"
 
-            );
-               $itemList[]=$itemLst; 
-               $final_array=array(
-                "itemList"=>$itemList,
-            );
-print_r($final_array);die();
+                    );
+                    $itemList[]=$itemLst; 
+                    $final_array=array(
+                        "itemList"=>$itemList,
+                    );
 
-               $hb_gen_master=$this->hbGenerateMaster(1,$final_array);
-               if($hb_gen_master['status']==200){
-                $this->session->set_flashdata('save_data', 'Item Created');
-                return redirect('Catalogue/model_details');
+                    $hb_gen_master=$this->hbGenerateMaster(1,$final_array);
+                    if($hb_gen_master['status']==200){
+                        $this->session->set_flashdata('save_data', 'Item Created');
+                        return redirect('Catalogue/model_details');
+                    }else{
+                        $response['status']=false;
+                        $this->session->set_flashdata('save_data', $hb_gen_master['message']);
+                        $response['message']=$hb_gen_master['message'];
+                        return redirect('Catalogue/model_details');
+                    }
+                }
             }else{
-                $response['status']=false;
-                $this->session->set_flashdata('save_data', $hb_gen_master['message']);
-                $response['message']=$hb_gen_master['message'];
-                   // return redirect('Catalogue/model_details');
+                $this->session->set_flashdata('save_data', $hb_valid['message']);
+                return redirect('Catalogue/model_details');
             }
-
         }else{
-            $this->session->set_flashdata('save_data', $hb_valid['message']);
+            $this->session->set_flashdata('save_data', $hb_login['message']);
             return redirect('Catalogue/model_details');
         }
-    }else{
-       $this->session->set_flashdata('save_data', $hb_login['message']);
-       return redirect('Catalogue/model_details');
-   }
-}
-public function hb_login($comp_id){
-    $hb_config_data= $this->common_model->getSingleRow('hostbook_config',array('company_id'=>$comp_id,'api_type'=>3));
-    $data=array(
-        "username"=>$hb_config_data['hb_loginid'],
-        "password"=>$hb_config_data['hb_password'],
-    );
-    return $hb_data= $this->Hostbook_Acc_Model->getLoginData($data);
-}
+    }
+    public function hb_login($comp_id){
+        $hb_config_data= $this->common_model->getSingleRow('hostbook_config',array('company_id'=>$comp_id,'api_type'=>3));
+        $data=array(
+            "username"=>$hb_config_data['hb_loginid'],
+            "password"=>$hb_config_data['hb_password'],
+        );
+        return $hb_data= $this->Hostbook_Acc_Model->getLoginData($data);
+    }
 
-public function hb_valid($comp_id){
-    $hb_config_data= $this->common_model->getSingleRow('hostbook_config',array('company_id'=>'1','api_type'=>3));
-    $Secret_Key=array('x-version:IND','x-preserveKey:'.$hb_config_data['hb_einvsecretkey'],'x-company:'.$hb_config_data['hb_compid'],'x-forwarded-portal:True');
+    public function hb_valid($comp_id){
+        $hb_config_data= $this->common_model->getSingleRow('hostbook_config',array('company_id'=>'1','api_type'=>3));
+        $Secret_Key=array('x-version:IND','x-preserveKey:'.$hb_config_data['hb_einvsecretkey'],'x-company:'.$hb_config_data['hb_compid'],'x-forwarded-portal:True');
 
-    return $hb_data= $this->Hostbook_Acc_Model->getauthData($Secret_Key);
-}
+        return $hb_data= $this->Hostbook_Acc_Model->getauthData($Secret_Key);
+    }
 
-public function hbGenerateMaster($comp_id,$fdata){
-    $hb_config_data= $this->common_model->getSingleRow('hostbook_config',array('company_id'=>'1','api_type'=>3));
-    $Secret_Key=array('x-preserveKey:'.$hb_config_data['hb_einvsecretkey'],'x-company:'.$hb_config_data['hb_compid'],'x-auth-token:'.$hb_config_data['hb_einvtoken']);
-    $data=$fdata;
+    public function hbGenerateMaster($comp_id,$fdata){
+        $hb_config_data= $this->common_model->getSingleRow('hostbook_config',array('company_id'=>'1','api_type'=>3));
+        $Secret_Key=array('x-preserveKey:'.$hb_config_data['hb_einvsecretkey'],'x-company:'.$hb_config_data['hb_compid'],'x-auth-token:'.$hb_config_data['hb_einvtoken']);
+        $data=$fdata;
 
-    return $hb_data= $this->Hostbook_Acc_Model->hbGenerateMaster($data,$Secret_Key);
-}
+        return $hb_data= $this->Hostbook_Acc_Model->hbGenerateMaster($data,$Secret_Key);
+    }
 
 }
 ?>

@@ -780,6 +780,7 @@
                         }
                     });
                     var valu=val.replace(/\s/g,'');
+                   
                     html+='<td class="text-center"><a class="thumbnail btn-link waves-effect delete-att" val="'+valu+'" style="margin: 0"><span class="mdi mdi-delete text-danger fa-lg"></span></a></td><input type="hidden" name="variant_att_names[]"  value="'+m_name+'" /></tr>';
                     if(validation){
                         
