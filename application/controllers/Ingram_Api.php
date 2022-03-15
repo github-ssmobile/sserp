@@ -17,6 +17,7 @@ class Ingram_Api extends CI_Controller {
         $this->load->model('Inward_model');
         $this->load->model('Stock_model');
         $this->load->model('Outward_model');
+        $this->load->model('Transfer_model');
         
         
 //       sale_token -> ingram_status -> 1-Pendig for approval,2-Order Placed, 3 - Rejected, 4 - Pick and Verify, 5 - Packed and Dispatched, 6 - Received, 7 - Returned, 8 - Refund, 9-Closed'
@@ -263,68 +264,23 @@ class Ingram_Api extends CI_Controller {
         $idvariant = $this->input->post('idvariant');                 
         $sale_type = $this->input->post('sale_type');
         $idskutype = $this->input->post('idskutype');
-        $sku_code = $this->input->post('sku');   
+        $sku_code = $this->input->post('sku');    
         $model_name = $this->input->post('model_name');
         $sale_type = (int)$sale_type;
         $idgodown= $this->stock_idgodown;
         $models = $this->Ingram_Model->ajax_get_variant_byid_branch_godown($idvariant, $this->idwarehouse,$idgodown);
-        $bqty = $this->Ingram_Model->ajax_get_booked_qty($idvariant, $this->idwarehouse);        
+        $bqty = $this->Ingram_Model->ajax_get_booked_qty($idvariant, $this->idwarehouse,$idgodown);        
         $avail_qty = 0;
         if ($models->avail_qty != NULL) {   
             $avail_qty = $models->avail_qty;
             if($bqty->booked_qty!=NULL){
                 $avail_qty = ($models->avail_qty)-($bqty->booked_qty);
             }
-        }
-//            die(print_r($models));
-//        $sku_data= $this->General_model->get_vendor_sku_data_byid(1);
-//        $sku_column=$sku_data->column_name;
-//        $access_token=$sku_data->access_token;
-        
-//                $data=array();
-//                $data['servicerequest']=array();
-//                $servicerequest=array();
-//                $servicerequest['requestpreamble']=array();
-//                $servicerequest['requestpreamble']['customernumber']="40-SSSEPV";
-//                $servicerequest['requestpreamble']['isocountrycode']="IN";
-//                $servicerequest['priceandstockrequest']=array();
-//                $servicerequest['priceandstockrequest']['showwarehouseavailability']="True";
-//                $servicerequest['priceandstockrequest']['extravailabilityflag']="Y";
-//                $servicerequest['priceandstockrequest']['item']=array();
-//                $item=array();
-//                $item['ingrampartnumber']=$sku_code;
-//                $item['warehouseidlist']=array(31);
-//                $item['quantity']="1";
-//                $servicerequest['priceandstockrequest']['item'][]=$item;
-//                $servicerequest['priceandstockrequest']['includeallsystems']=false;
-//                $data['servicerequest']= $servicerequest;
-//                $availablequantity=0;
-//                $error_flag=0;
-//                $ingram_data= $this->Ingram_Model->getPriceAndAvailability($data,$access_token);
-////                die('<pre>' . print_r($ingram_data, 1) . '</pre>');
-//                $customerprice=0;
-//                $retailprice=0;
-//                if(isset($ingram_data['serviceresponse']) && $ingram_data['serviceresponse']['responsepreamble']['responsestatus']=='SUCCESS'){
-//                    $customerprice=$ingram_data['serviceresponse']['priceandstockresponse']['details'][0]['customerprice'];
-//                    $warehousedetails=$ingram_data['serviceresponse']['priceandstockresponse']['details'][0]['warehousedetails'];
-//                    $retailprice=$ingram_data['serviceresponse']['priceandstockresponse']['details'][0]['retailprice'];
-//                    foreach ($warehousedetails as $wid){
-//                        $availablequantity=$availablequantity+$wid['availablequantity'];
-//                    }                    
-//                }else if(isset($ingram_data['serviceresponse']) && $ingram_data['serviceresponse']['responsepreamble']['responsestatus']=='FAILED'){
-//                   echo '0';  // Product not found
-//                   $error_flag=1;
-//                }
-//                else{                    
-//                   if(isset($ingram_data['fault']) || $ingram_data['fault']['faultstring']!=''){
-//                        $this->Ingram_Model->getToken();      
-//                        echo '1';  // Token expired -> Re-try
-//                        $error_flag=1;
-//                   } 
-//                }        
+        }   
         // Quantity
         if($avail_qty > 0){                 
-            $model = $this->General_model->get_active_variants_id($idvariant);            
+            $model = $this->General_model->get_active_variants_id($idvariant);   
+//            die('<pre>' . print_r($model, 1) . '</pre>');
                             $amount_diff = $model->mop - $model->landing; ?>
                             <tr id="m<?php echo $model->id_variant ?>" class="skuqty_row">
                     <td>
@@ -464,8 +420,10 @@ class Ingram_Api extends CI_Controller {
     public function ingram_inward($idpo) {
         $q['tab_active'] = '';        
         $q['purchase_order'] = $this->Ingram_Model->get_purchase_order_byid($idpo);             
-        if($q['purchase_order']->status==1 && $q['purchase_order']->ingram_order_status==1){
+        
+        if($q['purchase_order']->status==1 && $q['purchase_order']->ingram_order_status==1){            
             $q['purchase_order_product'] = $this->Ingram_Model->get_purchase_order_product_byid($idpo);
+//            die('<pre>'.print_r($q['purchase_order_product'],1).'</pre>');
             $this->load->view('ingram/purchase_inward',$q);
         }else{
             $this->session->set_flashdata('save_data', 'Error, Already inwared');
@@ -892,7 +850,7 @@ class Ingram_Api extends CI_Controller {
             }            
             $inward_data[$i] = array(                
                 'idinward' => $idinward,
-                'idgodown' => $this->input->post('idgodown['.$i.']'),
+                'idgodown' => $this->stock_idgodown,
                 'idproductcategory' => $this->input->post('idtype['.$i.']'),
                 'idcategory' => $this->input->post('idcategory['.$i.']'),
                 'idbrand' => $this->input->post('idbrand['.$i.']'),
@@ -918,6 +876,73 @@ class Ingram_Api extends CI_Controller {
                 'imei_srno' => rtrim($scanned_csv,','),
             );
             $idinward_data = $this->Inward_model->save_inward_data($inward_data[$i]);
+            
+            if($this->input->post('skutype['.$i.']') == 4){
+                $inward_product[$i] = array(
+                    'date' => $date,
+                    'idgodown' => $this->input->post('idgodown['.$i.']'),
+                    'idskutype' => $this->input->post('skutype['.$i.']'),
+                    'idproductcategory' => $this->input->post('idtype['.$i.']'),
+                    'idcategory' => $this->input->post('idcategory['.$i.']'),
+                    'idvariant' => $product_id[$i],
+                    'idmodel' => $this->input->post('idmainmodel['.$i.']'),
+                    'idbrand' => $this->input->post('idbrand['.$i.']'),
+                    'created_by' => $created_by,
+                    'idvendor' => $idvendor,
+                    'qty' => $this->input->post('qty['.$i.']'),
+                    'idinward_data' => $idinward_data,
+                    'idinward' => $idinward,
+                    'product_name' => $this->input->post('product_name['.$i.']'),
+                    'price' => $this->input->post('price['.$i.']'),
+                    'mrp' => $this->input->post('mrp['.$i.']'),
+                    'charges_amt' => $this->input->post('chrgs_amt['.$i.']'),
+                    'discount_per' => $this->input->post('discount_per['.$i.']'),
+                    'discount_amt' => $this->input->post('discount_amt['.$i.']'),
+                    'basic' => $this->input->post('basic['.$i.']'),
+                    'taxable_amt' => $this->input->post('taxable['.$i.']'),
+                    'cgst_per' => $this->input->post('cgst['.$i.']'),
+                    'cgst_amt' => $this->input->post('cgst_amt['.$i.']'),
+                    'sgst_per' => $this->input->post('sgst['.$i.']'),
+                    'sgst_amt' => $this->input->post('sgst_amt['.$i.']'),
+                    'igst_per' => $this->input->post('igst['.$i.']'),
+                    'igst_amt' => $this->input->post('igst_amt['.$i.']'),
+                    'tax' => $this->input->post('tax['.$i.']'),
+                    'total_amount' => $this->input->post('total['.$i.']'),
+                );
+                $this->Inward_model->save_inward_product($inward_product[$i]);
+                $hostock = $this->Transfer_model->get_branchstock_byidmodel_skutype_godown($product_id[$i],4,$idbranch,$this->input->post('idgodown['.$i.']'));
+//                $hostock = $this->Inward_model->get_hostock_byidmodel_skutype($product_id[$i], 4, 1);
+                if(count($hostock) === 0){
+                    if($sale_type[$i] == 0){
+                        $inward_stock_sku[$i] = array(
+                            'date' => $date,
+                            'idgodown' => $this->input->post('idgodown['.$i.']'),
+                            'product_name' => $this->input->post('product_name['.$i.']'),
+                            'idskutype' => $this->input->post('skutype['.$i.']'),
+                            'idproductcategory' => $this->input->post('idtype['.$i.']'),
+                            'idcategory' => $this->input->post('idcategory['.$i.']'),
+                            'is_gst'   => $this->input->post('gstradio'),
+                            'idvariant' => $product_id[$i],
+                            'idbranch' => $idbranch,
+                            'idmodel' => $this->input->post('idmainmodel['.$i.']'),
+                            'idbrand' => $this->input->post('idbrand['.$i.']'),
+                            'created_by' => $created_by,
+                            'idvendor' => $idvendor,
+                            'qty' => $this->input->post('qty['.$i.']'),
+                        );
+                        $this->Inward_model->save_stock($inward_stock_sku[$i]);
+                    }
+                }else{
+                    foreach ($hostock as $hstock){
+                        $qty = $hstock->qty + $this->input->post('qty['.$i.']');
+                        $this->Inward_model->update_stock_byid($hstock->id_stock,$qty);
+                    }
+                }
+                $last_purchase_price = array(
+                    'last_purchase_price' => $this->input->post('total['.$i.']') / $this->input->post('qty['.$i.']'),
+                );
+                $this->Inward_model->update_variants_last_purchase_price($product_id[$i], $last_purchase_price);
+            }else{
                         
                 $scanned = explode(",",$scanned_csv);
                 for($j = 0; $j < count($scanned); $j++){
@@ -925,7 +950,7 @@ class Ingram_Api extends CI_Controller {
                         $inward_product[$j] = array(
                             'date' => $date,
                             'imei_no' => rtrim($scanned[$j],','),
-                            'idgodown' => $this->input->post('idgodown['.$i.']'),
+                            'idgodown' => $this->stock_idgodown,
                             'idskutype' => $this->input->post('skutype['.$i.']'),
                             'idproductcategory' => $this->input->post('idtype['.$i.']'),
                             'idcategory' => $this->input->post('idcategory['.$i.']'),
@@ -959,7 +984,7 @@ class Ingram_Api extends CI_Controller {
                         $this->Inward_model->update_model_variant_mrp($product_id[$i], $this->input->post('mrp['.$i.']'));
                         $inward_stock[$j] = array(
                             'date' => $date,
-                            'idgodown' => $this->input->post('idgodown['.$i.']'),
+                            'idgodown' => $this->stock_idgodown,
                             'product_name' => $this->input->post('product_name['.$i.']'),
                             'imei_no' => $scanned[$j],
                             'idbranch' => $idbranch,
@@ -998,6 +1023,7 @@ class Ingram_Api extends CI_Controller {
                     }
                 }
 
+        }
         }
         if(count($imei_history['nest']) > 0){
             $this->General_model->save_batch_imei_history($imei_history['nest']);
@@ -1114,11 +1140,10 @@ class Ingram_Api extends CI_Controller {
     
     public function ajax_get_branch_order_report() {
         $status = $this->input->post('status');
-        $datefrom = $this->input->post('datefrom');
-        $dateto = $this->input->post('dateto');
+        $datefrom = $this->input->post('from');
+        $dateto = $this->input->post('to');
         $idbranch = $this->input->post('idbranch');
-//         die('<pre>'.print_r($_POST,1).'</pre>');
-        
+
         $sale_token_data = $this->Ingram_Model->get_pending_sale_token_data($status,$idbranch, $datefrom, $dateto);
 //        die(print_r($sale_token_data));
         $i=1; foreach($sale_token_data as $sale_token){ ?>
@@ -1602,77 +1627,7 @@ class Ingram_Api extends CI_Controller {
                 $y = date('y', mktime(0, 0, 0, 3 + date('m')));
                 $y1 = $y + 1;
                 $financial_year = "IM/".$y."-".$y1."/ODR/";                
-                
-//                $po = array(
-//                    'date' => $date,
-//                    'idbranch' => $idbranch,
-//                    'idwarehouse' => $this->idwarehouse,
-//                    'idvendor' => $idvendor ,
-//                    'created_by' => $this->input->post('created_by'),
-//                    'financial_year' => $financial_year,
-//                    'remark' => $this->input->post('remark'),                    
-//                    'status' => 0,
-//                    'order_type' => 1,
-//                    'entry_time' => date('Y-m-d H:i:s'),
-//                );
-//                $idpo = $this->Ingram_Model->save_vendor_po($po);
-                
-//                $data=array();
-//                $data['customerOrderNumber']=$financial_year.$idpo;
-//                $data['billToAddressId']="000";        
-//                $data['notes']="";                        
-//                $data['shipToInfo']["addressId"]="300";
-//                
-//                $data["lines"]=array();
-//                $skuz = $this->input->post('sku'); 
-//                $qtyz = $this->input->post('qty'); 
-//                $skutypez = $this->input->post('skutype'); 
-//                $idvariantz = $this->input->post('idvariant'); 
-//                $cnt=0;
-//                $purchase_product=array();
-//                foreach ($skuz as $sku){
-//                    $lines=array();                
-//                    $lines["customerLineNumber"]=$cnt+1;
-//                    $lines["ingramPartNumber"]=$sku;
-//                    $lines["quantity"]=$qtyz[$cnt];
-//                    
-//                    array_push($data["lines"], $lines);
-//                    $purchase_product[] = array(
-//                        'idvendor_po' => $idpo,
-//                        'idvariant' => $idvariantz[$cnt],
-//                        'ordered_qty' => $qtyz[$cnt],
-//                        'idsku_type' => $skutypez[$cnt],
-//                        'vendor_sku' => $sku,
-//                        'idgodown' => $idgodown
-//                    );
-//                    $cnt++;
-//                }
-//                $data["additionalAttributes"]=array();
-//                
-//                $data["additionalAttributes"][0]["attributeName"]="allowDuplicateCustomerOrderNumber";
-//                $data["additionalAttributes"][0]["attributeValue"]="true";
-//                $data["additionalAttributes"][1]["attributeName"]="shipFromWarehouseId";
-//                $data["additionalAttributes"][1]["attributeValue"]="31";            
-//                $data['shipmentDetails']["carrierCode"]="ZO";
-                
-//                $ingram_po_data= $this->Ingram_Model->OrderCreate_v6($data,$access_token);      
-                
-//                $ingramOrderNumber="";
-//                if(isset($ingram_po_data['orders']) && $ingram_po_data['orders'][0]['numberOfLinesWithSuccess'] > 0){
-//                    $ingramOrderNumber=$ingram_po_data['orders'][0]['ingramOrderNumber'];
-//                    $in_lines=$ingram_po_data['orders'][0]['lines'];
-//                    
-//                    
-//                    
-//                    foreach ($skuz as $sku){
-//                        $key=multi_array_search($in_lines, array("ingramPartNumber" => $sku));
-//                        die(print_r($in_lines[$key[0]]));
-//                        
-//                        $cnt++;
-//                }
-//                    
-//                }
-                
+                 
                 $dataa = array(
                     'date' => $date,
                     'idbranch' => $idbranch,
@@ -1821,7 +1776,7 @@ class Ingram_Api extends CI_Controller {
                 for($i = 0; $i < count($idvariant); $i++){
                     
                     $sqty = $this->Ingram_Model->ajax_get_variant_byid_branch_godown($idvariant[$i], $this->idwarehouse,$idgodown);
-                    $bqty = $this->Ingram_Model->ajax_get_booked_qty($idvariant[$i], $this->idwarehouse);        
+                    $bqty = $this->Ingram_Model->ajax_get_booked_qty($idvariant[$i], $this->idwarehouse,$idgodown);        
                     $avail_qty = 0;
                     if ($sqty->avail_qty != NULL) {   
                         $avail_qty = $sqty->avail_qty;
@@ -1980,7 +1935,7 @@ class Ingram_Api extends CI_Controller {
         $this->load->view('ingram/w_stock_report', $q);
     }
     public function save_picked(){
-//        die('<pre>'.print_r($_POST,1).'</pre>');        
+        die('<pre>'.print_r($_POST,1).'</pre>');        
         $idbranch=$this->input->post('idbranch');
         $idwarehouse=$this->input->post('idwarehouse');                        
         $idvariants=$this->input->post('idvariant');            
@@ -1988,7 +1943,8 @@ class Ingram_Api extends CI_Controller {
         $scanned=$this->input->post('scanned');
         $count= count($idvariants);              
         $id_sale_token=$this->input->post('id_sale_token');           
-        $id_saletokenproduct=$this->input->post('id_saletokenproduct');           
+        $id_saletokenproduct=$this->input->post('id_saletokenproduct');  
+        $id_skutype=$this->input->post('skutype');  
         
         $date = date('Y-m-d');
         $datetime = date('Y-m-d H:i:s');
@@ -1997,7 +1953,6 @@ class Ingram_Api extends CI_Controller {
         $this->db->trans_begin();     
         
         $sale_data = $this->Ingram_Model->get_saletoken_byid($id_sale_token);
-        
        
         $invoice_no = $this->Sale_model->get_invoice_no_by_branch($idbranch);                
         $invid = $invoice_no->invoice_no + 1; 
@@ -2042,42 +1997,41 @@ class Ingram_Api extends CI_Controller {
                     'corporate_sale' => 1,
                 );
                 $idsale = $this->Sale_model->save_sale($data);                                
-              /*  foreach ($sale_payment as $pay){
-                    $other_attr=array();
-                    $other_attr['inv_no'] = $inv_no;
-                    $other_attr['idsale'] = $idsale;
-                    $other_attr['entry_time'] = $datetime;
-                    $other_attr['corporate_sale'] = 1;                    
-                    foreach ($pay as $key=>$value){
-                        if($key=='id_saletokenpayment' || $key=='idsaletoken' || $key=='entry_time'){
-                            
-                        }else{
-                            $other_attr[$key] = $value;
-                        }
-                    }                                
-                    $id_sale_payment = $this->Sale_model->save_sale_payment($other_attr);
-                    
-                    $payment_re[] = array(
-                        'idsale_payment' => $pay->id_saletokenpayment,
-                        'idsale_payment' => $id_sale_payment,
-                        'inv_no' => $inv_no,      
-                        'idsale' => $idsale,
-                    );                    
-                    }
-                    $this->Ingram_Model->update_sale_payment($payment_re,$po_number);*/                        
+                                  
         $stock_array=array();
         $imei_history=array();
         $token_product=array(); 
         $vendor_product=array();    
         $update_stock=array();
         for($i=0;$i<$count;$i++){           
-               $imeis = explode(',', $scanned[$i]);
-//               $idsaletokenproducts = explode(',', $stkids[$i]);
-               
-//               $vendor_product[] = array(
-//                        'id_vendor_po_product'=> $id_vendor_po_product[$i],
-//                        'imei_nos' => $scanned[$i],
-//                    );
+            if($idskutype_s[$i]==4){        
+                $update_stock[]="UPDATE stock SET qty = qty - ".$qty[$i]." WHERE idvariant = ".$idvariants[$i]." AND idgodown = ".$idgodown[$i]." AND idbranch = ".$idwarehouse."; ";
+                $inward_stock_sku[] = array(
+                    'date' =>  $date,
+                    'outward_time' => $datetime,
+                    'idbranch' => 0,
+                    'temp_idbranch' => $idbranch,
+                    'transfer_from' => $idwarehouse,
+                    'outward_dc' => $idsale,
+                    'outward_remark' => $remark,
+                    'outward_by' => $iduser,
+                    'product_name' => $product_name[$i],
+                    'idskutype' => 4,
+                    'idgodown' => $idgodown[$i],
+                    'idproductcategory' => $idproductcategory[$i],
+                    'idcategory' => $idcategory_s[$i],
+                    'idmodel' => $idmodel_s[$i],
+                    'idvariant' => $idvariants[$i],
+                    'idbrand' => $idbrand[$i],
+                    'created_by' => $iduser,
+                    'idvendor' => 1,
+                    'qty' => $qty[$i],
+                    'outward' => 1,
+                );                 
+                
+            }else{
+            
+               $imeis = explode(',', $scanned[$i]); 
                
                for ($j=0;$j < count($imeis)-1;$j++){                
                   $token_product[] = array(
@@ -2112,8 +2066,14 @@ class Ingram_Api extends CI_Controller {
                     );                   
                 }            
         } 
-        
-            if (count($imei_history) > 0) {
+        }
+        if(count($inward_stock_sku)>0){ 
+        $this->Inward_model->save_stock_batch($inward_stock_sku);     
+            foreach ($update_stock as $data){
+                $this->Inward_model->minus_stock_byidmodel_idbranch_idgodown($data);    
+            }
+        }
+        if (count($imei_history) > 0) {
             $this->General_model->save_batch_imei_history($imei_history);
         }
         $invoice_data = array('invoice_no' => $invid);

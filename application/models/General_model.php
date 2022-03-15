@@ -188,6 +188,7 @@ class General_model extends CI_Model{
                 ->where('mv.idcategory = category.id_category')->from('category')
                         ->where('mv.active', 1)                        
                         ->get('model_variants mv')->row();
+        die( $this->db->last_query());
     }   
     public function get_category_variantid($id){        
          return $this->db->where('cha.idcategory',$id)

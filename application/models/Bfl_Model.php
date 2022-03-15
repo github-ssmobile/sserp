@@ -10,14 +10,14 @@ class Bfl_Model extends CI_Model {
     var $header3 = "SecretAccessKey:Zk1paHo2TXFqaEd3Sm13alkyNGFJdkFOK1o5SzFZVXA4Mms3K1I4QjNmNk1TWG5PR2Q0YmtnRzEreEVUd21jYg==";
     
     ///// UAT /////
-    var $header11 = "Acceskeyid:K3k4c2NkbnMxQzdPWDF5bXVUbkxoanZKU1pWenBEUUlYN1o2ZVB0TlpaVlplLzVuR1lGUnMxakE3SnhhUjZiOA==";
-    var $header22 = "MarketPlaceId:M21DYVNZZStuU2pyeHQvS3o0aXFrVGZOYnYxaWNGazAvMmpoUlc5TWhGWjRwTDB2VTVoU0hBeVF3YTYrTDJ2ZA==";
-    var $header33 = "SecretAccessKey:UkNJMnVCV2w4Q0ZBb0hTYTVyN0JCbGZyeHN1VS9FcFFNMUxYQkR4Z0ZwbHpVN1NKNzZ5QWEyUjZvYkpEbVVhWg==";
+    var $header11 = "Acceskeyid:UC8vbEllVnNYY1c1T3ljakY4NmRsTEtBUjluNXd5L1YwUkpyYS95NWsxa080Zk8xMTVGUVphMUtjaFNtZEg1eA==";
+    var $header22 = "MarketPlaceId:MEdhWENyWUtYQlg5YWNicnpKRFJLM2tnNWliNGhBK2ZWL1Mwd25JTm0va0ZwVGdvc3VldXN4NGo3Nldxc2k4aA==";
+    var $header33 = "SecretAccessKey:NEE2TVpCOXI2eG1UWW1yUTQwSjQyNGh2SDdibjRNUmxxbHduaG9iUFN1QnlVam02a3gvNGs5Y2lWbHhxemVPZw==";
     
     //////// QA ////////
-    var $updateinventorypricestatus_inuse = "https://bfsd.qa.bfsgodirect.com/dps/web/api/updateinventorypricestatus";
-    var $getdealersagainstgroup_inuse = "https://bfsd.qa.bfsgodirect.com/dps/web/api/getdealersagainstgroup";
-    var $getdealerdetailsbygroup_inuse = "https://bfsd.qa.bfsgodirect.com/dps/web/api/getdealerdetailsbygroup";
+    var $updateinventorypricestatus_inuse = "https://bfl.qa.emimalls.in/dps/web/api/updateinventorypricestatus";
+    var $getskudetails_inuse = "https://bfl.qa.emimalls.in/dps/web/api/getskudetails";
+    var $getdealersagainstgroup_inuse = "https://bfl.qa.emimalls.in/dps/web/api/getdealersagainstgroup";
     //////// UAT ////////
     var $updateinventorypricestatus_uat = "https://bfsd.qa.bfsgodirect.com/dps/web/api/updateinventorypricestatus";
     var $getdealersagainstgroup_uat = "https://bfsd.uat.bfsgodirect.com/dps/web/api/getdealersagainstgroup";
@@ -44,7 +44,8 @@ class Bfl_Model extends CI_Model {
         
     }    
     function Update_inventory_price_status ($data) {
-        $authorization = array( "$this->header11", "$this->header22", "$this->header33","Content-Type:application/json");
+        die(json_encode($data));
+        $authorization = array( "$this->header1", "$this->header2", "$this->header3","Content-Type:application/json");
         $result = $this->rest->request($this->updateinventorypricestatus_prod, "POST_BFL", json_encode($data), 0, $authorization);
         $result = json_decode($result, true);
         return $result;

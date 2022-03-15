@@ -9,10 +9,8 @@ class Bfl_Api extends CI_Controller
         $this->load->model('Bfl_Model');                     
     }
 
-    public function update_Inventory() {
-        
-        $this->Bfl_Model->Group_code_to_child_dealer_mapping_API();
-        
+    public function update_Inventory() {        
+        $this->Bfl_Model->Group_code_to_child_dealer_mapping_API();        
     }
     public function group_code_to_sku_details_api() {
         $q['tab_active'] = '';
@@ -76,35 +74,36 @@ class Bfl_Api extends CI_Controller
         $inventory=array();
         $inventory['dealer_grpid']="54429";
         foreach ($branches as $branch){
-            if($branch->id_branch==63){
-            $data = $this->Bfl_Model->get_bfl_stock_by_branch($branch->id_branch);
-            
+            if($branch->id_branch==82){
+            $data = $this->Bfl_Model->get_bfl_stock_by_branch($branch->id_branch); 
+//             die('<pre>'.print_r($data,1).'</pre>');
             if(count($data)>0){
                 $inventory['seller_id']=$branch->bfl_store_id;
                 $inventory['data']=array();
-                $i=0;
+                $i=1;
                 $total= count($data);
                 foreach ($data as $d){
                     $inv_data['sku']=$d->bfl_sku;
                     $inv_data['price_value']=$d->mop;
-                    $inv_data['stock_value']=$d->qty;
+                    $inv_data['stock_value']=(int)$d->qty;
                     $inv_data['status']=1;
                     array_push($inventory['data'], $inv_data);
                     if($i==19){
                         $sku_data = $this->Bfl_Model->Update_inventory_price_status($inventory);
                         $inventory['data']=array();
-                        $i=0;
+                        $i=1;
                     }elseif($i==$total && $total < 20){
+//                        die('<pre>'.print_r(json_encode($inventory),1).'</pre>');
                         $sku_data = $this->Bfl_Model->Update_inventory_price_status($inventory);
-                        die('<pre>'.print_r($sku_data,1).'</pre>');
-                        $i=0;
+
+                        $i=1;
                         $inventory['data']=array();
                     }else{
                         
                     }                    
                     $i++;
                 }
-//                    die('<pre>'.print_r(json_encode($sku_data),1).'</pre>');
+                    die('<pre>'.print_r(json_encode($sku_data),1).'</pre>');
             }
             }  
         }

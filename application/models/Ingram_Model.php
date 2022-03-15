@@ -59,34 +59,29 @@ class Ingram_Model extends CI_Model {
         $result = $this->rest->request($this->ordercreate_v6_inuse, "POST", json_encode($data), 0, $authorization);
         $result = json_decode($result, true);
         return $result;
-    }
-
-    public function ajax_get_booked_qty($variant, $idbranch) {
+    } 
+    public function ajax_get_booked_qty($variant, $idbranch,$idgodown) {
          return $this->db->select("SUM(qty) AS booked_qty")
                         ->where('sale_token_product.idvariant', $variant)                        
-                        ->where('sale_token_product.idgodown', 6)
+                        ->where('sale_token_product.idgodown', $idgodown)
                         ->where('sale_token.ingram_status', 2)
                         ->where('sale_token_product.idsaletoken = sale_token.id_sale_token')->from('sale_token')
                         ->get('sale_token_product')->row();
          die($this->db->last_query());
     }
-    public function ajax_get_variant_byid_branch_godown($variant, $idbranch,$idgodown) {
-
+    public function ajax_get_variant_byid_branch_godown($variant, $idbranch,$idgodown) { 
         return $this->db->select("sum(qty) as avail_qty")
                         ->where('stock.idvariant', $variant)
                         ->where('stock.idbranch', $idbranch)                
                         ->where('stock.idgodown', $idgodown)
                         ->get('stock', 1)->row();
-    }
-
+    } 
     public function update_vendor_products($data) {
         return $this->db->update_batch('vendor_po_product', $data, 'id_vendor_po_product');
-    }
-
+    } 
     public function update_vendor_po($data) {
         return $this->db->update_batch('vendor_po', $data, 'id_vendor_po');
-    }
-
+    } 
     public function save_vendor_po($data) {
         $this->db->insert('vendor_po', $data);
         return $this->db->insert_id();
@@ -94,12 +89,10 @@ class Ingram_Model extends CI_Model {
 
     public function save_vendor_po_products($data) {
         return $this->db->insert_batch('vendor_po_product', $data);
-    }
-
+    } 
     public function delete_sale_by_tokenid($id) {
         return $this->db->where('idsaletoken', $id)->delete('sale');
-    }
-
+    } 
     public function update_vendor_products_byid_vendorpo($data) {
         return $this->db->update_batch('vendor_po_product', $data, 'idvendor_po');
     }
@@ -138,7 +131,6 @@ public function save_ingram_order_history($data){
                         ->where('sale_token_product.idsaletoken = sale_token.id_sale_token')->from('sale_token_product')                                                
                         ->get('sale_token')->result();
     }
-
     public function get_purchase_order_byid($idpo) {
         return $this->db->select('vendor_po.*,b.branch_name as branchname,wb.id_branch as id_warehouse,wb.*,vendor.*')
                         ->where('vendor_po.id_vendor_po', $idpo)
@@ -147,27 +139,22 @@ public function save_ingram_order_history($data){
                         ->where('vendor_po.idvendor = vendor.id_vendor')->from('vendor')
                         ->get('vendor_po')->row();
     }
-
     public function get_purchase_order_product_byid($idpo) {
         return $this->db->where('vendor_po_product.idvendor_po', $idpo)
                         ->where('model_variants.idsku_type = sku_type.id_sku_type')->from('sku_type')
                         ->where('vendor_po_product.idvariant = model_variants.id_variant')->from('model_variants')
                         ->get('vendor_po_product')->result();
+//        die($this->db->last_query());
     }
- 
     public function update_purchase_order($id, $data) {
         return $this->db->where('id_vendor_po', $id)->update('vendor_po', $data);
     }
-    
-
     public function update_sale_payment_reconciliation($id_saletokenpayment, $inv_no, $data) {
         return $this->db->where("idsale_payment", $id_saletokenpayment)->where("inv_no", $inv_no)->update('payment_reconciliation', $data);
     }
-
     public function delete_stock_by_imei($imei_no) {
         return $this->db->where('imei_no', $imei_no)->delete('stock');
     }
-
     public function ajax_get_purchase_order_data($status, $from, $to) {
         if ($from == '' && $to == '' && $status != '') {
             return $this->db->select('sale_token.id_sale_token,branch.branch_name,branch.id_branch,vendor.vendor_name,vendor_po.*')->where('vendor_po.status', $status)
@@ -224,7 +211,7 @@ public function save_ingram_order_history($data){
                 ->where('st.idcustomer = customer.id_customer')->from('customer')
                 ->where('st.id_sale_token = ingram_order_history.idsaletoken')->from('ingram_order_history')
                 ->where('st.idsalesperson = users.id_users')->from('users');               
-        return $this->db->get('sale_token st')->result();
+         $this->db->get('sale_token st')->result();
 
         die($this->db->last_query());
     }

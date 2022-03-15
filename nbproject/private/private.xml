@@ -3,7 +3,18 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/iPalace/xampp/htdocs/sserp/application/config/routes.php</file>
+            <file>file:/C:/iPalace/xampp/htdocs/sserp/application/controllers/Stock.php</file>
+            <file>file:/C:/iPalace/xampp/htdocs/sserp/application/controllers/App_Api.php</file>
+            <file>file:/C:/iPalace/xampp/htdocs/sserp/application/models/Stock_model.php</file>
+            <file>file:/C:/iPalace/xampp/htdocs/sserp/application/models/Ingram_Model.php</file>
+            <file>file:/C:/iPalace/xampp/htdocs/sserp/application/views/ingram/purchase_inward.php</file>
+            <file>file:/C:/iPalace/xampp/htdocs/sserp/application/config/database.php</file>
+            <file>file:/C:/iPalace/xampp/htdocs/sserp/application/models/General_model.php</file>
+            <file>file:/C:/iPalace/xampp/htdocs/sserp/application/controllers/Purchase.php</file>
+            <file>file:/C:/iPalace/xampp/htdocs/sserp/application/models/Bfl_Model.php</file>
+            <file>file:/C:/iPalace/xampp/htdocs/sserp/application/controllers/Ingram_Api.php</file>
+            <file>file:/C:/iPalace/xampp/htdocs/sserp/application/controllers/Outward.php</file>
+            <file>file:/C:/iPalace/xampp/htdocs/sserp/application/controllers/Bfl_Api.php</file>
         </group>
     </open-files>
 </project-private>

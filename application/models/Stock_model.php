@@ -231,8 +231,8 @@ class Stock_model extends CI_Model {
              $this->db->where('mv.idbrand', $idbrand);   
         }
         if($idgodown && $idbranch)
-        {
-            $this->db->join('(select sum(st.qty) as stock_qty,st.idbranch,st.idvariant,st.idgodown from stock st WHERE  st.idgodown='.$idgodown.' and st.idbranch='.$idbranch.' '.$whr.' GROUP BY st.idvariant) stk','`stk`.`idbranch` = `b`.`id_branch` and `stk`.`idvariant` = `mv`.`id_variant`','left');                 
+        { 
+            $this->db->join('(select sum(st.qty) as stock_qty,st.idbranch,st.idvariant,st.idgodown from stock st WHERE  st.idgodown='.$idgodown.' and st.idbranch='.$idbranch.'  '.$whr.' GROUP BY st.idvariant) stk','`stk`.`idbranch` = `b`.`id_branch` and `stk`.`idvariant` = `mv`.`id_variant`','left');                 
             $this->db->join('(select sum(stm.qty) as intra_stock_qty,stm.temp_idbranch,stm.idvariant,stm.idgodown from stock stm WHERE  stm.idgodown='.$idgodown.' and stm.temp_idbranch='.$idbranch.'  '.$whr1.'  GROUP BY stm.idvariant) stkm',' `stkm`.`temp_idbranch` = `b`.`id_branch` and `stkm`.`idvariant` = `mv`.`id_variant`','left');                 
         }elseif(!$idgodown && $idbranch){
             $this->db->join('(select sum(st.qty) as stock_qty,st.idbranch,st.idvariant,st.idgodown from stock st WHERE  st.idbranch='.$idbranch.'  '.$whr.'  GROUP BY st.idvariant,st.idgodown) stk','`stk`.`idgodown` = `g`.`id_godown` and `stk`.`idbranch` = `b`.`id_branch` and `stk`.`idvariant` = `mv`.`id_variant`','left');                 
